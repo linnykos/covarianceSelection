@@ -19,7 +19,6 @@ Imports:
     doMC,
     hash,
     binaryLogic,
-    biomaRt,
     dequer,
     mgcv
 Suggests:

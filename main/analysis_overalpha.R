@@ -3,7 +3,7 @@ source("../main/step0_header.R")
 source("../main/step1_loading.R")
 
 additional_name <- ""
-alpha_seq <- seq(0, 0.35, by = 0.025)
+alpha_seq <- seq(0.05, 0.35, by = 0.025)
 
 for(alpha in alpha_seq){
   print(alpha)

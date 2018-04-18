@@ -36,7 +36,7 @@ rule_closure <- function(){
   }
 }
 
-criterion_closure <- function(trials = 1000, cores = 14,
+criterion_closure <- function(trials = 1000, cores = 10,
                               threshold = 0.95){
   function(dat, vec, y, ...){
     set.seed(y)

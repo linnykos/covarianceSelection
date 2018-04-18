@@ -1,41 +1,4 @@
 context("Test naming")
-#
-# ## convert_genenames is correct
-#
-# test_that("convert_genenames works", {
-#   library(biomaRt)
-#   vec <- c("KDM6B", "NCKAP1", "RANBP17", "WDFY3", "DSCAM",
-#            "FOXP1", "KDM5B", "MED13L", "PHF2", "SPAST", "CHD8", "DYRK1A",
-#            "ANK2" , "ARID1B", "ADNP", "POGZ")
-#   res <- convert_genenames(vec)
-#
-#   expect_true(length(res) == length(vec))
-#   expect_true(all(sapply(res, function(x){substr(x, 1, 4)}) == "ENSG"))
-# })
-#
-# test_that("convert_genenames is reflective", {
-#   library(biomaRt)
-#   vec <- c("KDM6B", "NCKAP1", "RANBP17", "WDFY3", "DSCAM",
-#            "FOXP1", "KDM5B", "MED13L", "PHF2", "SPAST", "CHD8", "DYRK1A",
-#            "ANK2" , "ARID1B", "ADNP", "POGZ")
-#   res <- convert_genenames(vec)
-#   res2 <- convert_genenames(res, from = "ensembl", to = "symbol")
-#
-#   expect_true(all(vec == res2))
-# })
-#
-# test_that("convert_genenames can output NA", {
-#   library(biomaRt)
-#   vec <- c("asdf", "KDM6B", "NCKAP1", "RANBP17", "WDFY3", "DSCAM",
-#            "FOXP1", "KDM5B", "MED13L", "PHF2", "SPAST", "CHD8", "DYRK1A",
-#            "ANK2" , "ARID1B", "ADNP", "asdfasdf", "POGZ")
-#   res <- convert_genenames(vec)
-#
-#   expect_true(all(is.na(res[c(1,17)])))
-#   expect_true(all(!is.na(res[-c(1,17)])))
-# })
-
-###########################
 
 ## symbol_synonyms is correct
 
