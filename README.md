@@ -30,7 +30,7 @@ You will need to install the Git Large File Storage system to do this (see below
 The two major datasets used in this article are also included in the repository.
 The first dataset is the BrainSpan microarray measurements collected by Kang et al. (2011). While the original dataset 
 is publicly available on GEO (\url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE25219}),
-we provide a locally preprocessed dataset, which was created to be amendable for our analysis in \texttt{R}.
+we provide a locally preprocessed dataset, which was created to be amendable for our analysis in R.
 This dataset is a 105 MB `.RData` file, and is synced onto GitHub using the Git Large File Storage system (https://git-lfs.github.com/). Please
 install this system before proceeding.
 
