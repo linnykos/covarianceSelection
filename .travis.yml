@@ -1,0 +1,27 @@
+language: r
+
+before_install:
+ - Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("biomaRt")'
+ - cd longitudinalGM
+
+cache: packages
+
+r_binary_packages:
+    - igraph
+    - glmnet
+    - Matrix
+    - MASS
+    - huge
+    - plyr
+    - devtools
+    - foreach
+    - doMC
+    - covr
+    - hash
+    - binaryLogic
+    - dequer
+
+after_success:
+  - Rscript -e 'library(covr); codecov()'
+
+warnings_are_errors: true

@@ -1,0 +1,16 @@
+*.tar.gz
+*.Rproj.user
+*.Rhistory
+*.Ruserdata
+*.out
+.Rproj.user
+*.Rout
+.Rout
+*.ROut
+.ROut
+main/beta_vec
+figures/*.RData
+results/*.RData
+simulation/*.RData
+experiment/*.RData
+data/*.RData
