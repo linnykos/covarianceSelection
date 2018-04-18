@@ -22,8 +22,6 @@ install.packages("doMC", repos="http://R-Forge.R-project.org")
 ```
 See: http://stackoverflow.com/questions/16453625/package-domc-not-available-for-r-version-3-0-0-warning-in-install-packages
 
-In addition, when running the analysis, the following packages also need to be installed: `fdrtool`. 
-
 # Data 
 
 The two major datasets used in this article are also included in the repository.

@@ -8,7 +8,6 @@ library(foreach)
 library(doMC)
 library(hash)
 library(glmnet)
-library(fdrtool)
 
-verbose = F
-save_filepath = "../results/"
+verbose <- F
+save_filepath <- "../results/"
