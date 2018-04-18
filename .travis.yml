@@ -2,7 +2,7 @@ language: r
 
 before_install:
  - Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("biomaRt")'
- - cd longitudinalGM
+ - cd covarianceSelection
 
 cache: packages
 
