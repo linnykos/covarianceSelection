@@ -65,21 +65,6 @@ NULL
 #' @format A data frame with 18735 rows (18735 genes) and 17 columns.
 #' \describe{
 #'   \item{Gene}{Gene name}
-#'   \item{mut.rate}{mutation rate}
-#'   \item{dn.LoF}{number of denovo loss of function events}
-#'   \item{case.LoF}{number of loss of function events in case}
-#'   \item{ctrl.LoF}{number of loss of function events in control}
-#'   \item{trans.LoF}{number of transmitted loss of function events}
-#'   \item{ntrans.LoF}{number of nontransmitted loss of function events}
-#'   \item{dn.mis3}{number of denovo missense 3 mutation events}
-#'   \item{case.mis3}{number of missense 3 mutation events in case}
-#'   \item{ctrl.mis3}{number of missense 3 mutation events in control}
-#'   \item{trans.mis3}{number of transmitted missense 3 events}
-#'   \item{ntrans.mis3}{number of nontransmitted missense 3 events}
-#'   \item{BF.dn}{Bayes factor for denovo}
-#'   \item{BF}{Bayes factor}
-#'   \item{qvalue.dn}{q value for denovo}
-#'   \item{qvalue}{qvalue}
 #'   \item{pval.TADA}{pvalue}
 #' }
 #' @author Kevin Lin \email{kevinl1@andrew.cmu.edu}
@@ -106,7 +91,7 @@ NULL
 #' @keywords data
 NULL
 
-#' Iossifov TADA genes
+#' Iossifov genes
 #'
 #' @name iossifov
 #' @docType data

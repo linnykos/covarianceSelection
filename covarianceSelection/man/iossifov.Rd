@@ -3,7 +3,7 @@
 \docType{data}
 \name{iossifov}
 \alias{iossifov}
-\title{Iossifov TADA genes}
+\title{Iossifov genes}
 \format{A vector of characters, length 251}
 \source{
 The partitionings were based on the data used in
@@ -13,7 +13,7 @@ The contribution of de novo coding mutations to autism spectrum disorder.
 Nature, 515(7526):216–221.
 }
 \description{
-Iossifov TADA genes
+Iossifov genes
 }
 \author{
 Kevin Lin \email{kevinl1@andrew.cmu.edu}

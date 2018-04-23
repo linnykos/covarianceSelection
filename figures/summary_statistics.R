@@ -34,8 +34,8 @@ overlap <- sort(iossifov[which(iossifov %in% as.character(autism_genes))])
 
 statements[[6]] <- paste0("A total of ", summary_results$num_aut, " of risk genes were found ",
                           "using our current method, ",
-             length(overlap), " of which are also in the independent study (",
-             round(length(overlap)/summary_results$num_aut*100, 2), "%):")
+                          length(overlap), " of which are also in the independent study (",
+                          round(length(overlap)/summary_results$num_aut*100, 2), "%):")
 statements[[7]] <- overlap
 
 load("../results/step5_res_pfc35.RData")
@@ -56,14 +56,14 @@ overlap_list <- vector("list", length(alpha_tuning_seq))
 
 for(idx in 1:length(alpha_tuning_seq)){
   load(paste0("../results/step5_res_alpha", alpha_tuning_seq[idx], ".RData"))
-
+  
   overlap_list[[idx]] <- sort(iossifov[which(iossifov %in% as.character(autism_genes))])
   autism_list[[idx]] <- autism_genes
 }
 
 overlap_table <- table(unlist(overlap_list))
 
-at_least_cutoff <- 7
+at_least_cutoff <- 8
 
 statements[[9]] <- paste0("Of the ", length(overlap_main), " overlap risk genes in our analysis, ",
                           length(which(overlap_table[names(overlap_table) %in% overlap_main] >= 6)),
