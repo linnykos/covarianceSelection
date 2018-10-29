@@ -88,7 +88,7 @@ NULL
 #' }
 #' @author Kevin Lin \email{kevinl1@andrew.cmu.edu}
 #' @source The dataset came from Bernie Devlin.
-#' @keywords data
+#' @keywords data 
 NULL
 
 #' Iossifov genes

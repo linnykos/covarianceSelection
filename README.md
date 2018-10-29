@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/linnylin92/covarianceSelection.svg?branch=master)](https://travis-ci.org/linnylin92/covarianceSelection)
-[![codecov](https://codecov.io/gh/linnylin92/covarianceSelection/branch/master/graph/badge.svg)](https://codecov.io/gh/linnylin92/covarianceSelection)
+[![Build Status](https://travis-ci.org/linnylin92/covariance_selection.svg?branch=master)](https://travis-ci.org/linnylin92/covariance_selection)
+[![codecov](https://codecov.io/gh/linnylin92/covariance_selection/branch/master/graph/badge.svg)](https://codecov.io/gh/linnylin92/covariance_selection)
 
 # Purpose
 
