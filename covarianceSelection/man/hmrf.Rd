@@ -4,8 +4,8 @@
 \alias{hmrf}
 \title{Hidden markov random field}
 \usage{
-hmrf(pval, adj, seedindex, pthres = 0.05, iter = 100, verbose = FALSE,
-  tol = 0.001)
+hmrf(pval, adj, seedindex, pthres = 0.05, iter = 100,
+  verbose = FALSE, tol = 0.001)
 }
 \arguments{
 \item{pval}{a vector of d p-values, between 0 and 1.}

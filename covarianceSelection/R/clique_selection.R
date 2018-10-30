@@ -44,7 +44,7 @@ clique_selection <- function(g, threshold = 0.95, mode = "all",
   queue <- .initialize_queue(len)
   hash_history <- hash::hash()
   hash_children <- .initialize_children(clique_list)
-  hash_unique <- .initalize_unique(clique_list, d)
+  hash_unique <- .initialize_unique(clique_list, d)
 
   start_time <- proc.time()["elapsed"]
   prev_time <- start_time
@@ -236,9 +236,10 @@ select_clique <- function(lis, idx, adj){
 #' Initialize hash table of indices
 #'
 #' @param lis list of indices
+#' @param d maximum index
 #'
 #' @return a \code{hash} object of booleans
-.initalize_unique <- function(lis, d){
+.initialize_unique <- function(lis, d){
   has <- hash::hash()
   for(i in 1:length(lis)){
     string <- .convert_indices_to_binary(lis[[i]], max = d)
@@ -292,6 +293,7 @@ select_clique <- function(lis, idx, adj){
 #' @param has hash table of booleans with strings of indicies as keys
 #' @param elements1 vector of indices
 #' @param elements2 vector of indices
+#' @param d maximum index
 #'
 #' @return boolean
 .check_nonunique <- function(has, elements1, elements2, d){
@@ -370,6 +372,7 @@ select_clique <- function(lis, idx, adj){
 #' @param hash_children \code{hash} object
 #' @param hash_unique \code{hash} object
 #' @param hash_history \code{hash} object
+#' @param d maximum index
 #' @param mode string
 #'
 #' @return a vector, stating how many things were attempted to be pushed and how many things were actually pushed

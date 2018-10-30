@@ -4,7 +4,8 @@
 \alias{screen}
 \title{Screening data}
 \usage{
-screen(dat, pv, pthres = 0.1, num_genes = min(100, ceiling(nrow(dat)/10)))
+screen(dat, pv, pthres = 0.1, num_genes = min(100,
+  ceiling(nrow(dat)/10)))
 }
 \arguments{
 \item{dat}{the nxd matrix}

@@ -89,7 +89,6 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
 #'
 #' @param num_list list of numerator vectors
 #' @param denom_list list of denominator vectors
-#' @param idx vector of the indices of the lower triangle
 #' @param combn_mat matrix of pairs to test for
 #' @param squared boolean on whether or not to square the test statistic
 #'
@@ -112,6 +111,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
 #' @param noise_list list of noise vectors
 #' @param cov_list list of covariance matrices
 #' @param idx vector of the indices of the lower triangle
+#' @param remaining_idx indices to compute the numerator of
 #'
 #' @return a list of vectors
 .compute_all_numerator_bootstrap <- function(dat_list, noise_list, cov_list, idx,

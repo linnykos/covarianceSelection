@@ -185,7 +185,7 @@ test_that(".add_to_queue works", {
   hash_history <- hash::hash()
   clique_list <- lapply(igraph::maximal.cliques(g), function(x){sort(as.numeric(x))})
   hash_children <- .initialize_children(clique_list)
-  hash_unique <- .initalize_unique(clique_list, n)
+  hash_unique <- .initialize_unique(clique_list, n)
 
   len <- length(clique_list)
   .add_to_queue(queue, len+1, sort(unique(unlist(clique_list[1:2]))), c(1,2),

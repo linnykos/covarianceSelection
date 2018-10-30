@@ -4,8 +4,8 @@
 \alias{stepdown_path}
 \title{Stepdown path}
 \usage{
-stepdown_path(dat_list, trials = 100, denominator = T, iterations = 15,
-  cores = 1, verbose = F)
+stepdown_path(dat_list, trials = 100, denominator = T,
+  iterations = 15, cores = 1, verbose = F)
 }
 \arguments{
 \item{dat_list}{list of data matrices with same number of columns}

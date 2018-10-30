@@ -4,8 +4,8 @@
 \alias{graphicalModel_store}
 \title{Graphical model estimate}
 \usage{
-graphicalModel_store(dat, filename_func, num_primary = ncol(dat), cores = 1,
-  cv = F)
+graphicalModel_store(dat, filename_func, num_primary = ncol(dat),
+  cores = 1, cv = F)
 }
 \arguments{
 \item{dat}{the nxd matrix}
