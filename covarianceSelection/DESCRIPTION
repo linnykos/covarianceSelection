@@ -23,4 +23,5 @@ Imports:
     mgcv
 Suggests:
     testthat
+LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.1.0
