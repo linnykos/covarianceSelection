@@ -123,14 +123,3 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
                                                cov_list[[x]], idx)})
   lis
 }
-
-#############
-
-.shorten_combn <- function(combn_mat, num_in){
-  if(ncol(combn_mat) == 1){if(all(combn_mat <= num_in)) return(combn_mat) else return(NA)}
-
-  res <- apply(combn_mat, 1, function(x){x <= num_in})
-  idx <- which(apply(res, 1, function(x){all(x)}))
-  if(length(idx) == 0) return(NA)
-  combn_mat[,idx, drop = F]
-}
