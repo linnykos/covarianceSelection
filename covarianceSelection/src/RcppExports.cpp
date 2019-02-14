@@ -6,20 +6,47 @@
 
 using namespace Rcpp;
 
-// c_compute_covariance
-arma::mat c_compute_covariance(const arma::mat X);
-RcppExport SEXP _covarianceSelection_c_compute_covariance(SEXP XSEXP) {
+// c_compute_sigma
+arma::mat c_compute_sigma(const arma::mat X);
+RcppExport SEXP _covarianceSelection_c_compute_sigma(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(c_compute_covariance(X));
+    rcpp_result_gen = Rcpp::wrap(c_compute_sigma(X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// c_compute_variance
+arma::mat c_compute_variance(const arma::mat X, const arma::mat cov_mat);
+RcppExport SEXP _covarianceSelection_c_compute_variance(SEXP XSEXP, SEXP cov_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type cov_mat(cov_matSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_compute_variance(X, cov_mat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// c_compute_bootSigma
+arma::mat c_compute_bootSigma(const arma::mat X, const arma::vec noise_vec, const arma::mat cov_mat);
+RcppExport SEXP _covarianceSelection_c_compute_bootSigma(SEXP XSEXP, SEXP noise_vecSEXP, SEXP cov_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type noise_vec(noise_vecSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type cov_mat(cov_matSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_compute_bootSigma(X, noise_vec, cov_mat));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_covarianceSelection_c_compute_covariance", (DL_FUNC) &_covarianceSelection_c_compute_covariance, 1},
+    {"_covarianceSelection_c_compute_sigma", (DL_FUNC) &_covarianceSelection_c_compute_sigma, 1},
+    {"_covarianceSelection_c_compute_variance", (DL_FUNC) &_covarianceSelection_c_compute_variance, 2},
+    {"_covarianceSelection_c_compute_bootSigma", (DL_FUNC) &_covarianceSelection_c_compute_bootSigma, 3},
     {NULL, NULL, 0}
 };
 
