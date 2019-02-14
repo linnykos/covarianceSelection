@@ -6,20 +6,20 @@
 
 using namespace Rcpp;
 
-// compute_covariance
-arma::mat compute_covariance(const arma::mat X);
-RcppExport SEXP _covarianceSelection_compute_covariance(SEXP XSEXP) {
+// c_compute_covariance
+arma::mat c_compute_covariance(const arma::mat X);
+RcppExport SEXP _covarianceSelection_c_compute_covariance(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_covariance(X));
+    rcpp_result_gen = Rcpp::wrap(c_compute_covariance(X));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_covarianceSelection_compute_covariance", (DL_FUNC) &_covarianceSelection_compute_covariance, 1},
+    {"_covarianceSelection_c_compute_covariance", (DL_FUNC) &_covarianceSelection_c_compute_covariance, 1},
     {NULL, NULL, 0}
 };
 

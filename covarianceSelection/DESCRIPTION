@@ -20,8 +20,9 @@ Imports:
     hash,
     binaryLogic,
     dequer,
-    mgcv
+    mgcv,
+    Rcpp
 Suggests:
     testthat
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1

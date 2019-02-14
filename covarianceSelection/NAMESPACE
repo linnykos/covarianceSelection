@@ -26,7 +26,5 @@ export(stepdown)
 export(stepdown_choose)
 export(stepdown_path)
 export(symbol_synonyms)
-
-importFrom(Rcpp, evalCpp)
-
 useDynLib(covarianceSelection)
+importFrom(Rcpp, evalCpp)

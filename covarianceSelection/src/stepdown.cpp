@@ -6,6 +6,6 @@ using namespace arma;
 
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export()]]
-arma::mat compute_covariance (const arma::mat X) {
+arma::mat c_compute_covariance (const arma::mat X) {
   return(trans(X) * X);
 }

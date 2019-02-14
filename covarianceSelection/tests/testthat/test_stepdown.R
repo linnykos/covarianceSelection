@@ -180,26 +180,3 @@ test_that("stepdown rejects everything with alpha is 1", {
 
   expect_true(length(res) == 0)
 })
-
-###################
-
-## .shorten_combn is correct
-
-test_that(".shorten_combn works", {
-  mat <- combn(10,2)
-  res <- .shorten_combn(mat, 5)
-
-  expect_true(is.matrix(res))
-  expect_true(nrow(res) == 2)
-  expect_true(all(as.numeric(res) <= 5))
-
-  bool_vec <- apply(mat, 2, function(x){if(all(x <= 5)) return(TRUE) else return(FALSE)})
-  expect_true(all(sort(as.numeric(res)) == sort(as.numeric(mat[,which(bool_vec)]))))
-})
-
-test_that(".shorten_combn still returns a matrix even if only one column is selected", {
-  mat <- combn(10,2)
-  res <- .shorten_combn(mat, 2)
-
-  expect_true(all(dim(res) == c(2,1)))
-})
