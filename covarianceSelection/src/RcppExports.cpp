@@ -6,6 +6,29 @@
 
 using namespace Rcpp;
 
+// c_quantile
+double c_quantile(const arma::mat X, const double quantile);
+RcppExport SEXP _covarianceSelection_c_quantile(SEXP XSEXP, SEXP quantileSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const double >::type quantile(quantileSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_quantile(X, quantile));
+    return rcpp_result_gen;
+END_RCPP
+}
+// c_combn
+arma::umat c_combn(double n);
+RcppExport SEXP _covarianceSelection_c_combn(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_combn(n));
+    return rcpp_result_gen;
+END_RCPP
+}
 // c_compute_sigma
 arma::mat c_compute_sigma(const arma::mat X);
 RcppExport SEXP _covarianceSelection_c_compute_sigma(SEXP XSEXP) {
@@ -42,11 +65,58 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// c_compute_covStat
+double c_compute_covStat(const arma::mat num_x, const arma::mat num_y, const arma::mat denom_x, const arma::mat denom_y, const double quantile, const bool squared);
+RcppExport SEXP _covarianceSelection_c_compute_covStat(SEXP num_xSEXP, SEXP num_ySEXP, SEXP denom_xSEXP, SEXP denom_ySEXP, SEXP quantileSEXP, SEXP squaredSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat >::type num_x(num_xSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type num_y(num_ySEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type denom_x(denom_xSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type denom_y(denom_ySEXP);
+    Rcpp::traits::input_parameter< const double >::type quantile(quantileSEXP);
+    Rcpp::traits::input_parameter< const bool >::type squared(squaredSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_compute_covStat(num_x, num_y, denom_x, denom_y, quantile, squared));
+    return rcpp_result_gen;
+END_RCPP
+}
+// c_compute_all_denom
+Rcpp::List c_compute_all_denom(const Rcpp::List dat_list, const Rcpp::List cov_list);
+RcppExport SEXP _covarianceSelection_c_compute_all_denom(SEXP dat_listSEXP, SEXP cov_listSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type dat_list(dat_listSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type cov_list(cov_listSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_compute_all_denom(dat_list, cov_list));
+    return rcpp_result_gen;
+END_RCPP
+}
+// c_compute_all_test_stat
+arma::vec c_compute_all_test_stat(const Rcpp::List num_list, const Rcpp::List denom_list, const arma::umat combn_mat, const bool squared);
+RcppExport SEXP _covarianceSelection_c_compute_all_test_stat(SEXP num_listSEXP, SEXP denom_listSEXP, SEXP combn_matSEXP, SEXP squaredSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type num_list(num_listSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type denom_list(denom_listSEXP);
+    Rcpp::traits::input_parameter< const arma::umat >::type combn_mat(combn_matSEXP);
+    Rcpp::traits::input_parameter< const bool >::type squared(squaredSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_compute_all_test_stat(num_list, denom_list, combn_mat, squared));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_covarianceSelection_c_quantile", (DL_FUNC) &_covarianceSelection_c_quantile, 2},
+    {"_covarianceSelection_c_combn", (DL_FUNC) &_covarianceSelection_c_combn, 1},
     {"_covarianceSelection_c_compute_sigma", (DL_FUNC) &_covarianceSelection_c_compute_sigma, 1},
     {"_covarianceSelection_c_compute_variance", (DL_FUNC) &_covarianceSelection_c_compute_variance, 2},
     {"_covarianceSelection_c_compute_bootSigma", (DL_FUNC) &_covarianceSelection_c_compute_bootSigma, 3},
+    {"_covarianceSelection_c_compute_covStat", (DL_FUNC) &_covarianceSelection_c_compute_covStat, 6},
+    {"_covarianceSelection_c_compute_all_denom", (DL_FUNC) &_covarianceSelection_c_compute_all_denom, 2},
+    {"_covarianceSelection_c_compute_all_test_stat", (DL_FUNC) &_covarianceSelection_c_compute_all_test_stat, 4},
     {NULL, NULL, 0}
 };
 
