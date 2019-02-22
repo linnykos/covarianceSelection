@@ -62,9 +62,13 @@ arma::vec c_compute_all_test_stat(const Rcpp::List num_list, const Rcpp::List de
   int len = combn_mat.n_cols;
   arma::vec res = arma::vec(len);
   for(int i = 0; i < len; i++){
-    res[i] = c_compute_covStat(num_list[combn_mat(1,i)], num_list[combn_mat(2,i)],
-                               denom_list[combn_mat(1,i)], denom_list[combn_mat(2,i)],
-                                                                     squared);
+    int j = combn_mat(0,i) - 1;
+    int k = combn_mat(1,i) - 1;
+    res[i] = c_compute_covStat(Rcpp::as<arma::mat>(num_list[j]),
+                               Rcpp::as<arma::mat>(num_list[k]),
+                               Rcpp::as<arma::mat>(denom_list[j]),
+                               Rcpp::as<arma::mat>(denom_list[k]),
+                                                   squared);
   }
   
   return(res);
@@ -77,8 +81,10 @@ Rcpp::List c_compute_all_numerator_bootstrap(const Rcpp::List dat_list, const Rc
   Rcpp::List res(k);
   
   for(int i = 0; i < k; i++){
-    res[i] = c_compute_bootSigma(dat_list[remaining_idx[i]], noise_list[remaining_idx[i]],
-                                 cov_list[remaining_idx[i]]);
+    int j = remaining_idx[i] - 1;
+    res[i] = c_compute_bootSigma(Rcpp::as<arma::mat>(dat_list[j]), 
+                                 Rcpp::as<arma::vec>(noise_list[j]),
+                                 Rcpp::as<arma::mat>(cov_list[j]));
   }
   
   return(res);
