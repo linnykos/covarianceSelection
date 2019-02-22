@@ -35,11 +35,11 @@ double c_compute_covStat(const arma::mat num_x, const arma::mat num_y,
                             const double quantile = 1, const bool squared = true){
   if(squared){
     arma::mat res = arma::square(num_x - num_y)/(denom_x + denom_y);
+    return(c_quantile(res));
   } else {
     arma::mat res = arma::abs(num_x - num_y);
+    return(c_quantile(res));
   }
-  
-  return(c_quantile(num_x));
 }
 
 ///////
@@ -70,6 +70,7 @@ arma::vec c_compute_all_test_stat(const Rcpp::List num_list, const Rcpp::List de
   return(res);
 }
 
+// [[Rcpp::export()]]
 Rcpp::List c_compute_all_numerator_bootstrap(const Rcpp::List dat_list, const Rcpp::List noise_list,
                                              const Rcpp::List cov_list, const arma::uvec remaining_idx){
   int k = remaining_idx.size();

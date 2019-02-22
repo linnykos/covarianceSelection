@@ -1,71 +1,58 @@
 context("Test Cai covariance test")
 
-## .compute_sigma is correct
+## .c_compute_sigma is correct
 
-test_that(".compute_sigma is computed correctly", {
+test_that(".c_compute_sigma is computed correctly", {
   set.seed(10)
   d <- 5; n <- 10
   mat <- matrix(rnorm(n*d), n, d)
-  res <- .compute_sigma(mat)
+  mat <- apply(mat, 2, function(x){x-mean(x)})
+  res <- .c_compute_sigma(mat)
 
   mean.vec <- colSums(mat)/n
   res2.mat <- matrix(0, d, d)
   for(i in 1:n){
     res2.mat <- res2.mat + 1/n*(mat[i,] - mean.vec)%*%t(mat[i,] - mean.vec)
   }
-
-  res2 <- res2.mat[lower.tri(res2.mat, diag = T)]
-
-  expect_true(sum(abs(res - res2)) < 1e-4)
+  
+  expect_true(sum(abs(res - res2.mat)) < 1e-4)
 })
 
-test_that(".compute_sigma gives the right length", {
+test_that(".c_compute_sigma gives the right length", {
   set.seed(10)
   d <- 5; n <- 10
   mat <- matrix(rnorm(n*d), n, d)
-  res <- .compute_sigma(mat)
+  mat <- apply(mat, 2, function(x){x-mean(x)})
+  res <- .c_compute_sigma(mat)
 
-  expect_true(length(res) == 5*4/2 + 5)
+  expect_true(length(res) == 5*5)
 })
 
 ##############################
 
-## .compute_variance is correct
+## .c_compute_variance is correct
 
-test_that(".compute_variance is computed correctly", {
+test_that(".c_compute_variance is computed correctly", {
   set.seed(10)
   d <- 5; n <- 10
   mat <- matrix(rnorm(n*d), n, d)
-  res <- .compute_variance(mat)
+  mat <- apply(mat, 2, function(x){x-mean(x)})
+  cov_mat <- .c_compute_sigma(mat)
+  res <- .c_compute_variance(mat, cov_mat)
 
   sigma.mat <- (n-1)/n*stats::cov(mat)
   mat <- scale(mat, center = T, scale = F)
   res2.mat <- matrix(0, d, d)
   for(i in 1:d){
-    for(j in 1:i){
+    for(j in 1:d){
       res2.mat[i,j] <- sum((mat[,i] * mat[,j] - sigma.mat[i,j])^2)/n
     }
   }
 
-  res2 <- res2.mat[lower.tri(res2.mat, diag = T)]
-
-  expect_true(sum(abs(res - res2)) < 1e-4)
+  expect_true(sum(abs(res - res2.mat)) < 1e-4)
 })
 
-test_that(".compute_variance is computed correctly when passing in cov and idx", {
-  set.seed(10)
-  d <- 5; n <- 10
-  mat <- matrix(rnorm(n*d), n, d)
-  cov_mat <- (n-1)/n*stats::cov(mat)
-  idx <- which(lower.tri(diag(d), diag = T))
-  res <- .compute_variance(mat, cov_mat, idx)
-  res2 <- .compute_variance(mat)
-
-  expect_true(sum(abs(res - res2)) < 1e-4)
-})
-
-
-test_that(".compute_variance is the same as an alternative way (in wrong order)", {
+test_that(".c_compute_variance is the same as an alternative way (in wrong order)", {
   func <- function(mat){
     d <- ncol(mat); n <- nrow(mat)
     mat <- scale(mat, center = TRUE, scale = FALSE)
@@ -84,41 +71,51 @@ test_that(".compute_variance is the same as an alternative way (in wrong order)"
   set.seed(10)
   d <- 5; n <- 10
   mat <- matrix(rnorm(n*d), n, d)
-  res <- .compute_variance(mat)
+  mat <- apply(mat, 2, function(x){x-mean(x)})
+  cov_mat <- .c_compute_sigma(mat)
+  res <- .c_compute_variance(mat, cov_mat)
+  res <- res[lower.tri(res, diag = T)]
   res2 <- func(mat)
 
   expect_true(sum(abs(sort(res) - sort(res2))) < 1e-4)
 })
 
-test_that(".compute_variance gives the right length", {
+test_that(".c_compute_variance gives the right length", {
   set.seed(10)
   d <- 5; n <- 10
   mat <- matrix(rnorm(n*d), n, d)
-  res <- .compute_variance(mat)
+  mat <- apply(mat, 2, function(x){x-mean(x)})
+  cov_mat <- .c_compute_sigma(mat)
+  res <- .c_compute_variance(mat, cov_mat)
 
-  expect_true(length(res) == 5*4/2 + 5)
+  expect_true(length(res) == 5*5)
 })
+
 ############################
 
-## .compute_bootSigma is correct
+## .c_compute_bootSigma is correct
 
-test_that(".compute_bootSigma works", {
+test_that(".c_compute_bootSigma works", {
   set.seed(10)
   d <- 5; n <- 10
   mat <- matrix(rnorm(n*d), n, d)
+  mat <- apply(mat, 2, function(x){x-mean(x)})
+  cov_mat <- .c_compute_sigma(mat)
   noise_vec <- rnorm(n)
-  res <- .compute_bootSigma(mat, noise_vec)
+  res <- .c_compute_bootSigma(mat, noise_vec, cov_mat)
 
   expect_true(is.numeric(res))
-  expect_true(length(res) == d + d*(d-1)/2)
+  expect_true(length(res) == d^2)
 })
 
-test_that(".compute_bootSigma is computed correctly", {
+test_that(".c_compute_bootSigma is computed correctly", {
   set.seed(10)
   d <- 5; n <- 10
   mat <- matrix(rnorm(n*d), n, d)
+  mat <- apply(mat, 2, function(x){x-mean(x)})
+  cov_mat <- .c_compute_sigma(mat)
   noise_vec <- rnorm(n)
-  res <- .compute_bootSigma(mat, noise_vec)
+  res <- .compute_bootSigma(mat, noise_vec, cov_mat)
 
   cov_mat <- (n-1)/n*stats::cov(mat)
   mat <- scale(mat, center = T, scale = F)
@@ -128,29 +125,31 @@ test_that(".compute_bootSigma is computed correctly", {
       res2.mat[i,j] <- sum(noise_vec * (mat[,i] * mat[,j] - cov_mat[i,j]))/n
     }
   }
-
   res2 <- res2.mat[lower.tri(res2.mat, diag = T)]
-  expect_true(sum(abs(res - res2)) < 1e-4)
+
+  expect_true(sum(abs(sort(res) - sort(res2))) < 1e-4)
 })
 
-test_that(".compute_variance gives the right length", {
+test_that(".c_compute_bootSigma gives the right length", {
   set.seed(10)
   d <- 5; n <- 10
   mat <- matrix(rnorm(n*d), n, d)
-  res <- .compute_bootSigma(mat, rnorm(n))
+  mat <- apply(mat, 2, function(x){x-mean(x)})
+  cov_mat <- .c_compute_sigma(mat)
+  res <- .compute_bootSigma(mat, rnorm(n), cov_mat)
 
   expect_true(length(res) == 5*4/2 + 5)
 })
 
 ##############################
 
-## .compute_covStat is correct
+## .c_compute_covStat is correct
 
-test_that(".compute_covStat returns 0 if nom.x == nom.y", {
-  num_x <- 1:10; num_y <- 1:10
-  denom_x <- 1:10; denom_y <- 1:10
+test_that("c_compute_covStat returns 0 if num_x == num_y", {
+  num_x <- matrix(1:25,5,5); num_y <- matrix(1:25,5,5)
+  denom_x <-  matrix(1:25,5,5); denom_y <- matrix(1:25,5,5)
 
-  expect_true(.compute_covStat(num_x, num_y, denom_x, denom_y) == 0)
+  expect_true(.c_compute_covStat(num_x, num_y, denom_x, denom_y) == 0)
 })
 
 ########################

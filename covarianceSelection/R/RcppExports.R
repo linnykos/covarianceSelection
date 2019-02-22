@@ -33,3 +33,7 @@
     .Call('_covarianceSelection_c_compute_all_test_stat', PACKAGE = 'covarianceSelection', num_list, denom_list, combn_mat, squared)
 }
 
+.c_compute_all_numerator_bootstrap <- function(dat_list, noise_list, cov_list, remaining_idx) {
+    .Call('_covarianceSelection_c_compute_all_numerator_bootstrap', PACKAGE = 'covarianceSelection', dat_list, noise_list, cov_list, remaining_idx)
+}
+

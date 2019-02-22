@@ -107,6 +107,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// c_compute_all_numerator_bootstrap
+Rcpp::List c_compute_all_numerator_bootstrap(const Rcpp::List dat_list, const Rcpp::List noise_list, const Rcpp::List cov_list, const arma::uvec remaining_idx);
+RcppExport SEXP _covarianceSelection_c_compute_all_numerator_bootstrap(SEXP dat_listSEXP, SEXP noise_listSEXP, SEXP cov_listSEXP, SEXP remaining_idxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type dat_list(dat_listSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type noise_list(noise_listSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type cov_list(cov_listSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec >::type remaining_idx(remaining_idxSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, remaining_idx));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_covarianceSelection_c_quantile", (DL_FUNC) &_covarianceSelection_c_quantile, 2},
@@ -117,6 +131,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_covarianceSelection_c_compute_covStat", (DL_FUNC) &_covarianceSelection_c_compute_covStat, 6},
     {"_covarianceSelection_c_compute_all_denom", (DL_FUNC) &_covarianceSelection_c_compute_all_denom, 2},
     {"_covarianceSelection_c_compute_all_test_stat", (DL_FUNC) &_covarianceSelection_c_compute_all_test_stat, 4},
+    {"_covarianceSelection_c_compute_all_numerator_bootstrap", (DL_FUNC) &_covarianceSelection_c_compute_all_numerator_bootstrap, 4},
     {NULL, NULL, 0}
 };
 
