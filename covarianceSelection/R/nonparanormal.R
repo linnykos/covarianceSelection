@@ -1,6 +1,15 @@
+#' Nonparanormal transformation
+#'
+#' @param dat \code{n} by \code{d} matrix
+#' @param density_list list of \code{d} \code{density} objects
+#' @param mean_vec numeric vector of length \code{d}
+#' @param sd_vec positive numeric vector of length \code{d}
+#'
+#' @return \code{n} by \code{d} matrix
+#' @export
 nonparanormal_transformation <- function(dat, density_list,
                                          mean_vec, sd_vec){
-  stopifnot(all(sapply(density_list, class) == "density"), length(density_list) == d)
+  stopifnot(all(sapply(density_list, class) == "density"), length(density_list) == ncol(dat))
   d <- ncol(dat)
   
   for(i in 1:d){
