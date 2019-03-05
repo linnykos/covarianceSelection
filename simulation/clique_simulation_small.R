@@ -2,7 +2,7 @@ rm(list=ls())
 library(simulation)
 library(covarianceSelection)
 
-paramMat <- cbind(15, 5, 5, 500, 10, c(0, 0.25, 0.5, 1))
+paramMat <- cbind(10, 2, 2, 500, 10, c(0, 0.25, 0.5, 1))
 colnames(paramMat) <- c("group1", "group2", "group3", "n", "d", "kappa")
 
 # collect all the marginal densities
@@ -42,6 +42,21 @@ generate_covariance3 <- function(vec){
   generate_covariance1(vec)
 }
 
+find_cliques <- function(len, indices, threshold = 0.95){
+  edges <- utils::combn(len, 2)
+  
+  g <- igraph::graph.empty(n = len, directed = F)
+  g <- igraph::add_edges(g, edges = edges[,indices])
+  
+  if(igraph::ecount(g) == 0) return(NA)
+  
+  res <- covarianceSelection::clique_selection(g, threshold = threshold,
+                                               mode = "or", verbose = F,
+                                               time_limit = 300)
+  
+  covarianceSelection::select_clique(res, c(1:5,11,13), igraph::as_adj(g))
+}
+
 ################
 
 rule <- function(vec){
@@ -66,24 +81,25 @@ rule <- function(vec){
   for(i in (vec["group1"]+vec["group2"]+1):length(dat_list)){
     dat_list[[i]] <- (1+2*vec["kappa"])*dat_list[[i]]
   }
+  
+  dat_list
 }
 
 criterion <- function(dat, vec, y){
+  trials <- 1000
   alpha_vec <- seq(0, 1, length.out = 21)
   combn_mat <- utils::combn(sum(vec[1:3]), 2)
   
   set.seed(y)
-  res <- covarianceSelection::stepdown_path(dat, trials = 1000, denominator = T,
+  res <- covarianceSelection::stepdown_path(dat, trials = trials, denominator = T,
                                             cores = 1, verbose = F)
-  
-  
   
   indices_list <- lapply(alpha_vec, function(alpha){
     covarianceSelection::stepdown_choose(res, alpha = alpha, verbose = F)
   })
   
   naive_pval_vec <- apply(combn_mat, 2, function(x){
-    covarianceSelection::cai_test(dat[[x[1]]], dat[[x[2]]], trials = trials, cores = cores)
+    covarianceSelection::cai_test(dat[[x[1]]], dat[[x[2]]], trials = trials, cores = 1)
   })
   
   bonferroni_indices_list <- lapply(alpha_vec, function(alpha){
@@ -93,6 +109,23 @@ criterion <- function(dat, vec, y){
   bh_indices_list <- lapply(alpha_vec, function(alpha){
     which(stats::p.adjust(naive_pval_vec, method = "BH") >= alpha)
   })
+  
+  partition_list <- lapply(indices_list, function(x){
+    find_cliques(length(dat), x)
+  })
+  
+  bonferroni_partition_list <- lapply(bonferroni_indices_list, function(x){
+    find_cliques(length(dat), x)
+  })
+  
+  bh_partition_list <- lapply(bh_indices_list, function(x){
+    find_cliques(length(dat), x)
+  })
+  
+  list(indices_list = indices_list, bonferroni_indices_list = bonferroni_indices_list,
+       bh_indices_list = bh_indices_list, 
+       partition_list = partition_list, bonferroni_partition_list = bonferroni_partition_list,
+       bh_partition_list = bh_partition_list)
 }
 
 # set.seed(1); criterion(rule(paramMat[1,]), paramMat[1,], 1)
@@ -101,8 +134,8 @@ criterion <- function(dat, vec, y){
 ###########################
 
 res <- simulation::simulation_generator(rule = rule, criterion = criterion,
-                                        paramMat = paramMat, trials = 50,
+                                        paramMat = paramMat, trials = 20,
                                         cores = 15, as_list = T,
-                                        filepath = "../results/high_dim_simulation_tmp.RData",
+                                        filepath = "../results/clique_simulation_small_tmp.RData",
                                         verbose = T)
-save.image("../results/high_dim_simulation.RData")
+save.image("../results/clique_simulation_small.RData")
