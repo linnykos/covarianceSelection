@@ -11,6 +11,7 @@ rownames(genexp) <- genexp[,1]
 genexp <- genexp[,-1]
 genexp <- t(genexp)
 genexp <- as.data.frame(genexp)
+set.seed(10)
 idx <- sample(1:ncol(genexp), paramMat[1,"d"])
 
 den_list <- lapply(idx, function(i){stats::density(genexp[,i])})
