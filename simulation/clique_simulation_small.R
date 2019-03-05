@@ -58,7 +58,7 @@ rule <- function(vec){
   })
   
   dat_list <- lapply(1:length(dat_list), function(x){
-    nonparanormal_transformation(dat_list[[x]], den_list, 
+    covarianceSelection::nonparanormal_transformation(dat_list[[x]], den_list, 
                                  mean_vec = rep(0, vec["n"]),
                                  sd_vec = sqrt(diag(cov_list[[x]])))
   })
