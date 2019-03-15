@@ -46,7 +46,7 @@ roc_region <- function(tpr_mat, fpr_mat,
     tmp <- sapply(1:len, function(x){
       val1 <- fpr_mat[index_list[[j]][x]+1,j]
       val2 <- fpr_mat[index_list[[j]][x],j]
-      stopifnot(val1 <= val, val2 >= val)
+      stopifnot(sign(val1 - val) != sign(val2 - val))
       
       (val - val1)/(val2 - val1)
     })
@@ -62,8 +62,6 @@ roc_region <- function(tpr_mat, fpr_mat,
     tmp <- sapply(1:len, function(x){
       val1 <- tpr_mat[index_list[[j]][x]+1,j]
       val2 <- tpr_mat[index_list[[j]][x],j]
-      
-      stopifnot(val1 <= val2)
       
       val1+(val2-val1)*percentage_list[[j]][x]
     })
