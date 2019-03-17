@@ -2,7 +2,7 @@ rm(list = ls())
 library(simulation)
 library(covarianceSelection)
 
-paramMat <- cbind(15, 5, 5, 500, 100, c(0, 0.25, 0.5, 1))
+paramMat <- cbind(10, 2, 2, 500, 10, c(0, 0.25, 0.5, 1))
 colnames(paramMat) <- c("group1", "group2", "group3", "n", "d", "kappa")
 
 # collect all the marginal densities
@@ -96,11 +96,14 @@ combn_mat <- utils::combn(sum(vec[1:3]), 2)
 
 library(profvis)
 p <- profvis({
-  set.seed(y)
-  res <- covarianceSelection::stepdown(dat, trials = trials, 
-                                     alpha = 0.05,
-                                     denominator = T,
-                                     cores = 1, verbose = F)
+  for(i in 1:10){
+    set.seed(10*i)
+    res <- covarianceSelection::stepdown(dat, trials = trials, 
+                                         alpha = 0.05,
+                                         denominator = T,
+                                         cores = 1, verbose = F)
+  }
 })
+
 htmlwidgets::saveWidget(p, paste0("../experiment/profile_large.html"))
 # browseURL("../experiment/profile.html")
