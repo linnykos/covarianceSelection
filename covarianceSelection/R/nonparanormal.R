@@ -10,6 +10,7 @@
 nonparanormal_transformation <- function(dat, density_list,
                                          mean_vec, sd_vec){
   stopifnot(all(sapply(density_list, class) == "density"), length(density_list) == ncol(dat))
+  stopifnot(length(mean_vec) == length(sd_vec))
   d <- ncol(dat)
   
   for(i in 1:d){
