@@ -11,9 +11,9 @@ roc_region <- function(tpr_mat, fpr_mat,
     percentage_list <- .compute_percentage_inbetween(fpr_mat, val, index_list)
     tpr_val <- .compute_y_coordinate(tpr_mat, index_list, percentage_list)
     
-    c(quantile(sapply(tpr_val, min), probs = quant[1]), 
-      median(unlist(tpr_val)),
-      quantile(sapply(tpr_val, max), probs = quant[2]))
+    c(stats::quantile(sapply(tpr_val, min), probs = quant[1]), 
+      stats::median(unlist(tpr_val)),
+      stats::quantile(sapply(tpr_val, max), probs = quant[2]))
   })
   
   res <- do.call(rbind, res)

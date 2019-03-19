@@ -4,25 +4,17 @@
 \alias{clique_selection}
 \title{Find largest soft clique in graph}
 \usage{
-clique_selection(g, threshold = 0.95, mode = "all", target_idx = NA,
-  prune = T, verbose = F, time_limit = 3600, max_length = 5e+05)
+clique_selection(g, num_pos = c(1:4), num_neg = c(0:3),
+  threshold = 0.95)
 }
 \arguments{
 \item{g}{\code{igraph} object}
 
+\item{num_pos}{numeric vector}
+
+\item{num_neg}{numeric vector}
+
 \item{threshold}{numeric}
-
-\item{mode}{string}
-
-\item{target_idx}{vector}
-
-\item{prune}{boolean}
-
-\item{verbose}{boolean}
-
-\item{time_limit}{large number}
-
-\item{max_length}{maximum length of queue before termination}
 }
 \value{
 list of indices
@@ -36,11 +28,4 @@ the number of edges among this set of nodes in \code{g} is at least
 \details{
 This is returned as a list of indices, so if there are multiple largest sets
 of the same size, the list will have multiple set of indices.
-
-\code{mode} is either "all" or "or". "all" is an approximate form that enables
-faster computing, but "or" gives exact answers.
-
-If \code{target_idx} is not \code{NA}, then maximal cliques are pruned based on
-their overlap with \code{target_idx} and its length. And after the algorithm,
-indices in \code{target_idx} are seen if they can be filled in heuristically.
 }
