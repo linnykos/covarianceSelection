@@ -2,7 +2,7 @@ rm(list = ls())
 library(simulation)
 library(covarianceSelection)
 
-paramMat <- cbind(10, 2, 2, 500, 10, c(0, 0.25, 0.5, 1))
+paramMat <- cbind(15, 5, 5, 500, 100, c(0, 0.25, 0.5, 1))
 colnames(paramMat) <- c("group1", "group2", "group3", "n", "d", "kappa")
 
 # collect all the marginal densities
@@ -104,6 +104,7 @@ p <- profvis({
                                          cores = 1, verbose = F)
   }
 })
+save.image("../experiment/bootstrap_profile.RData")
 
 htmlwidgets::saveWidget(p, paste0("../experiment/profile_large.html"))
 # browseURL("../experiment/profile.html")
