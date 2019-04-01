@@ -21,7 +21,7 @@ clique_selection <- function(g, num_pos = c(1:4), num_neg = c(0:3), threshold = 
   
   res <- lapply(1:nrow(combn_mat), function(x){
     tryCatch({
-      covarianceSelection:::.clique_selection(g, combn_mat[x,1], combn_mat[x,2], threshold)
+      .clique_selection(g, combn_mat[x,1], combn_mat[x,2], threshold)
     }, error = function(e){
       list(numeric(0))
     })
