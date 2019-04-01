@@ -2,7 +2,7 @@ rm(list=ls())
 library(simulation)
 library(covarianceSelection)
 
-paramMat <- cbind(10, 2, 2, 50, 10, c(0, 0.05, 0.1, 0.25))
+paramMat <- cbind(15, 5, 5, 500, 100, c(0, 0.05, 0.1, 0.25))
 colnames(paramMat) <- c("group1", "group2", "group3", "n", "d", "kappa")
 
 # collect all the marginal densities
