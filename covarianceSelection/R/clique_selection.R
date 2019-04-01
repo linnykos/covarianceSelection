@@ -31,9 +31,11 @@ clique_selection <- function(g, num_pos = c(1:4), num_neg = c(0:3), threshold = 
   k <- 1
   res2 <- vector("list", 0)
   for(i in 1:length(res)){
-    for(j in 1:length(res[[i]])){
-      res2[[k]] <- res[[i]][[j]]
-      k <- k+1
+    if(length(res[[i]] > 0)){
+      for(j in 1:length(res[[i]])){
+        res2[[k]] <- res[[i]][[j]]
+        k <- k+1
+      }
     }
   }
   
