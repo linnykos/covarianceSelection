@@ -1,5 +1,4 @@
 rm(list=ls())
-set.seed(10)
 library(microbenchmark)
 
 # testing .c_compute_sigma
@@ -13,7 +12,6 @@ res <- microbenchmark(
   stats::cov(dat), manual_cov(dat), .c_compute_sigma(dat), times = 1000
 )
 res2 <- res; res2$time <- log(res2$time); plot(res2)
-
 
 # > res
 # Unit: microseconds
@@ -29,7 +27,7 @@ res2 <- res; res2$time <- log(res2$time); plot(res2)
 ##############
 
 # testing .c_compute_variance
-
+rm(list=ls())
 .compute_variance <- function(mat, cov_mat){
   n <- nrow(mat)
   
@@ -47,6 +45,7 @@ cov_mat <- .c_compute_sigma(dat)
 res <- microbenchmark(
   .compute_variance(dat, cov_mat), .c_compute_variance(dat, cov_mat), times = 1000
 )
+res2 <- res; res2$time <- log(res2$time); plot(res2)
 
 # > res
 # Unit: microseconds
@@ -60,7 +59,7 @@ res <- microbenchmark(
 ######################
 
 # testing .c_compute_bootSigma
-
+rm(list=ls())
 .compute_bootSigma <- function(mat, noise_vec, cov_mat){
   n <- nrow(mat)
   mat <- scale(mat, center = TRUE, scale = FALSE)
@@ -77,6 +76,7 @@ noise_vec <- rnorm(nrow(dat))
 res <- microbenchmark(
   .compute_bootSigma(dat, noise_vec, cov_mat), .c_compute_bootSigma(dat, noise_vec, cov_mat), times = 1000
 )
+res2 <- res; res2$time <- log(res2$time); plot(res2)
 
 # > res
 # Unit: microseconds
@@ -90,7 +90,7 @@ res <- microbenchmark(
 #########################
 
 # testing .c_compute_covStat
-
+rm(list=ls())
 .compute_covStat <- function(num_x, num_y, denom_x, denom_y, prob = 1){
   res <- (num_x - num_y)^2/(denom_x + denom_y)
   stats::quantile(abs(res), prob = prob)
