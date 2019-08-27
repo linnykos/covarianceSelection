@@ -11,7 +11,7 @@ dat <- scale(dat, center = TRUE, scale = FALSE)
 manual_cov <- function(dat){t(dat)%*%dat/nrow(dat)}
 
 res <- microbenchmark(
-  stats::cov(dat), manual_cov(dat), covarianceSelection:::.c_compute_sigma(dat), times = 1000
+  stats::cov(dat), manual_cov(dat), covarianceSelectionTmp:::.c_compute_sigma(dat), times = 1000
 )
 plot(res)
 res2 <- res; res2$time <- log(res2$time); plot(res2)
