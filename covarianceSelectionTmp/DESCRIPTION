@@ -1,4 +1,4 @@
-Package: covarianceSelection
+Package: covarianceSelectionTmp
 Title: Covariance Selection
 Version: 1.0.0.0000
 Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))

@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // c_quantile
 double c_quantile(const arma::mat X, const double quantile);
-RcppExport SEXP _covarianceSelection_c_quantile(SEXP XSEXP, SEXP quantileSEXP) {
+RcppExport SEXP _covarianceSelectionTmp_c_quantile(SEXP XSEXP, SEXP quantileSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // c_combn
 arma::umat c_combn(double n);
-RcppExport SEXP _covarianceSelection_c_combn(SEXP nSEXP) {
+RcppExport SEXP _covarianceSelectionTmp_c_combn(SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -31,7 +31,7 @@ END_RCPP
 }
 // c_compute_sigma
 arma::mat c_compute_sigma(const arma::mat X);
-RcppExport SEXP _covarianceSelection_c_compute_sigma(SEXP XSEXP) {
+RcppExport SEXP _covarianceSelectionTmp_c_compute_sigma(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,7 +42,7 @@ END_RCPP
 }
 // c_compute_variance
 arma::mat c_compute_variance(const arma::mat X, const arma::mat cov_mat);
-RcppExport SEXP _covarianceSelection_c_compute_variance(SEXP XSEXP, SEXP cov_matSEXP) {
+RcppExport SEXP _covarianceSelectionTmp_c_compute_variance(SEXP XSEXP, SEXP cov_matSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -54,7 +54,7 @@ END_RCPP
 }
 // c_compute_bootSigma
 arma::mat c_compute_bootSigma(const arma::mat X, const arma::vec noise_vec, const arma::mat cov_mat);
-RcppExport SEXP _covarianceSelection_c_compute_bootSigma(SEXP XSEXP, SEXP noise_vecSEXP, SEXP cov_matSEXP) {
+RcppExport SEXP _covarianceSelectionTmp_c_compute_bootSigma(SEXP XSEXP, SEXP noise_vecSEXP, SEXP cov_matSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -67,7 +67,7 @@ END_RCPP
 }
 // c_compute_covStat
 double c_compute_covStat(const arma::mat num_x, const arma::mat num_y, const arma::mat denom_x, const arma::mat denom_y, const double quantile, const bool squared);
-RcppExport SEXP _covarianceSelection_c_compute_covStat(SEXP num_xSEXP, SEXP num_ySEXP, SEXP denom_xSEXP, SEXP denom_ySEXP, SEXP quantileSEXP, SEXP squaredSEXP) {
+RcppExport SEXP _covarianceSelectionTmp_c_compute_covStat(SEXP num_xSEXP, SEXP num_ySEXP, SEXP denom_xSEXP, SEXP denom_ySEXP, SEXP quantileSEXP, SEXP squaredSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -83,7 +83,7 @@ END_RCPP
 }
 // c_compute_all_denom
 Rcpp::List c_compute_all_denom(const Rcpp::List dat_list, const Rcpp::List cov_list);
-RcppExport SEXP _covarianceSelection_c_compute_all_denom(SEXP dat_listSEXP, SEXP cov_listSEXP) {
+RcppExport SEXP _covarianceSelectionTmp_c_compute_all_denom(SEXP dat_listSEXP, SEXP cov_listSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -95,7 +95,7 @@ END_RCPP
 }
 // c_compute_all_test_stat
 arma::vec c_compute_all_test_stat(const Rcpp::List num_list, const Rcpp::List denom_list, const arma::umat combn_mat, const bool squared);
-RcppExport SEXP _covarianceSelection_c_compute_all_test_stat(SEXP num_listSEXP, SEXP denom_listSEXP, SEXP combn_matSEXP, SEXP squaredSEXP) {
+RcppExport SEXP _covarianceSelectionTmp_c_compute_all_test_stat(SEXP num_listSEXP, SEXP denom_listSEXP, SEXP combn_matSEXP, SEXP squaredSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -109,7 +109,7 @@ END_RCPP
 }
 // c_compute_all_numerator_bootstrap
 Rcpp::List c_compute_all_numerator_bootstrap(const Rcpp::List dat_list, const Rcpp::List noise_list, const Rcpp::List cov_list, const arma::uvec remaining_idx);
-RcppExport SEXP _covarianceSelection_c_compute_all_numerator_bootstrap(SEXP dat_listSEXP, SEXP noise_listSEXP, SEXP cov_listSEXP, SEXP remaining_idxSEXP) {
+RcppExport SEXP _covarianceSelectionTmp_c_compute_all_numerator_bootstrap(SEXP dat_listSEXP, SEXP noise_listSEXP, SEXP cov_listSEXP, SEXP remaining_idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -123,19 +123,19 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_covarianceSelection_c_quantile", (DL_FUNC) &_covarianceSelection_c_quantile, 2},
-    {"_covarianceSelection_c_combn", (DL_FUNC) &_covarianceSelection_c_combn, 1},
-    {"_covarianceSelection_c_compute_sigma", (DL_FUNC) &_covarianceSelection_c_compute_sigma, 1},
-    {"_covarianceSelection_c_compute_variance", (DL_FUNC) &_covarianceSelection_c_compute_variance, 2},
-    {"_covarianceSelection_c_compute_bootSigma", (DL_FUNC) &_covarianceSelection_c_compute_bootSigma, 3},
-    {"_covarianceSelection_c_compute_covStat", (DL_FUNC) &_covarianceSelection_c_compute_covStat, 6},
-    {"_covarianceSelection_c_compute_all_denom", (DL_FUNC) &_covarianceSelection_c_compute_all_denom, 2},
-    {"_covarianceSelection_c_compute_all_test_stat", (DL_FUNC) &_covarianceSelection_c_compute_all_test_stat, 4},
-    {"_covarianceSelection_c_compute_all_numerator_bootstrap", (DL_FUNC) &_covarianceSelection_c_compute_all_numerator_bootstrap, 4},
+    {"_covarianceSelectionTmp_c_quantile", (DL_FUNC) &_covarianceSelectionTmp_c_quantile, 2},
+    {"_covarianceSelectionTmp_c_combn", (DL_FUNC) &_covarianceSelectionTmp_c_combn, 1},
+    {"_covarianceSelectionTmp_c_compute_sigma", (DL_FUNC) &_covarianceSelectionTmp_c_compute_sigma, 1},
+    {"_covarianceSelectionTmp_c_compute_variance", (DL_FUNC) &_covarianceSelectionTmp_c_compute_variance, 2},
+    {"_covarianceSelectionTmp_c_compute_bootSigma", (DL_FUNC) &_covarianceSelectionTmp_c_compute_bootSigma, 3},
+    {"_covarianceSelectionTmp_c_compute_covStat", (DL_FUNC) &_covarianceSelectionTmp_c_compute_covStat, 6},
+    {"_covarianceSelectionTmp_c_compute_all_denom", (DL_FUNC) &_covarianceSelectionTmp_c_compute_all_denom, 2},
+    {"_covarianceSelectionTmp_c_compute_all_test_stat", (DL_FUNC) &_covarianceSelectionTmp_c_compute_all_test_stat, 4},
+    {"_covarianceSelectionTmp_c_compute_all_numerator_bootstrap", (DL_FUNC) &_covarianceSelectionTmp_c_compute_all_numerator_bootstrap, 4},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_covarianceSelection(DllInfo *dll) {
+RcppExport void R_init_covarianceSelectionTmp(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

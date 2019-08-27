@@ -1,28 +1,31 @@
 rm(list=ls())
 library(microbenchmark)
 
+p <- 200; n <- 10
+
 # testing .c_compute_sigma
 set.seed(10)
-dat <- matrix(rnorm(15*200), nrow = 15, ncol = 200)
+dat <- matrix(rnorm(n*p), nrow = n, ncol = p)
 dat <- scale(dat, center = TRUE, scale = FALSE)
 
 manual_cov <- function(dat){t(dat)%*%dat/nrow(dat)}
 
 res <- microbenchmark(
-  stats::cov(dat), manual_cov(dat), .c_compute_sigma(dat), times = 1000
+  stats::cov(dat), manual_cov(dat), covarianceSelection:::.c_compute_sigma(dat), times = 1000
 )
+plot(res)
 res2 <- res; res2$time <- log(res2$time); plot(res2)
 
 # > res
-# Unit: microseconds
-# expr     min       lq     mean   median       uq
-# stats::cov(dat) 380.558 491.3825 696.2119 549.2375 652.5740
-# manual_cov(dat) 428.790 538.3525 864.2238 586.5510 715.7915
-# .c_compute_sigma(dat) 127.698 313.7290 524.1444 423.6790 493.4775
-# max neval
-# 24064.93  1000
-# 27594.95  1000
-# 25393.58  1000
+# Unit: milliseconds
+# expr      min        lq      mean
+# stats::cov(dat) 625.7506  685.7971  715.4059
+# manual_cov(dat) 679.3357  697.0153  727.2036
+# covarianceSelection:::.c_compute_sigma(dat) 921.8879 1037.5564 1094.7013
+# median        uq       max neval
+# 696.8555  742.6572  819.5590   100
+# 714.1300  748.7725  885.0109   100
+# 1101.0343 1150.9371 1382.1910   100
 
 ##############
 
@@ -38,23 +41,24 @@ rm(list=ls())
 }
 
 set.seed(10)
-dat <- matrix(rnorm(15*200), nrow = 15, ncol = 200)
+p <- 6000; n <- 10
+dat <- matrix(rnorm(n*p), nrow = n, ncol = p)
 dat <- scale(dat, center = TRUE, scale = FALSE)
-cov_mat <- .c_compute_sigma(dat)
+cov_mat <- stats::cov(dat)
 
 res <- microbenchmark(
-  .compute_variance(dat, cov_mat), .c_compute_variance(dat, cov_mat), times = 1000
+  .compute_variance(dat, cov_mat), covarianceSelection:::.c_compute_variance(dat, cov_mat), times = 100
 )
 res2 <- res; res2$time <- log(res2$time); plot(res2)
 
 # > res
-# Unit: microseconds
-# expr     min       lq      mean
-# .compute_variance(dat, cov_mat) 660.019 870.9345 2128.1334
-# .c_compute_variance(dat, cov_mat) 147.137 331.7125  924.9418
-# median       uq       max neval
-# 1061.6565 1458.421 108866.08  1000
-# 568.6095  712.437  40413.41  1000
+# Unit: milliseconds
+# expr       min       lq
+# .compute_variance(dat, cov_mat)  992.6049 1025.341
+# covarianceSelection:::.c_compute_variance(dat, cov_mat) 1145.5202 1224.760
+# mean   median       uq      max neval
+# 1098.129 1062.467 1172.194 1370.378   100
+# 1329.875 1300.299 1397.318 2030.893   100
 
 ######################
 
@@ -67,25 +71,26 @@ rm(list=ls())
 }
 
 set.seed(10)
-dat <- matrix(rnorm(15*200), nrow = 15, ncol = 200)
+p <- 6000; n <- 10
+dat <- matrix(rnorm(n*p), nrow = n, ncol = p)
 dat <- scale(dat, center = TRUE, scale = FALSE)
-cov_mat <- .c_compute_sigma(dat)
+cov_mat <- stats::cov(dat)
 noise_vec <- rnorm(nrow(dat))
 
 
 res <- microbenchmark(
-  .compute_bootSigma(dat, noise_vec, cov_mat), .c_compute_bootSigma(dat, noise_vec, cov_mat), times = 1000
+  .compute_bootSigma(dat, noise_vec, cov_mat), covarianceSelection:::.c_compute_bootSigma(dat, noise_vec, cov_mat), times = 100
 )
 res2 <- res; res2$time <- log(res2$time); plot(res2)
 
 # > res
-# Unit: microseconds
-# expr     min       lq
-# .compute_bootSigma(dat, noise_vec, cov_mat) 534.334 630.8165
-# .c_compute_bootSigma(dat, noise_vec, cov_mat) 143.022 315.4490
-# mean   median       uq      max neval
-# 1106.2103 813.6655 972.5045 23437.23  1000
-# 653.1823 491.5860 621.8845 21421.76  1000
+# Unit: milliseconds
+# expr       min
+# .compute_bootSigma(dat, noise_vec, cov_mat)  850.4727
+# covarianceSelection:::.c_compute_bootSigma(dat, noise_vec, cov_mat) 1219.6890
+# lq      mean    median       uq      max neval
+# 894.288  955.0559  954.4304 1003.158 1213.916   100
+# 1393.235 1474.4309 1471.6795 1554.023 1834.537   100
 
 #########################
 
@@ -97,23 +102,24 @@ rm(list=ls())
 }
 
 set.seed(10)
-dat1 <- matrix(rnorm(15*200), nrow = 15, ncol = 200)
+p <- 6000; n <- 10
+dat1 <- matrix(rnorm(n*p), nrow = n, ncol = p)
 dat1 <- scale(dat1, center = TRUE, scale = FALSE)
-dat2 <- matrix(rnorm(15*200), nrow = 15, ncol = 200)
+dat2 <- matrix(rnorm(n*p), nrow = n, ncol = p)
 dat2 <- scale(dat2, center = TRUE, scale = FALSE)
-num1 <- .c_compute_sigma(dat1); num2 <- .c_compute_sigma(dat2)
-dem1 <- .compute_variance(dat1, num1); dem2 <- .compute_variance(dat2, num2)
+num1 <- covarianceSelection:::.c_compute_sigma(dat1); num2 <- covarianceSelection:::.c_compute_sigma(dat2)
+dem1 <- covarianceSelection:::.c_compute_variance(dat1, num1); dem2 <- covarianceSelection:::.c_compute_variance(dat2, num2)
 
 res <- microbenchmark(
-  .compute_covStat(num1, num2, dem1, dem2), .c_compute_covStat(num1, num2, dem1, dem2), times = 1000
+  .compute_covStat(num1, num2, dem1, dem2), covarianceSelection:::.c_compute_covStat(num1, num2, dem1, dem2), times = 100
 )
 res2 <- res; res2$time <- log(res2$time); plot(res2)
 
 # > res
-# Unit: microseconds
-# expr      min        lq
-# .compute_covStat(num1, num2, dem1, dem2)  862.115  995.1685
-# .c_compute_covStat(num1, num2, dem1, dem2) 2361.091 2649.6080
-# mean   median       uq      max neval
-# 2196.300 1255.619 1592.133 66908.06  1000
-# 3566.146 3229.965 3752.394 32665.68  1000
+# Unit: seconds
+# expr      min
+# .compute_covStat(num1, num2, dem1, dem2) 2.693438
+# covarianceSelection:::.c_compute_covStat(num1, num2, dem1, dem2) 6.960124
+# lq    mean   median       uq      max neval
+# 2.791349 2.94196 2.834462 3.060822 4.071903   100
+# 7.240974 7.49931 7.427881 7.743516 8.679723   100
