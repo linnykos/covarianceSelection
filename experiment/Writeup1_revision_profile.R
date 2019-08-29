@@ -11,7 +11,7 @@ dat <- scale(dat, center = TRUE, scale = FALSE)
 manual_cov <- function(dat){t(dat)%*%dat/nrow(dat)}
 
 res <- microbenchmark(
-  stats::cov(dat), manual_cov(dat), covarianceSelectionTmp:::.c_compute_sigma(dat), times = 100
+  stats::cov(dat), manual_cov(dat), covarianceSelectionTmp:::c_compute_sigma(dat), times = 100
 )
 plot(res)
 res2 <- res; res2$time <- log(res2$time); plot(res2)
@@ -47,7 +47,7 @@ dat <- scale(dat, center = TRUE, scale = FALSE)
 cov_mat <- stats::cov(dat)
 
 res <- microbenchmark(
-  .compute_variance(dat, cov_mat), covarianceSelectionTmp:::.c_compute_variance(dat, cov_mat), times = 100
+  .compute_variance(dat, cov_mat), covarianceSelectionTmp:::c_compute_variance(dat, cov_mat), times = 100
 )
 res2 <- res; res2$time <- log(res2$time); plot(res2)
 
@@ -79,7 +79,7 @@ noise_vec <- rnorm(nrow(dat))
 
 
 res <- microbenchmark(
-  .compute_bootSigma(dat, noise_vec, cov_mat), covarianceSelectionTmp:::.c_compute_bootSigma(dat, noise_vec, cov_mat), times = 100
+  .compute_bootSigma(dat, noise_vec, cov_mat), covarianceSelectionTmp:::c_compute_bootSigma(dat, noise_vec, cov_mat), times = 100
 )
 res2 <- res; res2$time <- log(res2$time); plot(res2)
 
