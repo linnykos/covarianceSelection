@@ -19,13 +19,13 @@ res2 <- res; res2$time <- log(res2$time); plot(res2)
 # > res
 # Unit: milliseconds
 # expr      min       lq     mean
-# stats::cov(dat) 172.1368 173.5394 175.4214
-# manual_cov(dat) 176.6561 179.0858 180.8543
-# covarianceSelectionTmp:::.c_compute_sigma(dat) 244.7507 247.3124 255.0377
+# stats::cov(dat) 160.9727 165.1366 171.5026
+# manual_cov(dat) 167.2803 170.7199 177.1572
+# covarianceSelectionTmp:::c_compute_sigma(dat) 247.6457 276.6433 293.4150
 # median       uq      max neval
-# 174.2681 175.0944 252.8201   100
-# 180.0477 181.9721 203.3202   100
-# 249.3451 253.4832 324.8574   100
+# 169.6042 175.5868 241.1468   100
+# 175.5634 181.4187 204.6710   100
+# 290.8825 302.0871 383.7218   100
 
 ##############
 
@@ -51,14 +51,13 @@ res <- microbenchmark(
 )
 res2 <- res; res2$time <- log(res2$time); plot(res2)
 
-# > res
 # Unit: milliseconds
 # expr      min       lq
-# .compute_variance(dat, cov_mat) 250.8158 287.3850
-# covarianceSelectionTmp:::.c_compute_variance(dat, cov_mat) 303.0551 333.0452
+# .compute_variance(dat, cov_mat) 250.4481 263.8595
+# covarianceSelectionTmp:::c_compute_variance(dat, cov_mat) 246.7291 276.4481
 # mean   median       uq      max neval
-# 301.1266 301.5825 315.0834 398.9428   100
-# 401.5429 427.1848 443.3182 513.6221   100
+# 281.9083 271.1581 292.8610 418.8111   100
+# 297.1633 295.7172 313.9755 451.8254   100
 
 ######################
 
@@ -83,14 +82,14 @@ res <- microbenchmark(
 )
 res2 <- res; res2$time <- log(res2$time); plot(res2)
 
-# > res
+# res
 # Unit: milliseconds
 # expr
 # .compute_bootSigma(dat, noise_vec, cov_mat)
-# covarianceSelectionTmp:::.c_compute_bootSigma(dat, noise_vec,      cov_mat)
+# covarianceSelectionTmp:::c_compute_bootSigma(dat, noise_vec,      cov_mat)
 # min       lq     mean   median       uq      max neval
-# 206.7321 223.7780 253.7574 233.8668 288.6268 375.3291   100
-# 294.9329 316.4361 355.8011 330.9611 368.9359 521.9608   100
+# 208.1378 215.1320 231.7844 220.6916 246.7697 289.1676   100
+# 247.4989 277.1277 291.1309 289.5158 309.6095 376.4795   100
 
 #########################
 
@@ -107,19 +106,19 @@ dat1 <- matrix(rnorm(n*p), nrow = n, ncol = p)
 dat1 <- scale(dat1, center = TRUE, scale = FALSE)
 dat2 <- matrix(rnorm(n*p), nrow = n, ncol = p)
 dat2 <- scale(dat2, center = TRUE, scale = FALSE)
-num1 <- covarianceSelection:::.c_compute_sigma(dat1); num2 <- covarianceSelection:::.c_compute_sigma(dat2)
-dem1 <- covarianceSelection:::.c_compute_variance(dat1, num1); dem2 <- covarianceSelection:::.c_compute_variance(dat2, num2)
+num1 <- covarianceSelectionTmp:::c_compute_sigma(dat1); num2 <- covarianceSelectionTmp:::c_compute_sigma(dat2)
+dem1 <- covarianceSelectionTmp:::c_compute_variance(dat1, num1); dem2 <- covarianceSelectionTmp:::c_compute_variance(dat2, num2)
 
 res <- microbenchmark(
-  .compute_covStat(num1, num2, dem1, dem2), covarianceSelection:::.c_compute_covStat(num1, num2, dem1, dem2), times = 100
+  .compute_covStat(num1, num2, dem1, dem2), covarianceSelectionTmp:::c_compute_covStat(num1, num2, dem1, dem2), times = 50
 )
 res2 <- res; res2$time <- log(res2$time); plot(res2)
 
 # > res
 # Unit: seconds
-# expr      min
-# .compute_covStat(num1, num2, dem1, dem2) 2.693438
-# covarianceSelection:::.c_compute_covStat(num1, num2, dem1, dem2) 6.960124
-# lq    mean   median       uq      max neval
-# 2.791349 2.94196 2.834462 3.060822 4.071903   100
-# 7.240974 7.49931 7.427881 7.743516 8.679723   100
+# expr
+# .compute_covStat(num1, num2, dem1, dem2)
+# covarianceSelectionTmp:::c_compute_covStat(num1, num2, dem1,      dem2)
+# min       lq     mean   median       uq      max neval
+# 2.772056 3.169486 3.291614 3.259967 3.447146 3.965732    50
+# 6.121036 6.390369 6.593717 6.535867 6.854874 7.433616    50
