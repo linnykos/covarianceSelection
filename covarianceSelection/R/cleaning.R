@@ -135,7 +135,7 @@ extractor <- function(dat){
   id <- sapply(rownames(dat), .split_name)
   id <- as.factor(apply(id, 2, function(x){paste0(x[1], ".", x[2], ".", x[3])}))
   
-  split(dat, f = id)
+  base::split(dat, f = id, drop = F)
 }
 
 ############################

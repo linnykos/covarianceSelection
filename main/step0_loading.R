@@ -50,13 +50,16 @@ tada <- tada[idx,] # 13962 genes
 idx <- covarianceSelection::matching(tada$Gene, colnames(genexp))
 genexp <- genexp[,idx]
 
-dat_list <- covarianceSelection::extractor(genexp)
-dat_list <- lapply(dat_list, as.matrix)
+dat_list <- covarianceSelection::extractor(genexp) # 212 partitions
+dat_list <- lapply(dat_list, as.matrix, drop = F)
+
+idx <- which(sapply(dat_list, function(x){ifelse(nrow(x) >= 5, T, F)}))
+dat_list <- dat_list[idx] # 125 partitions
 
 if(verbose) print(paste0("Dimension of genexp is: ", paste0(dim(genexp), collapse = ", ")))
 
 #cleanup
 rm(list = c("brain_expression", "brain_genes", "idx", "vec", "region_subregion",
-            "subregion", "genexp"))
+            "subregion", "genexp", "unknown_genes_idx"))
 
-save.image(file = paste0(save_filepath, "/step1_res.RData"))
+save.image(file = paste0(save_filepath, "/step0_res.RData"))
