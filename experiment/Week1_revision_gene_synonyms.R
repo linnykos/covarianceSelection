@@ -30,8 +30,7 @@ res <- res[-idx]
 genexp <- genexp[-idx]
 
 # now to deal with non-unique rows
-res <- unlist(res)
-table(table(res))
+genexp2 <- average_same_columns(genexp)
 
 
 ##############3

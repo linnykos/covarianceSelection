@@ -1,51 +1,52 @@
 #format the brainspan dataset
-load("../data/newGenexp.RData")
+load("../../raw_data/newGenexp.RData")
 rownames(genexp) <- genexp[,1]
 genexp <- genexp[,-1]
 genexp <- t(genexp)
-genexp <- as.data.frame(genexp)
+genexp <- as.data.frame(genexp) # 1340 x 16947
 
 #determine brain-expressed genes
 brain_expression <- covarianceSelection::brain_expression
 brain_genes <- brain_expression$Gene[brain_expression$Brain_expressed != 'No']
 idx <- which(colnames(genexp) %in% brain_genes)
-genexp <- genexp[,idx]
+genexp <- genexp[,idx] # 1340 x 14370
 
 #translate into synonyms
-vec <- colnames(genexp)
-vec <- covarianceSelection::symbol_synonyms(vec)
-idx <- which(is.na(vec))
-genexp <- genexp[,-idx]; vec <- vec[-idx]
+vec <- covarianceSelection::symbol_synonyms(colnames(genexp), verbose = T)
+unknown_genes_idx <- which(sapply(vec, length) == 0)
+vec <- vec[-unknown_genes_idx]; vec <- unlist(vec)
+genexp <- genexp[-unknown_genes_idx] # 1340 x 14296
 colnames(genexp) <- vec
 
-#remove duplicated genes
-genexp <- genexp[,-which(duplicated(colnames(genexp)))]
+#average non-unique genes
+genexp <- covarianceSelection::average_same_columns(genexp) # 1340 x 14246
 
 #remove samples from subregions that we don't have a region for
 region_subregion <- covarianceSelection::region_subregion
 vec <- rownames(genexp)
 subregion <- unlist(strsplit(vec,"\\."))[seq(2, length(vec)*4, 4)]
 idx <- which(subregion %in% region_subregion$subregion)
-genexp <- genexp[idx,]
+genexp <- genexp[idx,] # 1294 x 14296
 
 ####
 
 #load tada dataset
-tada <- covarianceSelection::tada
+tada <- covarianceSelection::tada # 18735 genes
 vec <- tada$Gene
-vec <- covarianceSelection::symbol_synonyms(vec)
-idx <- which(is.na(vec))
-tada <- tada[-idx,]; vec <- vec[-idx]
+vec <- covarianceSelection::symbol_synonyms(vec, verbose = T)
+unknown_genes_idx <- which(sapply(vec, length) == 0)
+tada <- tada[-unknown_genes_idx,] # 18699 genes
+vec <- vec[-unknown_genes_idx]; vec <- unlist(vec)
 tada$Gene <- vec
 
 #remove duplicated tada by keeping the one with the lowest p-value
-tada <- tada[-which(duplicated(tada$Gene)),]
+tada <- tada[-which(duplicated(tada$Gene)),] #18495 genes
 
 #match the order in both datasets
 idx <- which(colnames(genexp) %in% tada$Gene)
-genexp <- genexp[,idx]
+genexp <- genexp[,idx] # 1294 x 13962
 idx <- which(tada$Gene %in% colnames(genexp))
-tada <- tada[idx,]
+tada <- tada[idx,] # 13962 genes
 idx <- covarianceSelection::matching(tada$Gene, colnames(genexp))
 genexp <- genexp[,idx]
 

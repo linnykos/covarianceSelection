@@ -49,13 +49,13 @@ symbol_synonyms <- function(vec, verbose = T){
 average_same_columns <- function(dat){
   col_vec <- colnames(dat)
   tab_vec <- table(col_vec)
-  idx <- which(tab_vec >= 1)
+  idx <- which(tab_vec > 1)
   remove_idx <- numeric(0)
   
   if(length(idx) > 0){
     for(i in idx){
-      col_idx <- which(col_vec == tab_vec[i])
-      dat[,col_idx[1]] <- colMeans(dat[,col_idx])
+      col_idx <- which(col_vec == names(tab_vec)[i])
+      dat[,col_idx[1]] <- rowMeans(dat[,col_idx])
       remove_idx <- c(remove_idx, col_idx[-1])
     }
     
