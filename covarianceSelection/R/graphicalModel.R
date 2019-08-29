@@ -3,10 +3,11 @@
 #' Estimated using neighbhorhood selection, cross validation to select lambda
 #'
 #' @param dat the nxd matrix
+#' @param verbose boolean
 #'
 #' @return a precision matrix estimate, dxd
 #' @export
-graphicalModel <- function(dat){
+graphicalModel <- function(dat, verbose = F){
   n <- nrow(dat); d <- ncol(dat)
 
   coef_list <- .compute_reg_coefficients_cv(dat)
@@ -14,6 +15,7 @@ graphicalModel <- function(dat){
   sigma_vec <- .compute_sigma_vec(dat, coef_mat)
 
   prec_mat <- sapply(1:d, function(x){
+    if(verbose & x %% floor(verbose/10) == 0) cat('*')
     vec <- numeric(d)
     vec<- -coef_mat[,x]/sigma_vec[x]
     vec[x] <- 1/sigma_vec[x]
@@ -27,12 +29,15 @@ graphicalModel <- function(dat){
 .compute_reg_coefficients_cv <- function(dat){
   d <- ncol(dat)
 
-  plyr::llply(1:d, function(x){
+  func <- function(x){
     res <- glmnet::cv.glmnet(x = dat[,-x], y = dat[,x], intercept = F)
     vec <- rep(0, d)
     vec[-x] <- as.numeric(stats::coef(res, s = "lambda.1se"))[-1]
     vec
-  })
+  }
+  
+  i <- 0 #debugging purposes only
+  foreach::"%dopar%"(foreach::foreach(i = 1:d), func(i))
 }
 
 .compute_sigma_vec <- function(dat, coef_mat, cores = 1){
