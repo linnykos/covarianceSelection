@@ -17,38 +17,37 @@ genexp <- genexp[,idx] # 1340 x 14370
 vec <- covarianceSelection::symbol_synonyms(colnames(genexp), verbose = T)
 unknown_genes_idx <- which(sapply(vec, length) == 0)
 vec <- vec[-unknown_genes_idx]; vec <- unlist(vec)
-genexp <- genexp[-unknown_genes_idx] # 1340 x 14296
+genexp <- genexp[-unknown_genes_idx] # 1340 x 14297
 colnames(genexp) <- vec
 
 #average non-unique genes
-genexp <- covarianceSelection::average_same_columns(genexp) # 1340 x 14246
+genexp <- covarianceSelection::average_same_columns(genexp) # 1340 x 14249
 
 #remove samples from subregions that we don't have a region for
 region_subregion <- covarianceSelection::region_subregion
 vec <- rownames(genexp)
 subregion <- unlist(strsplit(vec,"\\."))[seq(2, length(vec)*4, 4)]
 idx <- which(subregion %in% region_subregion$subregion)
-genexp <- genexp[idx,] # 1294 x 14296
+genexp <- genexp[idx,] # 1294 x 14249
 
 ####
 
 #load tada dataset
 tada <- covarianceSelection::tada # 18735 genes
-vec <- tada$Gene
-vec <- covarianceSelection::symbol_synonyms(vec, verbose = T)
+vec <- covarianceSelection::symbol_synonyms( tada$Gene, verbose = T)
 unknown_genes_idx <- which(sapply(vec, length) == 0)
-tada <- tada[-unknown_genes_idx,] # 18699 genes
+tada <- tada[-unknown_genes_idx,] # 18700 genes
 vec <- vec[-unknown_genes_idx]; vec <- unlist(vec)
 tada$Gene <- vec
 
 #remove duplicated tada by keeping the one with the lowest p-value
-tada <- tada[-which(duplicated(tada$Gene)),] #18495 genes
+tada <- tada[-which(duplicated(tada$Gene)),] #18498 genes
 
 #match the order in both datasets
 idx <- which(colnames(genexp) %in% tada$Gene)
-genexp <- genexp[,idx] # 1294 x 13962
+genexp <- genexp[,idx] # 1294 x 13964
 idx <- which(tada$Gene %in% colnames(genexp))
-tada <- tada[idx,] # 13962 genes
+tada <- tada[idx,] # 13964 genes
 idx <- covarianceSelection::matching(tada$Gene, colnames(genexp))
 genexp <- genexp[,idx]
 

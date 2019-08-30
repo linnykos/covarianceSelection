@@ -25,4 +25,8 @@ p_val_vec <- sapply(autism_genes, function(x){
 })
 plot(p_val_vec, neigh_vec)
 
-plot
+p_val_after <- sapply(autism_genes, function(x){
+  report[which(report$Gene == x), "FDR"]
+})
+
+plot(p_val_vec, p_val_after)

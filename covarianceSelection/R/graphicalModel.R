@@ -7,15 +7,18 @@
 #'
 #' @return a precision matrix estimate, dxd
 #' @export
-graphicalModel <- function(dat, verbose = F){
+graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F){
   n <- nrow(dat); d <- ncol(dat)
 
-  coef_list <- .compute_reg_coefficients_cv(dat)
+  if(verbose) print("Starting to estimate coefficients")
+  coef_list <- .compute_reg_coefficients_cv(dat, lambda = lambda)
   coef_mat <- do.call(cbind, coef_list)
+  
+  if(verbose) print("Starting to estimate sigma")
   sigma_vec <- .compute_sigma_vec(dat, coef_mat)
 
+  if(verbose) print("Finalizing")
   prec_mat <- sapply(1:d, function(x){
-    if(verbose & x %% floor(d/10) == 0) cat('*')
     vec <- numeric(d)
     vec<- -coef_mat[,x]/sigma_vec[x]
     vec[x] <- 1/sigma_vec[x]
@@ -26,10 +29,12 @@ graphicalModel <- function(dat, verbose = F){
   .symmetrize(prec_mat)
 }
 
-.compute_reg_coefficients_cv <- function(dat){
+.compute_reg_coefficients_cv <- function(dat, lambda = "lambda.1se"){
   d <- ncol(dat)
 
   func <- function(x){
+    if(verbose & x %% floor(d/10) == 0) cat('*')
+    
     res <- glmnet::cv.glmnet(x = dat[,-x], y = dat[,x], intercept = F)
     vec <- rep(0, d)
     vec[-x] <- as.numeric(stats::coef(res, s = "lambda.1se"))[-1]
