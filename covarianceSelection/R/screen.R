@@ -23,7 +23,7 @@ screen <- function(dat, pv, p_thres = 0.1, cor_thres){
 
   cor_mat <- abs(stats::cor(dat))
   candidates <- c(1:d)[-primary]
-  if(length(candidates) == 0 | num_genes <= length(primary)) {
+  if(length(candidates) == 0) {
     return(list(primary = primary, secondary = NA))
   }
 
