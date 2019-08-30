@@ -21,7 +21,7 @@ genexp <- genexp[-unknown_genes_idx] # 1340 x 14297
 colnames(genexp) <- vec
 
 #average non-unique genes
-genexp <- covarianceSelection::average_same_columns(genexp) # 1340 x 14249
+genexp <- covarianceSelection:::average_same_columns(genexp) # 1340 x 14249 #EDIT THIS
 
 #remove samples from subregions that we don't have a region for
 region_subregion <- covarianceSelection::region_subregion
