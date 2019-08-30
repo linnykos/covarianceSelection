@@ -10,7 +10,7 @@ dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 3438
 dat_pfc35 <- scale(dat_pfc35)
 
 # estimate graphical model on PFC35 using cross-validated lasso for neighborhood selection
-prec_mat_naive <- covarianceSelection::graphicalModel(dat_pfc35, verbose = T) 
+prec_mat_naive <- covarianceSelection::graphicalModel(dat_pfc35, lambda = "lambda.min", verbose = T) 
 
 # grab the edges
 d <- ncol(dat_pfc35)
