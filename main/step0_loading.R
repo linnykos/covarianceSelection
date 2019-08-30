@@ -62,4 +62,4 @@ if(verbose) print(paste0("Dimension of genexp is: ", paste0(dim(genexp), collaps
 rm(list = c("brain_expression", "brain_genes", "idx", "vec", "region_subregion",
             "subregion", "genexp", "unknown_genes_idx"))
 
-save.image(file = paste0(save_filepath, "/step0_res.RData"))
+save.image(file = paste0(save_filepath, "/step0_loading.RData"))

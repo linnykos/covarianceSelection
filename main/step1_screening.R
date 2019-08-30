@@ -19,4 +19,4 @@ for(i in 1:length(dat_list)){
 rm(list = c("selected_idx", "dat_pfc35", "v_seq", "res_pca", 
             "primary_genes", "secondary_genes", "i"))
 
-save.image(file = paste0(save_filepath, "/step1_res.RData"))
+save.image(file = paste0(save_filepath, "/step1_screening.RData"))
