@@ -15,7 +15,7 @@ graphicalModel <- function(dat, verbose = F){
   sigma_vec <- .compute_sigma_vec(dat, coef_mat)
 
   prec_mat <- sapply(1:d, function(x){
-    if(verbose & x %% floor(verbose/10) == 0) cat('*')
+    if(verbose & x %% floor(d/10) == 0) cat('*')
     vec <- numeric(d)
     vec<- -coef_mat[,x]/sigma_vec[x]
     vec[x] <- 1/sigma_vec[x]

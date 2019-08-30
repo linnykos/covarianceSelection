@@ -1,3 +1,5 @@
+if(verbose) print("Start of step 0: Loading")
+
 #format the brainspan dataset
 load("../../raw_data/newGenexp.RData")
 rownames(genexp) <- genexp[,1]

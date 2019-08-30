@@ -1,5 +1,9 @@
 pthres_screening <- 0.1 
 
+###
+
+if(verbose) print("Start of step 1: Screening")
+
 selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
 dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 13962
 
@@ -16,6 +20,8 @@ for(i in 1:length(dat_list)){
   dat_list[[i]] <- dat_list[[i]][,all_genes]
 }
                    
+if(verbose) print(paste0("Dimension of dat_list is: ", unique(sapply(dat_list, ncol)), collapse = ", "))
+
 rm(list = c("selected_idx", "dat_pfc35", "v_seq", "res_pca", 
             "primary_genes", "secondary_genes", "i"))
 

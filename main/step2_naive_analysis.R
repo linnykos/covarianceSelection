@@ -1,3 +1,5 @@
+if(verbose) print("Start of step 2: Naive analysis")
+
 selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
 dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 3437
 
