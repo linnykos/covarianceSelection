@@ -25,6 +25,10 @@ c_compute_bootSigma <- function(X, noise_vec, cov_mat) {
     .Call('_covarianceSelectionTmp_c_compute_bootSigma', PACKAGE = 'covarianceSelectionTmp', X, noise_vec, cov_mat)
 }
 
+c_compute_bootSigma_tmp <- function(X, noise_vec, cov_mat) {
+    .Call('_covarianceSelectionTmp_c_compute_bootSigma_tmp', PACKAGE = 'covarianceSelectionTmp', X, noise_vec, cov_mat)
+}
+
 c_compute_covStat <- function(num_x, num_y, denom_x, denom_y, quantile = 1, squared = TRUE) {
     .Call('_covarianceSelectionTmp_c_compute_covStat', PACKAGE = 'covarianceSelectionTmp', num_x, num_y, denom_x, denom_y, quantile, squared)
 }

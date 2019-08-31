@@ -77,8 +77,10 @@ cov_mat <- stats::cov(dat)
 noise_vec <- rnorm(nrow(dat))
 
 
-res <- microbenchmark(
-  .compute_bootSigma(dat, noise_vec, cov_mat), covarianceSelectionTmp:::c_compute_bootSigma(dat, noise_vec, cov_mat), times = 100
+res <- microbenchmark::microbenchmark(
+  .compute_bootSigma(dat, noise_vec, cov_mat), 
+  covarianceSelectionTmp:::c_compute_bootSigma(dat, noise_vec, cov_mat),
+  covarianceSelectionTmp:::c_compute_bootSigma_tmp(dat, noise_vec, cov_mat),times = 100
 )
 res2 <- res; res2$time <- log(res2$time); plot(res2)
 

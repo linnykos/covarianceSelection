@@ -28,6 +28,7 @@ arma::mat c_compute_bootSigma(const arma::mat& X, const arma::vec& noise_vec,
   return(X.t() * arma::diagmat(noise_vec)*X/n - arma::sum(noise_vec)/n*cov_mat);
 }
 
+// [[Rcpp::export()]]
 arma::mat c_compute_bootSigma_tmp(const arma::mat& X, const arma::vec& noise_vec, 
                               const arma::mat& cov_mat) {
   double n = X.n_rows;
