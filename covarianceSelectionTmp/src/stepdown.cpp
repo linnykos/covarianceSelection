@@ -1,7 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include <RcppArmadillo.h>
-#include <Rcpp.h>
 #include "misc.h"
 
 // All the following functions assumes the matrix X is already centered
@@ -12,7 +11,7 @@ arma::mat c_compute_sigma(const arma::mat& X) {
   double n = X.n_rows;
   return(X.t() * X / n);
 }
-
+ 
 // [[Rcpp::export()]]
 arma::mat c_compute_variance(const arma::mat& X, const arma::mat& cov_mat) {
   double n = X.n_rows;
@@ -27,6 +26,17 @@ arma::mat c_compute_bootSigma(const arma::mat& X, const arma::vec& noise_vec,
   double n = X.n_rows;
   
   return(X.t() * arma::diagmat(noise_vec)*X/n - arma::sum(noise_vec)/n*cov_mat);
+}
+
+arma::mat c_compute_bootSigma_tmp(const arma::mat& X, const arma::vec& noise_vec, 
+                              const arma::mat& cov_mat) {
+  double n = X.n_rows;
+  arma::mat X2(size(X));
+  for(int i = 0; i < X.n_cols; i++){
+    X2.col(i) = noise_vec[i]*X/n;
+  }
+  
+  return(X.t() * X2 - arma::sum(noise_vec)/n*cov_mat);
 }
 
 // [[Rcpp::export()]]

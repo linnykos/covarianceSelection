@@ -132,24 +132,24 @@ dat_list <- lapply(1:r, function(x){matrix(rnorm(n*p), nrow = n, ncol = p)})
 cov_list <- lapply(dat_list, function(x){n <- nrow(x); (n-1)/n*stats::cov(x)})
 noise_list <- lapply(dat_list, function(x){stats::rnorm(nrow(x))})
 remaining_idx <- 1:length(dat_list)
-
-.compute_bootSigma_tmp <- function(mat, noise_vec, cov_mat){
-  n <- nrow(mat)
-  mat <- scale(mat, center = TRUE, scale = FALSE)
-  t(mat)%*%diag(noise_vec/n)%*%mat - (sum(noise_vec)/n)*cov_mat
-}
-
-.compute_all_numerator_bootstrap_tmp <- function(dat_list, noise_list, cov_list,
-                                             remaining_idx){
-  k <- length(dat_list)
-  
-  lis <- vector("list", k)
-  lis[remaining_idx] <- lapply(remaining_idx, function(x){.compute_bootSigma_tmp(dat_list[[x]], noise_list[[x]],
-                                                                             cov_list[[x]])})
-  lis
-}
+# 
+# .compute_bootSigma_tmp <- function(mat, noise_vec, cov_mat){
+#   n <- nrow(mat)
+#   mat <- scale(mat, center = TRUE, scale = FALSE)
+#   t(mat)%*%diag(noise_vec/n)%*%mat - (sum(noise_vec)/n)*cov_mat
+# }
+# 
+# .compute_all_numerator_bootstrap_tmp <- function(dat_list, noise_list, cov_list,
+#                                              remaining_idx){
+#   k <- length(dat_list)
+#   
+#   lis <- vector("list", k)
+#   lis[remaining_idx] <- lapply(remaining_idx, function(x){.compute_bootSigma_tmp(dat_list[[x]], noise_list[[x]],
+#                                                                              cov_list[[x]])})
+#   lis
+# }
 
 # zz <- c_compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, remaining_idx)
 res <- microbenchmark::microbenchmark(
-  .compute_all_numerator_bootstrap_tmp(dat_list, noise_list, cov_list, remaining_idx), covarianceSelectionTmp:::c_compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, remaining_idx), times = 50
+  covarianceSelectionTmp::compute_all_numerator_bootstrap_tmp1(dat_list, noise_list, cov_list, remaining_idx), covarianceSelectionTmp::compute_all_numerator_bootstrap_tmp2(dat_list, noise_list, cov_list, remaining_idx), times = 50
 )
