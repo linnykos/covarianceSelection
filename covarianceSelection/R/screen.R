@@ -21,13 +21,13 @@ screen <- function(dat, pv, p_thres = 0.1, cor_thres){
 
   primary <- which(pv < p_thres)
 
-  cor_mat <- abs(stats::cor(dat))
   candidates <- c(1:d)[-primary]
   if(length(candidates) == 0) {
     return(list(primary = primary, secondary = NA))
   }
-
+  
   #find the largest correlation of secondary genes to primary genes
+  cor_mat <- abs(stats::cor(dat))
   cor_vec <- apply(cor_mat[candidates, primary], 1, max)
   secondary <- candidates[which(cor_vec >= cor_thres)]
 
