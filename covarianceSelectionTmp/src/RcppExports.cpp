@@ -29,6 +29,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// c_armadillo
+void c_armadillo();
+RcppExport SEXP _covarianceSelectionTmp_c_armadillo() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    c_armadillo();
+    return R_NilValue;
+END_RCPP
+}
 // c_compute_sigma
 arma::mat c_compute_sigma(const arma::mat& X);
 RcppExport SEXP _covarianceSelectionTmp_c_compute_sigma(SEXP XSEXP) {
@@ -125,6 +134,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_covarianceSelectionTmp_c_quantile", (DL_FUNC) &_covarianceSelectionTmp_c_quantile, 2},
     {"_covarianceSelectionTmp_c_combn", (DL_FUNC) &_covarianceSelectionTmp_c_combn, 1},
+    {"_covarianceSelectionTmp_c_armadillo", (DL_FUNC) &_covarianceSelectionTmp_c_armadillo, 0},
     {"_covarianceSelectionTmp_c_compute_sigma", (DL_FUNC) &_covarianceSelectionTmp_c_compute_sigma, 1},
     {"_covarianceSelectionTmp_c_compute_variance", (DL_FUNC) &_covarianceSelectionTmp_c_compute_variance, 2},
     {"_covarianceSelectionTmp_c_compute_bootSigma", (DL_FUNC) &_covarianceSelectionTmp_c_compute_bootSigma, 3},

@@ -37,3 +37,9 @@ arma::umat c_combn(double n) {
   }
   return(out);
 }
+
+// [[Rcpp::export()]]
+void c_armadillo(){
+  arma::arma_version ver;
+  std::cout << "ARMA version: "<< ver.as_string() << std::endl;
+}

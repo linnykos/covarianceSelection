@@ -9,6 +9,10 @@ c_combn <- function(n) {
     .Call('_covarianceSelectionTmp_c_combn', PACKAGE = 'covarianceSelectionTmp', n)
 }
 
+c_armadillo <- function() {
+    invisible(.Call('_covarianceSelectionTmp_c_armadillo', PACKAGE = 'covarianceSelectionTmp'))
+}
+
 c_compute_sigma <- function(X) {
     .Call('_covarianceSelectionTmp_c_compute_sigma', PACKAGE = 'covarianceSelectionTmp', X)
 }

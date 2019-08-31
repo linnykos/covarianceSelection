@@ -122,3 +122,34 @@ res2 <- res; res2$time <- log(res2$time); plot(res2)
 # min       lq     mean   median       uq      max neval
 # 2.772056 3.169486 3.291614 3.259967 3.447146 3.965732    50
 # 6.121036 6.390369 6.593717 6.535867 6.854874 7.433616    50
+
+#########################
+
+rm(list=ls())
+set.seed(10)
+p <- 3000; n <- 10; r <- 10
+dat_list <- lapply(1:r, function(x){matrix(rnorm(n*p), nrow = n, ncol = p)})
+cov_list <- lapply(dat_list, function(x){n <- nrow(x); (n-1)/n*stats::cov(x)})
+noise_list <- lapply(dat_list, function(x){stats::rnorm(nrow(x))})
+remaining_idx <- 1:length(dat_list)
+
+.compute_bootSigma_tmp <- function(mat, noise_vec, cov_mat){
+  n <- nrow(mat)
+  mat <- scale(mat, center = TRUE, scale = FALSE)
+  t(mat)%*%diag(noise_vec/n)%*%mat - (sum(noise_vec)/n)*cov_mat
+}
+
+.compute_all_numerator_bootstrap_tmp <- function(dat_list, noise_list, cov_list,
+                                             remaining_idx){
+  k <- length(dat_list)
+  
+  lis <- vector("list", k)
+  lis[remaining_idx] <- lapply(remaining_idx, function(x){.compute_bootSigma_tmp(dat_list[[x]], noise_list[[x]],
+                                                                             cov_list[[x]])})
+  lis
+}
+
+# zz <- c_compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, remaining_idx)
+res <- microbenchmark::microbenchmark(
+  .compute_all_numerator_bootstrap_tmp(dat_list, noise_list, cov_list, remaining_idx), covarianceSelectionTmp:::c_compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, remaining_idx), times = 50
+)
