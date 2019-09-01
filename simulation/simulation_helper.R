@@ -1,12 +1,14 @@
-.normalize_mat <- function(mat){
+.normalize_mat <- function(mat, normalize = T){
   stopifnot(nrow(mat) == ncol(mat))
   # symmetrize
   mat <- (mat + t(mat))/2
 
   # ensure PSD
-  eig <- eigen(mat)
-  eig$values[eig$values <= 0.01] <- 0.01
-  mat <- eig$vectors%*%diag(eig$values)%*%t(eig$vectors)
+  if(normalize){
+    eig <- eigen(mat)
+    eig$values[eig$values <= 0.01] <- 0.01
+    mat <- eig$vectors%*%diag(eig$values)%*%t(eig$vectors)
+  }
   
   # normalize so all marignal variance is 1
   diag(1/sqrt(diag(mat))) %*% mat %*% diag(1/sqrt(diag(mat)))

@@ -4,7 +4,7 @@ library(covarianceSelection)
 source("../simulation/simulation_helper.R")
 
 trials <- 1
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 3000, 1))
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 10, 1))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage")
 
@@ -39,9 +39,11 @@ generate_data <- function(covar_list, num_partition, n){
 rule <- function(vec){
   covar_list <- generate_covariance(d = vec["d"], percentage = vec["percentage"])
   
-  generate_data(covar_list, num_partition = vec[1:3],  n = vec["n"])
-
+  dat <- generate_data(covar_list, num_partition = vec[1:3],  n = vec["n"])
+  
   print(paste0("Finish generating data: ", Sys.time()))
+  
+  dat 
 }
 
 criterion <- function(dat, vec, y, ...){
@@ -52,7 +54,7 @@ criterion <- function(dat, vec, y, ...){
   list(res = res)
 }
 
-## set.seed(1); criterion(rule(paramMat[1,]), paramMat[1,], 1)
+## set.seed(1); res <- criterion(rule(paramMat[1,]), paramMat[1,], 1)
 
 ################
 
