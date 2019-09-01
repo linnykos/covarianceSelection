@@ -1,38 +1,39 @@
-.normalize_mat <- function(mat, normalize = T){
+.normalize_mat <- function(mat){
+  stopifnot(nrow(mat) == ncol(mat))
+  # symmetrize
   mat <- (mat + t(mat))/2
 
+  # ensure PSD
   eig <- eigen(mat)
   eig$values[eig$values <= 0.01] <- 0.01
-
   mat <- eig$vectors%*%diag(eig$values)%*%t(eig$vectors)
-  mat/max(mat)
+  
+  # normalize so all marignal variance is 1
+  diag(1/sqrt(diag(mat))) %*% mat %*% diag(1/sqrt(diag(mat)))
 }
 
-.shuffle <- function(mat, percentage = 0.1, normalize = T){
-  if(ncol(mat) != nrow(mat)) stop("mat is not square")
-  if(percentage == 0) return(mat)
-
-  d <- ncol(mat)
-  idx <- sample(1:d, floor(percentage * d))
-  mat[sort(idx), ] <- mat[idx, ]
-  mat[-idx, sort(idx)] <- mat[-idx, idx]
-
-  .normalize_mat(mat, normalize)
-}
-
-.generate_block <- function(d){
-  mat <- matrix(0, d, d)
-  for(j in 1:d){
-    for(i in 1:j){
-      mat[i,j] <- i*(d-j+1)/(d+1)
-      mat[j,i] <- mat[i,j]
+.generate_block <- function(d, alpha = 0.75, beta = .25, spillover_percentage = 0){
+  mat <- matrix(beta, d, d)
+  cutoff <- round(d/2)
+  
+  cluster_lab <- rep(2, d); cluster_lab[1:cutoff] <- 1
+  # account for spillover
+  num_spillover <- round(d*spillover_percentage)
+  if(num_spillover > 0){
+    for(i in 1:2){
+      idx <- which(cluster_lab == i)[1:num_spillover]
+      cluster_lab[idx] <- 3
     }
   }
-
+  
+  for(i in 1:3){
+    idx <- which(cluster_lab == i)
+    if(length(idx) > 0){
+      mat[idx, idx] <- alpha
+    }
+  }
+  
+  diag(mat) <- 1
+  
   .normalize_mat(mat)
-}
-
-.spectral_norm_mat <- function(mat1, mat2){
-  stopifnot(all(dim(mat1) == dim(mat2)))
-  max(svd(mat1 - mat2)$d)
 }
