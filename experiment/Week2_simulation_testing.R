@@ -8,7 +8,7 @@ ncores <- 25
 doMC::registerDoMC(cores = ncores)
 
 trials <- 1
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 10, 1, 0.5))
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 3000, 1, 0.5))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha")
 
