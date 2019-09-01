@@ -28,17 +28,17 @@ arma::mat c_compute_bootSigma(const arma::mat& X, const arma::vec& noise_vec,
   return(X.t() * arma::diagmat(noise_vec)*X/n - arma::sum(noise_vec)/n*cov_mat);
 }
 
-// [[Rcpp::export()]]
-arma::mat c_compute_bootSigma_tmp(const arma::mat& X, const arma::vec& noise_vec, 
-                              const arma::mat& cov_mat) {
-  double n = X.n_rows;
-  arma::mat X2(X.n_rows, X.n_cols);
-  for(int i = 0; i < X.n_cols; i++){
-    X2.col(i) = noise_vec[i]*X/n;
-  }
-  
-  return(X.t() * X2 - arma::sum(noise_vec)/n*cov_mat);
-}
+// // [[Rcpp::export()]]
+// arma::mat c_compute_bootSigma_tmp(const arma::mat& X, const arma::vec& noise_vec, 
+//                               const arma::mat& cov_mat) {
+//   double n = X.n_rows;
+//   arma::mat X2(X.n_rows, X.n_cols);
+//   for(int i = 0; i < X.n_cols; i++){
+//     X2.col(i) = noise_vec[i]*X/n;
+//   }
+//   
+//   return(X.t() * X2 - arma::sum(noise_vec)/n*cov_mat);
+// }
 
 // [[Rcpp::export()]]
 double c_compute_covStat(const arma::mat& num_x, const arma::mat& num_y,

@@ -1,7 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include <RcppArmadillo.h>
-#include <Rcpp.h>
 
 // [[Rcpp::export()]]
 double c_quantile(const arma::mat X, const double quantile = 1){
