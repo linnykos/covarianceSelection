@@ -44,6 +44,8 @@ generate_data <- function(covar_list, num_partition, n){
 rule <- function(vec){
   covar_list <- generate_covariance(d = vec["d"], percentage = vec["percentage"])
   
+  print(paste0("Finish generating covariances: ", Sys.time()))
+  
   dat <- generate_data(covar_list, num_partition = vec[1:3],  n = vec["n"])
   
   print(paste0("Finish generating data: ", Sys.time()))
