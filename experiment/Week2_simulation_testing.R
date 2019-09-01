@@ -8,7 +8,7 @@ ncores <- 25
 doMC::registerDoMC(cores = ncores)
 
 trials <- 1
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 3000, 1, 0.5))
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 10, 1, 0.5))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha")
 
@@ -35,9 +35,9 @@ generate_data <- function(covar_list, num_partition, n){
   d <- nrow(covar_list[[1]])
   
   func <- function(i){
-    if(type_vec[i] == 1) mvnfast::rmvn(n, rep(0, d), covar_list[[1]])
-    if(type_vec[i] == 2) mvnfast::rmvn(n, rep(0, d), covar_list[[2]])
-    if(type_vec[i] == 3) mvnfast::rmvn(n, rep(0, d), covar_list[[3]])
+    if(type_vec[i] == 1) return(mvnfast::rmvn(n, rep(0, d), covar_list[[1]]))
+    if(type_vec[i] == 2) return(mvnfast::rmvn(n, rep(0, d), covar_list[[2]]))
+    if(type_vec[i] == 3) return(mvnfast::rmvn(n, rep(0, d), covar_list[[3]]))
   }
 
   dat_list <- foreach::"%dopar%"(foreach::foreach(i = 1:k), func(i))
