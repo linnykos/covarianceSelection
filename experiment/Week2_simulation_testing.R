@@ -4,7 +4,7 @@ library(covarianceSelection)
 source("../simulation/simulation_helper.R")
 
 trials <- 1
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 10, 1))
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, 1))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage")
 
