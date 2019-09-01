@@ -41,6 +41,7 @@ rule <- function(vec){
   
   generate_data(covar_list, num_partition = vec[1:3],  n = vec["n"])
 
+  print(paste0("Finish generating data: ", Sys.time()))
 }
 
 criterion <- function(dat, vec, y, ...){
