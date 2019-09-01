@@ -4,9 +4,9 @@ library(covarianceSelection)
 source("../simulation/simulation_helper.R")
 
 trials <- 1
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, 1))
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 3000, 1, 0.5))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
-                        "percentage")
+                        "percentage", "alpha")
 
 ########3
 
@@ -48,8 +48,8 @@ rule <- function(vec){
 
 criterion <- function(dat, vec, y, ...){
   set.seed(y)
-  res <- covarianceSelection::stepdown(dat, trials = 200, denominator = T, alpha = 0.5,
-                                            cores = 15, verbose = T)
+  res <- covarianceSelection::stepdown(dat, trials = 200, denominator = T, alpha = vec["alpha"],
+                                            cores = 25, verbose = T)
   
   list(res = res)
 }
