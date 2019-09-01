@@ -11,7 +11,15 @@
   }
   
   # normalize so all marignal variance is 1
-  diag(1/sqrt(diag(mat))) %*% mat %*% diag(1/sqrt(diag(mat)))
+  d <- ncol(mat)
+  for(i in 1:d){
+    if(i %% floor(d/10) == 0) cat('*')
+    for(j in 1:d){
+      mat[i,j] <- mat[i,j]/sqrt(mat[i,i] * mat[j,j])
+    }
+  }
+  
+  mat
 }
 
 .generate_block <- function(d, alpha = 0.75, beta = .25, spillover_percentage = 0,
