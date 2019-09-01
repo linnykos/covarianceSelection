@@ -10,15 +10,6 @@
     mat <- eig$vectors%*%diag(eig$values)%*%t(eig$vectors)
   }
   
-  # normalize so all marignal variance is 1
-  d <- ncol(mat)
-  for(i in 1:d){
-    if(i %% floor(d/10) == 0) cat('*')
-    for(j in 1:d){
-      mat[i,j] <- mat[i,j]/sqrt(mat[i,i] * mat[j,j])
-    }
-  }
-  
   mat
 }
 

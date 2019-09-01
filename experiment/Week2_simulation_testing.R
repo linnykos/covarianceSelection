@@ -36,6 +36,8 @@ generate_data <- function(covar_list, num_partition, n){
     if(type_vec[i] == 3) dat_list[[i]] <- MASS::mvrnorm(n, rep(0, d), covar_list[[3]])
   }
   
+  # the nonparanormal transformation would happen here
+  
   dat_list
 }
 
