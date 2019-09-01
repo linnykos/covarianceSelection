@@ -11,11 +11,14 @@ colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
 ########3
 
 generate_covariance <- function(d, percentage){
-  covar_base <- .generate_block(d, alpha = 0.9, beta = 0.1, spillover_percentage = 0)
+  covar_base <- .generate_block(d, alpha = 0.9, beta = 0.1, spillover_percentage = 0,
+                                normalize = F)
   covar_alt1 <- .generate_block(d, alpha = 0.9 - percentage*0.4, 
                                 beta = 0.1 + percentage*0.4, 
-                                spillover_percentage = 0)
-  covar_alt2 <- .generate_block(d, alpha = 0.9, beta = 0.1, spillover_percentage = percentage*(1/6))
+                                spillover_percentage = 0,
+                                normalize = F)
+  covar_alt2 <- .generate_block(d, alpha = 0.9, beta = 0.1, spillover_percentage = percentage*(1/6),
+                                normalize = F)
   
   list(covar_base = covar_base, covar_alt1 = covar_alt1,
        covar_alt2 = covar_alt2)

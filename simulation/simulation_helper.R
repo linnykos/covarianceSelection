@@ -1,4 +1,4 @@
-.normalize_mat <- function(mat, normalize = T){
+.clean_mat <- function(mat, normalize = T){
   stopifnot(nrow(mat) == ncol(mat))
   # symmetrize
   mat <- (mat + t(mat))/2
@@ -14,7 +14,8 @@
   diag(1/sqrt(diag(mat))) %*% mat %*% diag(1/sqrt(diag(mat)))
 }
 
-.generate_block <- function(d, alpha = 0.75, beta = .25, spillover_percentage = 0){
+.generate_block <- function(d, alpha = 0.75, beta = .25, spillover_percentage = 0,
+                            normalize = T){
   mat <- matrix(beta, d, d)
   cutoff <- round(d/2)
   
@@ -37,5 +38,5 @@
   
   diag(mat) <- 1
   
-  .normalize_mat(mat)
+  .clean_mat(mat, normalize = normalize)
 }
