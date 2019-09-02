@@ -60,6 +60,9 @@ rule <- function(vec){
 
 criterion <- function(dat, vec, y, ...){
   set.seed(y)
+  
+  print(paste0("Starting to run the test: ", Sys.time()))
+  
   res <- covarianceSelection::stepdown(dat, trials = 200, denominator = T, alpha = vec["alpha"],
                                             cores = ncores, verbose = T)
   

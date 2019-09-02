@@ -22,6 +22,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
   diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
   cov_list <- lapply(dat_list, function(x){n <- nrow(x); (n-1)/n*stats::cov(x)})
   num_list <- lapply(cov_list, function(x){x[diag_idx]})
+  
   if(denominator){
     denom_list <- .compute_all_denom(dat_list, cov_list)
   } else {
@@ -30,6 +31,8 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
 
   t_vec <- .compute_all_test_stat(num_list, denom_list, combn_mat = combn_mat,
                                   squared = denominator)
+  
+  if(verbose)  print(paste0("Starting to run heavy parallel computation: ", Sys.time()))
 
   func <- function(i){
     if(verbose && i %% floor(trials/10) == 0) cat('*')
