@@ -28,6 +28,17 @@ arma::mat c_compute_bootSigma(const arma::mat& X, const arma::vec& noise_vec,
   return(X.t() * arma::diagmat(noise_vec)*X/n - arma::sum(noise_vec)/n*cov_mat);
 }
 
+// [[Rcpp::export()]]
+SEXP c_compute_bootSigma_tmp(SEXP X_, SEXP noise_, SEXP cov_){
+  using namespace Rcpp;
+  
+  arma::mat X = as<arma::mat>(X_);
+  arma::rowvec noise = as<arma::rowvec>(noise_);
+  arma::mat cov = as<arma::mat>(cov_);
+  
+  
+}
+
 // // [[Rcpp::export()]]
 // arma::mat c_compute_bootSigma_tmp(const arma::mat& X, const arma::vec& noise_vec, 
 //                               const arma::mat& cov_mat) {

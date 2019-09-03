@@ -23,7 +23,7 @@ library(microbenchmark)
 .compute_bootSigma_2 <- function(mat, noise_vec, cov_mat){
   n <- nrow(mat)
   mat <- scale(mat, center = TRUE, scale = FALSE)
-  mat2 <- apply(mat, 2, function(x){x*noise_vec/n})
+  mat2 <- noise_vec * mat / n
   Matrix::crossprod(mat, mat2) - (sum(noise_vec)/n)*cov_mat
 }
 
@@ -84,4 +84,10 @@ dem1 <- covarianceSelectionTmp:::c_compute_variance(dat1, num1); dem2 <- covaria
 res <- microbenchmark::microbenchmark(
   .compute_covStat(num1, num2, dem1, dem2), 
   .compute_covStat2(num1, num2, dem1, dem2), times = 100
+)
+
+
+xx = matrix(rnorm(3000^2), 3000)
+res <- microbenchmark::microbenchmark(
+  max(xx), quantile(xx, prob = 1), times = 100
 )

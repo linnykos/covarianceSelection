@@ -74,19 +74,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// c_compute_bootSigma_tmp
-arma::mat c_compute_bootSigma_tmp(const arma::mat& X, const arma::vec& noise_vec, const arma::mat& cov_mat);
-RcppExport SEXP _covarianceSelectionTmp_c_compute_bootSigma_tmp(SEXP XSEXP, SEXP noise_vecSEXP, SEXP cov_matSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type noise_vec(noise_vecSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type cov_mat(cov_matSEXP);
-    rcpp_result_gen = Rcpp::wrap(c_compute_bootSigma_tmp(X, noise_vec, cov_mat));
-    return rcpp_result_gen;
-END_RCPP
-}
 // c_compute_covStat
 double c_compute_covStat(const arma::mat& num_x, const arma::mat& num_y, const arma::mat& denom_x, const arma::mat& denom_y, const double& quantile, const bool& squared);
 RcppExport SEXP _covarianceSelectionTmp_c_compute_covStat(SEXP num_xSEXP, SEXP num_ySEXP, SEXP denom_xSEXP, SEXP denom_ySEXP, SEXP quantileSEXP, SEXP squaredSEXP) {
@@ -151,7 +138,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_covarianceSelectionTmp_c_compute_sigma", (DL_FUNC) &_covarianceSelectionTmp_c_compute_sigma, 1},
     {"_covarianceSelectionTmp_c_compute_variance", (DL_FUNC) &_covarianceSelectionTmp_c_compute_variance, 2},
     {"_covarianceSelectionTmp_c_compute_bootSigma", (DL_FUNC) &_covarianceSelectionTmp_c_compute_bootSigma, 3},
-    {"_covarianceSelectionTmp_c_compute_bootSigma_tmp", (DL_FUNC) &_covarianceSelectionTmp_c_compute_bootSigma_tmp, 3},
     {"_covarianceSelectionTmp_c_compute_covStat", (DL_FUNC) &_covarianceSelectionTmp_c_compute_covStat, 6},
     {"_covarianceSelectionTmp_c_compute_all_denom", (DL_FUNC) &_covarianceSelectionTmp_c_compute_all_denom, 2},
     {"_covarianceSelectionTmp_c_compute_all_test_stat", (DL_FUNC) &_covarianceSelectionTmp_c_compute_all_test_stat, 4},
