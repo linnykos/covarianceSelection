@@ -4,16 +4,16 @@
 \alias{.compute_bootSigma}
 \title{Compute the bootstrap empirical covariance (numerator)}
 \usage{
-.compute_bootSigma(mat, noise_vec, cov_mat = NA, idx = NA)
+.compute_bootSigma(mat, noise_vec, cov_vec, idx)
 }
 \arguments{
 \item{mat}{data matrix}
 
 \item{noise_vec}{vector of noise}
 
-\item{cov_mat}{covariance matrix}
-
 \item{idx}{vector of the indices of the lower triangle}
+
+\item{cov_mat}{vectorized covariance matrix of length \code{idx}}
 }
 \value{
 vector

@@ -11,7 +11,7 @@ graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F){
   n <- nrow(dat); d <- ncol(dat)
 
   if(verbose) print("Starting to estimate coefficients")
-  coef_list <- .compute_reg_coefficients_cv(dat, lambda = lambda)
+  coef_list <- .compute_reg_coefficients_cv(dat, lambda = lambda, verbose = verbose)
   coef_mat <- do.call(cbind, coef_list)
   
   if(verbose) print("Starting to estimate sigma")
@@ -29,7 +29,7 @@ graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F){
   .symmetrize(prec_mat)
 }
 
-.compute_reg_coefficients_cv <- function(dat, lambda = "lambda.1se"){
+.compute_reg_coefficients_cv <- function(dat, lambda = "lambda.1se", verbose = F){
   d <- ncol(dat)
 
   func <- function(x){

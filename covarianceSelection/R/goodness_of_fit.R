@@ -15,7 +15,7 @@
 #' @return vector of p-values
 #' @export
 goodness_of_fit <- function(dat_list, num_partitions, trials = 500, cores = 1,
-                            verbose = F, prob = 0.99925){
+                            verbose = F){
   dat_list <- lapply(dat_list, function(x){
     scale(x, center = T, scale = F)
   })
@@ -25,7 +25,7 @@ goodness_of_fit <- function(dat_list, num_partitions, trials = 500, cores = 1,
     if(verbose && length(partitions) > 10 && x %% floor(length(partitions)/10) == 0) cat('*')
     dat1 <- do.call(rbind, dat_list[partitions[[x]][[1]]])
     dat2 <- do.call(rbind, dat_list[partitions[[x]][[2]]])
-    cai_test(dat1, dat2, trials = trials, cores = cores, prob = prob)
+    cai_test(dat1, dat2, trials = trials, cores = cores)
   })
 }
 

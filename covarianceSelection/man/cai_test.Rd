@@ -4,7 +4,7 @@
 \alias{cai_test}
 \title{Cai Test}
 \usage{
-cai_test(x, y, trials = 100, cores = 1, prob = 1)
+cai_test(x, y, trials = 100, cores = 1)
 }
 \arguments{
 \item{x}{data matrix}
@@ -14,8 +14,6 @@ cai_test(x, y, trials = 100, cores = 1, prob = 1)
 \item{trials}{number of trials}
 
 \item{cores}{number of cores}
-
-\item{prob}{parameter for robustness}
 }
 \value{
 numeric (p-value)

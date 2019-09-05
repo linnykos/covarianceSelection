@@ -17,7 +17,6 @@ stepdown_path <- function(dat_list, trials = 100, denominator = T, iterations = 
   len <- length(dat_list)
   combn_mat <- utils::combn(len, 2)
 
-  diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
   cov_list <- lapply(dat_list, function(x){n <- nrow(x); (n-1)/n*stats::cov(x)})
   num_list <- lapply(cov_list, function(x){x[diag_idx]})
   if(denominator){
@@ -33,7 +32,7 @@ stepdown_path <- function(dat_list, trials = 100, denominator = T, iterations = 
     if(verbose && i %% floor(trials/10) == 0) cat('*')
     set.seed(round*10*i)
     noise_list <- lapply(dat_list, function(x){stats::rnorm(nrow(x))})
-    num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, diag_idx,
+    num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list,
                                                  remaining_idx = 1:length(dat_list))
 
     .compute_all_test_stat(num_list, denom_list, combn_mat = combn_mat,

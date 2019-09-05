@@ -4,7 +4,7 @@
 \alias{.compute_sigma}
 \title{Compute the empirical covariance (numerator)}
 \usage{
-.compute_sigma(mat, idx = NA)
+.compute_sigma(mat, idx)
 }
 \arguments{
 \item{mat}{data matrix}

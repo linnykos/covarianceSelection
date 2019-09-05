@@ -20,11 +20,10 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
   idx_all <- rep(TRUE, ncol(combn_mat))
 
   diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
-  cov_list <- lapply(dat_list, function(x){n <- nrow(x); (n-1)/n*stats::cov(x)})
-  num_list <- lapply(cov_list, function(x){x[diag_idx]})
-  
+  num_list <- lapply(dat_list, function(x){.compute_sigma(x, diag_idx)})
+
   if(denominator){
-    denom_list <- .compute_all_denom(dat_list, cov_list)
+    denom_list <- .compute_all_denom(dat_list, num_list)
   } else {
     denom_list <- lapply(1:length(dat_list), function(x){1})
   }
@@ -38,6 +37,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
     if(verbose && i %% floor(trials/10) == 0) cat('*')
     set.seed(round*10*i)
     noise_list <- lapply(dat_list, function(x){stats::rnorm(nrow(x))})
+    
     remaining_pairs <- which(idx_all)
     combn_short <- combn_mat[, remaining_pairs, drop = F]
     if(any(is.na(combn_short))) return(Inf)
@@ -77,12 +77,13 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
 #' Compute all of the denominators
 #'
 #' @param dat_list list of data matrices
-#' @param cov_list list of covariance matrices
+#' @param num_list list of covariance matrices
+#' @param idx vector of the indices of the lower triangle
 #'
 #' @return a list of denominator vectors
-.compute_all_denom <- function(dat_list, cov_list = as.list(rep(NA, length(dat_list)))){
+.compute_all_denom <- function(dat_list, num_list, idx){
   lapply(1:length(dat_list), function(x){
-    .compute_variance(dat_list[[x]], cov_list[[x]])
+    .compute_variance(dat_list[[x]], num_list[[x]], idx)
   })
 }
 
@@ -112,28 +113,17 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
 #'
 #' @param dat_list list of data matrices
 #' @param noise_list list of noise vectors
-#' @param cov_list list of covariance matrices
+#' @param num_list list of covariance matrices
 #' @param idx vector of the indices of the lower triangle
 #' @param remaining_idx indices to compute the numerator of
 #'
 #' @return a list of vectors
-.compute_all_numerator_bootstrap <- function(dat_list, noise_list, cov_list, idx,
+.compute_all_numerator_bootstrap <- function(dat_list, noise_list, num_list, idx,
                                               remaining_idx){
   k <- length(dat_list)
 
   lis <- vector("list", k)
   lis[remaining_idx] <- lapply(remaining_idx, function(x){.compute_bootSigma(dat_list[[x]], noise_list[[x]],
-                                               cov_list[[x]], idx)})
+                                                                             num_list[[x]], idx)})
   lis
-}
-
-#############
-
-.shorten_combn <- function(combn_mat, num_in){
-  if(ncol(combn_mat) == 1){if(all(combn_mat <= num_in)) return(combn_mat) else return(NA)}
-
-  res <- apply(combn_mat, 1, function(x){x <= num_in})
-  idx <- which(apply(res, 1, function(x){all(x)}))
-  if(length(idx) == 0) return(NA)
-  combn_mat[,idx, drop = F]
 }

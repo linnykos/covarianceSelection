@@ -4,11 +4,10 @@
 #' @param y data matrix
 #' @param trials number of trials
 #' @param cores number of cores
-#' @param prob parameter for robustness
 #'
 #' @return numeric (p-value)
 #' @export
-cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
+cai_test <- function(x, y, trials = 100, cores = 1){
   if(ncol(x) != ncol(y)) stop("x and y have different number of dimensions")
   if(!is.matrix(x) | !is.numeric(x)) stop("x is not a numeric matrix")
   if(!is.matrix(y) | !is.numeric(y)) stop("y is not a numeric matrix")
@@ -19,7 +18,7 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
 
   denom_x <- .compute_variance(x); denom_y <- .compute_variance(y)
   num_x <- .compute_sigma(x); num_y <- .compute_sigma(y)
-  t_org <- .compute_covStat(num_x, num_y, denom_x, denom_y, prob = prob)
+  t_org <- .compute_covStat(num_x, num_y, denom_x, denom_y)
 
   func <- function(i){
     set.seed(i*10)
@@ -39,45 +38,29 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
   length(which(abs(t_boot) >= abs(t_org)))/trials
 }
 
-.compute_covStat <- function(num_x, num_y, denom_x, denom_y, prob = 1, squared = T){
-  stopifnot(length(num_x) == length(num_y), length(denom_x) == length(denom_y))
-  stopifnot(length(denom_x) == 1 | length(denom_x) == length(num_x))
-
+.compute_covStat <- function(num_x, num_y, denom_x, denom_y, squared = T){
   if(squared){
     res <- (num_x - num_y)^2/(denom_x + denom_y)
   } else {
     res <- abs(num_x - num_y)
   }
 
-  stats::quantile(abs(res), prob = prob)
+  max(abs(res))
 }
 
 #' Compute the bootstrap empirical covariance (numerator)
 #'
 #' @param mat data matrix
 #' @param noise_vec vector of noise
-#' @param cov_mat covariance matrix
+#' @param cov_mat vectorized covariance matrix of length \code{idx}
 #' @param idx vector of the indices of the lower triangle
 #'
 #' @return vector
-.compute_bootSigma <- function(mat, noise_vec, cov_mat = NA, idx = NA){
-  if(length(noise_vec) != nrow(mat)) stop("length(noise_vec) not equal to nrow(mat)")
-
+.compute_bootSigma <- function(mat, noise_vec, cov_vec, idx){
   n <- nrow(mat)
-  if(any(is.na(cov_mat))){
-    cov_mat <- (n-1)/n*stats::cov(mat)
-  } else {
-    stopifnot(ncol(cov_mat) == ncol(mat))
-  }
-
-  mat <- scale(mat, center = TRUE, scale = FALSE)
-
-  res <- t(mat)%*%diag(noise_vec/n)%*%mat - (sum(noise_vec)/n)*cov_mat
-  if(any(is.na(idx))){
-    c(res[lower.tri(res, diag = T)])
-  } else {
-    c(res[idx])
-  }
+  
+  mat2 <- noise_vec/n * mat
+  Matrix::crossprod(mat, mat2)[idx] - (sum(noise_vec)/n)*cov_vec
 }
 
 #' Compute the empirical covariance (numerator)
@@ -86,41 +69,22 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
 #' @param idx vector of the indices of the lower triangle
 #'
 #' @return vector
-.compute_sigma <- function(mat, idx = NA){
+.compute_sigma <- function(mat, idx){
   n <- nrow(mat)
-  res <- (n-1)/n * stats::cov(mat)
-
-  if(any(is.na(idx))){
-    c(res[lower.tri(res, diag = T)])
-  } else {
-    c(res[idx])
-  }
+  (n-1)/n * stats::cov(mat)[idx]
 }
 
 
 #' Compute the variance of the empirical covariance estimate
 #'
 #' @param mat data matrix
-#' @param cov_mat optional argument of the empirical covariance
+#' @param cov_vec vectorized covariance matrix of length \code{idx}
 #' @param idx vector of the indices of the lower triangle
 #'
 #' @return vector
-.compute_variance <- function(mat, cov_mat = NA, idx = NA){
+.compute_variance <- function(mat, cov_vec, idx){
   n <- nrow(mat)
-  if(any(is.na(cov_mat))){
-    cov_mat <- (n-1)/n*stats::cov(mat)
-  } else {
-    stopifnot(ncol(cov_mat) == ncol(mat))
-  }
-
-  mat <- scale(mat, center = TRUE, scale = FALSE)
   mat2 <- mat^2
 
-  res <- t(mat2)%*%mat2/n - cov_mat^2
-
-  if(any(is.na(idx))){
-    c(res[lower.tri(res, diag = T)])
-  } else {
-    c(res[idx])
-  }
+  crossprod(mat2)[idx]/n - cov_vec^2
 }

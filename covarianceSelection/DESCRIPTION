@@ -20,7 +20,11 @@ Imports:
     hash,
     binaryLogic,
     dequer,
-    mgcv
+    mgcv,
+    Rcpp,
+    org.Hs.eg.db,
+    DBI
 Suggests:
     testthat
+LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.1.1

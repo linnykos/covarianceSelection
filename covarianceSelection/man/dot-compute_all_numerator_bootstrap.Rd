@@ -4,7 +4,7 @@
 \alias{.compute_all_numerator_bootstrap}
 \title{Compute all the numerator bootstraps}
 \usage{
-.compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, idx,
+.compute_all_numerator_bootstrap(dat_list, noise_list, num_list, idx,
   remaining_idx)
 }
 \arguments{
@@ -12,7 +12,7 @@
 
 \item{noise_list}{list of noise vectors}
 
-\item{cov_list}{list of covariance matrices}
+\item{num_list}{list of covariance matrices}
 
 \item{idx}{vector of the indices of the lower triangle}
 

@@ -1,46 +1,43 @@
 context("Test stepdown")
 
-## .compute_all_numerator_bootstrap is correct
+## .c_compute_all_numerator_bootstrap is correct
 
-test_that(".compute_all_numerator_bootstrap gives the same results as manual calculations", {
+test_that(".c_compute_all_numerator_bootstrap gives the same results as manual calculations", {
   set.seed(10)
   n <- 10; d <- 15; k <- 10
-  dat_list <- lapply(1:k, function(x){matrix(rnorm(n*d),n,d)})
+  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); apply(mat, 2, function(x){x-mean(x)})})
   noise_list <- lapply(1:k, function(x){rnorm(n)})
 
   cov_list <- lapply(dat_list, function(x){(n-1)/n*stats::cov(x)})
-  idx <- which(lower.tri(diag(d), diag = T))
   remaining_idx <- 1:k
 
-  res <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, idx, remaining_idx)
+  res <- .c_compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, remaining_idx)
 
-  expect_true(all(sapply(res, length) == d*(d-1)/2+d))
+  expect_true(all(sapply(res, length) == d^2))
   expect_true(all(sapply(res, is.numeric)))
-  expect_true(!any(sapply(res, is.matrix)))
+  expect_true(all(sapply(res, is.matrix)))
 })
 
-test_that(".compute_all_numerator_bootstrap gives the same results as manual calculations", {
+test_that(".c_compute_all_numerator_bootstrap gives the same results as manual calculations", {
   set.seed(10)
   n <- 15; d <- 10; k <- 5
-  dat_list <- lapply(1:k, function(x){matrix(rnorm(n*d),n,d)})
+  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); apply(mat, 2, function(x){x-mean(x)})})
   noise_list <- lapply(1:k, function(x){rnorm(n)})
 
   cov_list <- lapply(dat_list, function(x){(n-1)/n*stats::cov(x)})
-  idx <- which(lower.tri(diag(d), diag = T))
   remaining_idx <- 1:k
 
-  res <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, idx, remaining_idx)
+  res <- .c_compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, remaining_idx)
 
   res2 <- vector("list", k)
-  dat_list <- lapply(dat_list, scale, center = T, scale = F)
   for(l in 1:k){
     mat <- matrix(0, d, d)
     for(i in 1:d){
-      for(j in 1:i){
+      for(j in 1:d){
         mat[i,j] <- sum(noise_list[[l]] * (dat_list[[l]][,i] * dat_list[[l]][,j] - cov_list[[l]][i,j]))/n
       }
     }
-    res2[[l]] <- mat[lower.tri(mat, diag = T)]
+    res2[[l]] <- mat
   }
 
   dif <- sum(sapply(1:k, function(x){sum(abs(res[[x]] - res2[[x]]))}))
@@ -51,39 +48,38 @@ test_that(".compute_all_numerator_bootstrap gives the same results as manual cal
 test_that(".compute_all_numerator_bootstrap works with remaining_idx", {
   set.seed(10)
   n <- 25; d <- 10; k <- 5
-  dat_list <- lapply(1:k, function(x){matrix(rnorm(n*d),n,d)})
+  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); apply(mat, 2, function(x){x-mean(x)})})
   noise_list <- lapply(1:k, function(x){rnorm(n)})
 
   cov_list <- lapply(dat_list, function(x){(n-1)/n*stats::cov(x)})
   idx <- which(lower.tri(diag(d), diag = T))
   remaining_idx <- c(1,4,5)
 
-  res <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, idx, remaining_idx)
-  res2 <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, idx, 1:k)
+  res <- .c_compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, remaining_idx)
+  res2 <- .c_compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, 1:k)
 
-  expect_true(length(res) == length(res2))
-  for(i in c(1,4,5)){
-    expect_true(sum(abs(res2[[i]] - res[[i]])) <= 1e-6)
+  for(i in 1:3){
+    expect_true(sum(abs(res2[[remaining_idx[i]]] - res[[i]])) <= 1e-6)
   }
 })
 
 #######################
 
-## .compute_all_test_stat is correct
+## .c_compute_all_test_stat is correct
 
-test_that(".compute_all_test_stat works", {
+test_that(".c_compute_all_test_stat works", {
+  set.seed(10)
   k <- 5
-  num_list <- lapply(1:k, function(x){seq(x, x^2, length.out = 10)})
-  denom_list <- lapply(1:k, function(x){x:(x+9)})
+  num_list <- lapply(1:k, function(x){matrix(rnorm(25), 5, 5)})
+  denom_list <- lapply(1:k, function(x){matrix(rnorm(25), 5, 5)})
+  combn_mat <- combn(k, 2)
 
-  res <- .compute_all_test_stat(num_list, denom_list)
+  res <- .c_compute_all_test_stat(num_list, denom_list, combn_mat)
 
   expect_true(length(res) == k*(k-1)/2)
-  expect_true(is.numeric(res))
-  expect_true(!is.matrix(res))
 })
 
-test_that(".compute_all_test_stat changes with combn_mat", {
+test_that(".c_compute_all_test_stat changes with combn_mat", {
   k <- 5
   num_list <- lapply(1:k, function(x){seq(x, x^2, length.out = 10)})
   denom_list <- lapply(1:k, function(x){x:(x+9)})
@@ -99,18 +95,18 @@ test_that(".compute_all_test_stat changes with combn_mat", {
 
 ###############
 
-## .compute_all_denom is correct
+## .c_compute_all_denom is correct
 
-test_that(".compute_all_denom works", {
+test_that(".c_compute_all_denom works", {
   set.seed(10)
   n <- 10; d <- 10; k <- 5
-  dat_list <- lapply(1:k, function(x){matrix(rnorm(n*d),n,d)})
+  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); apply(mat, 2, function(x){x-mean(x)})})
   cov_list <- lapply(dat_list, function(x){n <- nrow(x); (n-1)/n*stats::cov(x)})
-  denom_list <- .compute_all_denom(dat_list, cov_list)
+  denom_list <- .c_compute_all_denom(dat_list, cov_list)
 
-  expect_true(all(sapply(denom_list, length) == d*(d-1)/2 + d))
+  expect_true(all(sapply(denom_list, length) == d^2))
   expect_true(all(sapply(denom_list, is.numeric)))
-  expect_true(!any(sapply(denom_list, is.matrix)))
+  expect_true(all(sapply(denom_list, is.matrix)))
 })
 
 ###############
@@ -179,27 +175,4 @@ test_that("stepdown rejects everything with alpha is 1", {
   res <- stepdown(dat_list, trials = 25, alpha = 1)
 
   expect_true(length(res) == 0)
-})
-
-###################
-
-## .shorten_combn is correct
-
-test_that(".shorten_combn works", {
-  mat <- combn(10,2)
-  res <- .shorten_combn(mat, 5)
-
-  expect_true(is.matrix(res))
-  expect_true(nrow(res) == 2)
-  expect_true(all(as.numeric(res) <= 5))
-
-  bool_vec <- apply(mat, 2, function(x){if(all(x <= 5)) return(TRUE) else return(FALSE)})
-  expect_true(all(sort(as.numeric(res)) == sort(as.numeric(mat[,which(bool_vec)]))))
-})
-
-test_that(".shorten_combn still returns a matrix even if only one column is selected", {
-  mat <- combn(10,2)
-  res <- .shorten_combn(mat, 2)
-
-  expect_true(all(dim(res) == c(2,1)))
 })

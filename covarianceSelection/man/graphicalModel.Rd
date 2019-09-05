@@ -4,10 +4,12 @@
 \alias{graphicalModel}
 \title{Graphical model estimate}
 \usage{
-graphicalModel(dat)
+graphicalModel(dat, lambda = "lambda.1se", verbose = F)
 }
 \arguments{
 \item{dat}{the nxd matrix}
+
+\item{verbose}{boolean}
 }
 \value{
 a precision matrix estimate, dxd

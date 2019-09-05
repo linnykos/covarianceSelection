@@ -31,9 +31,11 @@ clique_selection <- function(g, num_pos = c(1:4), num_neg = c(0:3), threshold = 
   k <- 1
   res2 <- vector("list", 0)
   for(i in 1:length(res)){
-    for(j in 1:length(res[[i]])){
-      res2[[k]] <- res[[i]][[j]]
-      k <- k+1
+    if(length(res[[i]]) > 0){
+      for(j in 1:length(res[[i]])){
+        res2[[k]] <- res[[i]][[j]]
+        k <- k+1
+      }
     }
   }
   
@@ -82,6 +84,7 @@ select_clique <- function(lis, idx, adj){
   dist_mat <- stats::as.dist(.form_dist_mat(pos_mat, neg_mat))
   hclust_res <- stats::hclust(dist_mat)
   lis <- .extract_level_set(hclust_res)
+  stopifnot(length(lis) >= 1)
   
   bool_vec <- sapply(lis, function(x){
     .pass_threshold(adj_mat[x,x], threshold)

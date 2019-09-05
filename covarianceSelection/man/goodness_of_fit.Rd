@@ -5,7 +5,7 @@
 \title{Goodness of fit diagnostic}
 \usage{
 goodness_of_fit(dat_list, num_partitions, trials = 500, cores = 1,
-  verbose = F, prob = 0.99925)
+  verbose = F)
 }
 \arguments{
 \item{dat_list}{list of data matrices with same number of columns}

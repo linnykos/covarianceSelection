@@ -4,13 +4,14 @@
 \alias{.compute_all_denom}
 \title{Compute all of the denominators}
 \usage{
-.compute_all_denom(dat_list, cov_list = as.list(rep(NA,
-  length(dat_list))))
+.compute_all_denom(dat_list, num_list, idx)
 }
 \arguments{
 \item{dat_list}{list of data matrices}
 
-\item{cov_list}{list of covariance matrices}
+\item{num_list}{list of covariance matrices}
+
+\item{idx}{vector of the indices of the lower triangle}
 }
 \value{
 a list of denominator vectors

@@ -4,12 +4,12 @@
 \alias{.compute_variance}
 \title{Compute the variance of the empirical covariance estimate}
 \usage{
-.compute_variance(mat, cov_mat = NA, idx = NA)
+.compute_variance(mat, cov_vec, idx)
 }
 \arguments{
 \item{mat}{data matrix}
 
-\item{cov_mat}{optional argument of the empirical covariance}
+\item{cov_vec}{vectorized covariance matrix of length \code{idx}}
 
 \item{idx}{vector of the indices of the lower triangle}
 }
