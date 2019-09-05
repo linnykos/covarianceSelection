@@ -1,7 +1,40 @@
-// [[Rcpp::depends(RcppArmadillo)]]
 
-#include <RcppArmadillo.h>
-#include "misc.h"
+
+// from https://github.com/fditraglia/selectr/blob/master/R/combn.cpp
+// [[Rcpp::export]]
+arma::umat c_combn(double n) {
+  int k = 2;
+  double n_subsets = Rf_choose(n, k);
+  arma::umat out = arma::zeros<arma::umat>(k, n_subsets);
+  arma::uvec a = arma::linspace<arma::uvec>(1, k, k);  
+  out.col(0) = a;
+  int m = 0;
+  int h = k;
+  arma::uvec j;
+  
+  for(long long i = 1; i < n_subsets; i++){
+    if(m < (n - h)){  
+      h = 1;
+      m = a(k - 1);
+      j = arma::linspace<arma::uvec>(1, 1, 1);
+    }
+    else{
+      m = a(k - h - 1);
+      ++h;
+      j = arma::linspace<arma::uvec>(1, h, h);
+    }
+    a.elem(k - h - 1 + j) = m + j;
+    out.col(i) = a;
+  }
+  return(out);
+}
+
+// [[Rcpp::export()]]
+void c_armadillo(){
+  arma::arma_version ver;
+  std::cout << "ARMA version: "<< ver.as_string() << std::endl;
+}
+
 
 // All the following functions assumes the matrix X is already centered
 // Q: let's keep it as a matrix for now to see later if vectorizing is faster
@@ -11,7 +44,7 @@ arma::mat c_compute_sigma(const arma::mat& X) {
   double n = X.n_rows;
   return(X.t() * X / n);
 }
- 
+
 // [[Rcpp::export()]]
 arma::mat c_compute_variance(const arma::mat& X, const arma::mat& cov_mat) {
   double n = X.n_rows;
@@ -53,8 +86,8 @@ SEXP c_compute_bootSigma_tmp(SEXP X_, SEXP noise_, SEXP cov_){
 
 // [[Rcpp::export()]]
 double c_compute_covStat(const arma::mat& num_x, const arma::mat& num_y,
-                            const arma::mat& denom_x, const arma::mat& denom_y,
-                            const double& quantile = 1, const bool& squared = true){
+                         const arma::mat& denom_x, const arma::mat& denom_y,
+                         const double& quantile = 1, const bool& squared = true){
   if(squared){
     arma::mat res = arma::square(num_x - num_y)/(denom_x + denom_y);
     return(c_quantile(res));
@@ -76,39 +109,3 @@ Rcpp::List c_compute_all_denom(const Rcpp::List& dat_list, const Rcpp::List& cov
   
   return(res);
 }
-
-// [[Rcpp::export()]]
-arma::vec c_compute_all_test_stat(const Rcpp::List& num_list, const Rcpp::List& denom_list,
-                                   const arma::umat& combn_mat, const bool& squared = true){
-  
-  int len = combn_mat.n_cols;
-  arma::vec res = arma::vec(len);
-  for(int i = 0; i < len; i++){
-    int j = combn_mat(0,i) - 1;
-    int k = combn_mat(1,i) - 1;
-    res[i] = c_compute_covStat(Rcpp::as<arma::mat>(num_list[j]),
-                               Rcpp::as<arma::mat>(num_list[k]),
-                               Rcpp::as<arma::mat>(denom_list[j]),
-                               Rcpp::as<arma::mat>(denom_list[k]),
-                                                   squared);
-  }
-  
-  return(res);
-}
-
-// [[Rcpp::export()]]
-Rcpp::List c_compute_all_numerator_bootstrap(const Rcpp::List& dat_list, const Rcpp::List& noise_list,
-                                             const Rcpp::List& cov_list, const arma::uvec& remaining_idx){
-  int k = remaining_idx.size();
-  Rcpp::List res(k);
-  
-  for(int i = 0; i < k; i++){
-    int j = remaining_idx[i] - 1;
-    res[i] = c_compute_bootSigma(Rcpp::as<arma::mat>(dat_list[j]), 
-                                 Rcpp::as<arma::vec>(noise_list[j]),
-                                 Rcpp::as<arma::mat>(cov_list[j]));
-  }
-  
-  return(res);
-}
-

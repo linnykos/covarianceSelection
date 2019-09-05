@@ -39,7 +39,7 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
   length(which(abs(t_boot) >= abs(t_org)))/trials
 }
 
-.compute_covStat <- function(num_x, num_y, denom_x, denom_y, prob = 1, squared = T){
+.compute_covStat <- function(num_x, num_y, denom_x, denom_y, squared = T){
   stopifnot(length(num_x) == length(num_y), length(denom_x) == length(denom_y))
   stopifnot(length(denom_x) == 1 | length(denom_x) == length(num_x))
 
@@ -49,7 +49,7 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
     res <- abs(num_x - num_y)
   }
 
-  stats::quantile(abs(res), prob = prob)
+  max(abs(res))
 }
 
 #' Compute the bootstrap empirical covariance (numerator)
@@ -60,24 +60,13 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
 #' @param idx vector of the indices of the lower triangle
 #'
 #' @return vector
-.compute_bootSigma <- function(mat, noise_vec, cov_mat = NA, idx = NA){
+.compute_bootSigma <- function(mat, noise_vec, cov_mat){
   if(length(noise_vec) != nrow(mat)) stop("length(noise_vec) not equal to nrow(mat)")
 
   n <- nrow(mat)
-  if(any(is.na(cov_mat))){
-    cov_mat <- (n-1)/n*stats::cov(mat)
-  } else {
-    stopifnot(ncol(cov_mat) == ncol(mat))
-  }
-
-  mat <- scale(mat, center = TRUE, scale = FALSE)
-
-  res <- t(mat)%*%diag(noise_vec/n)%*%mat - (sum(noise_vec)/n)*cov_mat
-  if(any(is.na(idx))){
-    c(res[lower.tri(res, diag = T)])
-  } else {
-    c(res[idx])
-  }
+  
+  mat2 <- noise_vec/n * mat
+  res <- Matrix::crossprod(mat, mat2)- (sum(noise_vec)/n)*cov_mat
 }
 
 #' Compute the empirical covariance (numerator)
@@ -86,15 +75,9 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
 #' @param idx vector of the indices of the lower triangle
 #'
 #' @return vector
-.compute_sigma <- function(mat, idx = NA){
+.compute_sigma <- function(mat){
   n <- nrow(mat)
-  res <- (n-1)/n * stats::cov(mat)
-
-  if(any(is.na(idx))){
-    c(res[lower.tri(res, diag = T)])
-  } else {
-    c(res[idx])
-  }
+  (n-1)/n * stats::cov(mat)
 }
 
 
@@ -105,22 +88,15 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
 #' @param idx vector of the indices of the lower triangle
 #'
 #' @return vector
-.compute_variance <- function(mat, cov_mat = NA, idx = NA){
+.compute_variance <- function(mat, cov_mat = NA){
   n <- nrow(mat)
   if(any(is.na(cov_mat))){
     cov_mat <- (n-1)/n*stats::cov(mat)
   } else {
     stopifnot(ncol(cov_mat) == ncol(mat))
   }
-
-  mat <- scale(mat, center = TRUE, scale = FALSE)
+  
   mat2 <- mat^2
 
-  res <- t(mat2)%*%mat2/n - cov_mat^2
-
-  if(any(is.na(idx))){
-    c(res[lower.tri(res, diag = T)])
-  } else {
-    c(res[idx])
-  }
+  crossprod(mat2)/n - cov_mat^2
 }
