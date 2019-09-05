@@ -7,8 +7,8 @@ set.seed(10)
 ncores <- 15
 doMC::registerDoMC(cores = ncores)
 
-trials <- 1
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, 1, 0.5))
+trials <- 10
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, 1, c(0, 0.5, 1)))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha")
 
@@ -78,6 +78,19 @@ res <- simulation::simulation_generator(rule, criterion, paramMat, trials = tria
                                         as_list = T, filepath = "../experiment/test_tmp.RData")
 print(Sys.time())
 
+#################
 
+# combn_null <- cbind(combn(paramMat[1,1],2),
+#                     (combn(paramMat[1,2],2)+paramMat[1,1]),
+#                     (combn(paramMat[1,3],2)+sum(paramMat[1,1:2])))
+# num_partition <- sum(paramMat[1,1:3])
+# idx_null <- combn_null[1,]+num_partition*combn_null[2,]
+# combn_mat <- combn(num_partition,2)
+# idx_all <- combn_mat[1,]+num_partition*combn_mat[2,]
+# idx <- which(idx_all %in% idx_null)
+# 
+# z <- res[[1]][[1]]$res
+# length(which(idx %in% z))/length(idx_null)
+# length(which(1:paramMat[1,1] %in% z))/paramMat[1,1]
 
 
