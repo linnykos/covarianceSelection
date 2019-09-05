@@ -12,16 +12,10 @@ Imports:
     igraph,
     glmnet,
     Matrix,
-    MASS,
-    huge,
-    plyr,
     foreach,
     doMC,
-    hash,
     binaryLogic,
-    dequer,
     mgcv,
-    Rcpp,
     org.Hs.eg.db,
     DBI
 Suggests:
