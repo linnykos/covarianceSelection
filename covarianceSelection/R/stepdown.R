@@ -43,7 +43,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
     if(any(is.na(combn_short))) return(Inf)
 
     remaining_idx <- unique(as.vector(combn_short))
-    num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, diag_idx,
+    num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, num_list, diag_idx,
                                                   remaining_idx = remaining_idx)
 
     if(denominator){
