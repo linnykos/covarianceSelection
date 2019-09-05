@@ -23,7 +23,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
   num_list <- lapply(dat_list, function(x){.compute_sigma(x, diag_idx)})
 
   if(denominator){
-    denom_list <- .compute_all_denom(dat_list, num_list, idx)
+    denom_list <- .compute_all_denom(dat_list, num_list, diag_idx)
   } else {
     denom_list <- lapply(1:length(dat_list), function(x){1})
   }
