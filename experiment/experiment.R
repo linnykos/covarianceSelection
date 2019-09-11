@@ -8,7 +8,7 @@ ncores <- 15
 doMC::registerDoMC(cores = ncores)
 
 trials <- 10
-paramMat <- as.matrix(expand.grid(5, 2, 2, 10, 5, c(0, 0.5, 1), c(0, 0.5, 1)))
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, c(0, 0.5, 1), c(0, 0.5, 1)))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha")
 
@@ -40,8 +40,7 @@ generate_data <- function(covar_list, num_partition, n){
     if(type_vec[i] == 3) return(mvnfast::rmvn(n, rep(0, d), covar_list[[3]]))
   }
   
-  # dat_list <- foreach::"%dopar%"(foreach::foreach(i = 1:k), func(i))
-  dat_list <- sapply(1:k, function(i){func(i)})
+  dat_list <- lapply(1:k, function(i){func(i)})
   
   # the nonparanormal transformation would happen here
   dat_list
@@ -70,26 +69,8 @@ criterion <- function(dat, vec, y, ...){
   list(res = res)
 }
 
-idx <- 8; y <- 3; 
-print(y)
-set.seed(y); dat1 <- rule(paramMat[idx,])
-print(y)
-set.seed(y); dat2 <- rule(paramMat[idx,])
+###############3
 
-sum(abs(dat1[[1]] - dat2[[1]]))
-
-###############################
+idx <- 1; y <- 1
 set.seed(y)
-vec <- paramMat[idx,]
-covar_list1 <- generate_covariance(d = vec["d"], percentage = vec["percentage"])
-print(paste0("Finish generating covariances: ", Sys.time()))
-dat1 <- generate_data(covar_list1, num_partition = vec[1:3],  n = vec["n"])
-
-set.seed(y)
-vec <- paramMat[idx,]
-covar_list2 <- generate_covariance(d = vec["d"], percentage = vec["percentage"])
-print(paste0("Finish generating covariances: ", Sys.time()))
-dat2 <- generate_data(covar_list1, num_partition = vec[1:3],  n = vec["n"])
-
-sum(abs(covar_list1[[1]] - covar_list2[[1]]))
-sum(abs(dat1[[1]] - dat2[[1]]))
+dat <- rule(paramMat[idx,])
