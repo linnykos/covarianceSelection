@@ -40,7 +40,7 @@ generate_data <- function(covar_list, num_partition, n){
     if(type_vec[i] == 3) return(mvnfast::rmvn(n, rep(0, d), covar_list[[3]]))
   }
 
-  dat_list <- foreach::"%dopar%"(foreach::foreach(i = 1:k), func(i))
+  dat_list <- sapply(1:k, function(i){func(i)})
   
   # the nonparanormal transformation would happen here
   dat_list
@@ -69,7 +69,8 @@ criterion <- function(dat, vec, y, ...){
   list(res = res)
 }
 
-## set.seed(1); res <- criterion(rule(paramMat[1,]), paramMat[1,], 1)
+## idx <- 8; y <- 3; set.seed(y); dat1 <- rule(paramMat[idx,]); set.seed(y); dat2 <- rule(paramMat[idx,])
+## idx <- 8; y <- 3; set.seed(y); res <- criterion(rule(paramMat[idx,]), paramMat[idx,], y)
 
 ################
 
