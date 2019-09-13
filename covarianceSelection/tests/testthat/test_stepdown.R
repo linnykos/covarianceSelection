@@ -5,24 +5,23 @@ context("Test stepdown")
 test_that(".compute_all_numerator_bootstrap gives the same results as manual calculations", {
   set.seed(10)
   n <- 10; d <- 15; k <- 10
-  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); apply(mat, 2, function(x){x-mean(x)})})
+  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); scale(mat, center = T, scale = F)})
   noise_list <- lapply(1:k, function(x){rnorm(n)})
   diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
 
-  cov_list <- lapply(dat_list, function(x){(n-1)/n*stats::cov(x)})
+  cov_list <- lapply(dat_list, function(x){(n-1)/n*stats::cov(x)[diag_idx]})
   remaining_idx <- 1:k
 
   res <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, diag_idx, remaining_idx)
 
-  expect_true(all(sapply(res, length) == d^2))
+  expect_true(all(sapply(res, length) == d*(d-1)/2+d))
   expect_true(all(sapply(res, is.numeric)))
-  expect_true(all(sapply(res, is.matrix)))
 })
 
 test_that(".compute_all_numerator_bootstrap gives the same results as manual calculations", {
   set.seed(10)
   n <- 15; d <- 10; k <- 5
-  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); apply(mat, 2, function(x){x-mean(x)})})
+  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); scale(mat, center = T, scale = F)})
   noise_list <- lapply(1:k, function(x){rnorm(n)})
   diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
 
@@ -51,7 +50,7 @@ test_that(".compute_all_numerator_bootstrap gives the same results as manual cal
 test_that(".compute_all_numerator_bootstrap works with remaining_idx", {
   set.seed(10)
   n <- 25; d <- 10; k <- 5
-  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); apply(mat, 2, function(x){x-mean(x)})})
+  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); scale(mat, center = T, scale = F)})
   noise_list <- lapply(1:k, function(x){rnorm(n)})
   diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
   
@@ -69,21 +68,21 @@ test_that(".compute_all_numerator_bootstrap works with remaining_idx", {
 
 #######################
 
-## .c_compute_all_test_stat is correct
+## .compute_all_test_stat is correct
 
-test_that(".c_compute_all_test_stat works", {
+test_that(".compute_all_test_stat works", {
   set.seed(10)
   k <- 5
   num_list <- lapply(1:k, function(x){matrix(rnorm(25), 5, 5)})
   denom_list <- lapply(1:k, function(x){matrix(rnorm(25), 5, 5)})
   combn_mat <- combn(k, 2)
 
-  res <- .c_compute_all_test_stat(num_list, denom_list, combn_mat)
+  res <- .compute_all_test_stat(num_list, denom_list, combn_mat)
 
   expect_true(length(res) == k*(k-1)/2)
 })
 
-test_that(".c_compute_all_test_stat changes with combn_mat", {
+test_that(".compute_all_test_stat changes with combn_mat", {
   k <- 5
   num_list <- lapply(1:k, function(x){seq(x, x^2, length.out = 10)})
   denom_list <- lapply(1:k, function(x){x:(x+9)})
@@ -99,18 +98,19 @@ test_that(".c_compute_all_test_stat changes with combn_mat", {
 
 ###############
 
-## .c_compute_all_denom is correct
+## .compute_all_denom is correct
 
-test_that(".c_compute_all_denom works", {
+test_that(".compute_all_denom works", {
   set.seed(10)
   n <- 10; d <- 10; k <- 5
-  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); apply(mat, 2, function(x){x-mean(x)})})
-  cov_list <- lapply(dat_list, function(x){n <- nrow(x); (n-1)/n*stats::cov(x)})
-  denom_list <- .c_compute_all_denom(dat_list, cov_list)
+  dat_list <- lapply(1:k, function(x){mat <- matrix(rnorm(n*d),n,d); scale(mat, center = T, scale = F)})
+  diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
+  cov_list <- lapply(dat_list, function(x){n <- nrow(x); (n-1)/n*stats::cov(x)[diag_idx]})
+  
+  res <- .compute_all_denom(dat_list, cov_list, diag_idx)
 
-  expect_true(all(sapply(denom_list, length) == d^2))
-  expect_true(all(sapply(denom_list, is.numeric)))
-  expect_true(all(sapply(denom_list, is.matrix)))
+  expect_true(all(sapply(res, length) == d*(d-1)/2+d))
+  expect_true(all(sapply(res, is.numeric)))
 })
 
 ###############
@@ -122,19 +122,22 @@ test_that("stepdown works", {
   dat_list <- lapply(1:5, function(x){matrix(rnorm(100),10,10)})
   res <- stepdown(dat_list, trials = 25)
 
-  expect_true(is.numeric(res))
-  expect_true(length(res) > 0)
-  expect_true(length(res) <= 5*4/2)
+  expect_true(is.numeric(res$null_idx))
+  expect_true(length(res$null_idx) > 0)
+  expect_true(length(res$null_idx) <= 5*4/2)
 })
 
-test_that("stepdown works with no denominator", {
+test_that("stepdown can return the p values", {
   set.seed(10)
   dat_list <- lapply(1:5, function(x){matrix(rnorm(100),10,10)})
-  res <- stepdown(dat_list, trials = 25, denominator = F)
-
-  expect_true(is.numeric(res))
-  expect_true(length(res) > 0)
-  expect_true(length(res) <= 5*4/2)
+  res <- stepdown(dat_list, trials = 100, return_pvalue = T)
+  
+  expect_true(is.numeric(res$null_idx))
+  expect_true(length(res$null_idx) > 0)
+  expect_true(length(res$null_idx) <= 5*4/2)
+  expect_true(is.numeric(res$pval))
+  expect_true(length(res$pval) == length(dat_list))
+  expect_true(sum(res$pval) > 0)
 })
 
 test_that("stepdown can reject", {
@@ -151,26 +154,8 @@ test_that("stepdown can reject", {
     if(bool1 == bool2) T else F
   })
 
-  expect_true(sum(bool_vec[res]) >= length(res)-sum(bool_vec[res]))
-  expect_true(sum(!bool_vec[-res]) >= length(bool_vec) - length(res) - sum(!bool_vec[-res]))
-})
-
-test_that("stepdown can reject with no denominator", {
-  set.seed(10)
-  dat_list <- lapply(1:6, function(x){
-    if(x <= 3) matrix(rnorm(500), 50, 10) else matrix(rnorm(500,sd = 2), 50, 10)
-  })
-  res <- stepdown(dat_list, denominator = F, trials = 25)
-
-  combn_mat <- combn(6, 2)
-  bool_vec <- apply(combn_mat, 2, function(x){
-    bool1 <- ifelse(x[1] <= 3, T, F)
-    bool2 <- ifelse(x[2] <= 3, T, F)
-    if(bool1 == bool2) T else F
-  })
-
-  expect_true(sum(bool_vec[res]) >= length(res)-sum(bool_vec[res]))
-  expect_true(sum(!bool_vec[-res]) >= length(bool_vec) - length(res) - sum(!bool_vec[-res]))
+  expect_true(sum(bool_vec[res$null_idx]) >= length(res$null_idx)-sum(bool_vec[res$null_idx]))
+  expect_true(sum(!bool_vec[-res$null_idx]) >= length(bool_vec) - length(res$null_idx) - sum(!bool_vec[-res$null_idx]))
 })
 
 test_that("stepdown rejects everything with alpha is 1", {
@@ -178,5 +163,5 @@ test_that("stepdown rejects everything with alpha is 1", {
   dat_list <- lapply(1:5, function(x){matrix(rnorm(100),10,10)})
   res <- stepdown(dat_list, trials = 25, alpha = 1)
 
-  expect_true(length(res) == 0)
+  expect_true(length(res$null_idx) == 0)
 })
