@@ -6,6 +6,7 @@ source("../simulation/simulation_helper.R")
 set.seed(10)
 ncores <- 15
 doMC::registerDoMC(cores = ncores)
+verbose <- F
 
 trials <- 10
 paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, c(0, 0.5, 1), seq(0, 1, length.out = 11)))
@@ -49,11 +50,11 @@ generate_data <- function(covar_list, num_partition, n){
 rule <- function(vec){
   covar_list <- generate_covariance(d = vec["d"], percentage = vec["percentage"])
   
-  print(paste0("Finish generating covariances: ", Sys.time()))
+  if(verbose) print(paste0("Finish generating covariances: ", Sys.time()))
   
   dat <- generate_data(covar_list, num_partition = vec[1:3],  n = vec["n"])
   
-  print(paste0("Finish generating data: ", Sys.time()))
+  if(verbose) print(paste0("Finish generating data: ", Sys.time()))
   
   dat 
 }
@@ -61,10 +62,10 @@ rule <- function(vec){
 criterion <- function(dat, vec, y, ...){
   set.seed(y)
   
-  print(paste0("Starting to run the test: ", Sys.time()))
+  if(verbose) print(paste0("Starting to run the test: ", Sys.time()))
   
   res <- covarianceSelection::stepdown(dat, trials = 200, denominator = T, alpha = vec["alpha"],
-                                            cores = ncores, verbose = T)
+                                            cores = ncores, verbose = F)
   
   list(res = res)
 }
@@ -77,6 +78,7 @@ criterion <- function(dat, vec, y, ...){
 print(Sys.time())
 res <- simulation::simulation_generator(rule, criterion, paramMat, trials = trials, cores = 1,
                                         as_list = T, filepath = "../experiment/test_tmp.RData")
+save.image("../experiment/test_tmp_final.RData")
 print(Sys.time())
 
 #################

@@ -10,7 +10,7 @@
 #' @return indices for \code{combn(length(dat_list), 2)} that correspond to the
 #' hypotheses that passed
 #' @export
-stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, cores = 1,
+stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, cores = 1,
                      verbose = F){
   doMC::registerDoMC(cores = cores)
 
@@ -21,15 +21,9 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
 
   diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
   num_list <- lapply(dat_list, function(x){.compute_sigma(x, diag_idx)})
+  denom_list <- .compute_all_denom(dat_list, num_list, diag_idx)
 
-  if(denominator){
-    denom_list <- .compute_all_denom(dat_list, num_list, diag_idx)
-  } else {
-    denom_list <- lapply(1:length(dat_list), function(x){1})
-  }
-
-  t_vec <- .compute_all_test_stat(num_list, denom_list, combn_mat = combn_mat,
-                                  squared = denominator)
+  t_vec <- .compute_all_test_stat(num_list, denom_list, combn_mat = combn_mat, squared = T)
   
   if(verbose)  print(paste0("Starting to run heavy parallel computation: ", Sys.time()))
 
@@ -46,32 +40,46 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, denominator = T, core
     num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, num_list, diag_idx,
                                                   remaining_idx = remaining_idx)
 
-    if(denominator){
-      max(abs(.compute_all_test_stat(num_list, denom_list, combn_mat = combn_short)))
+    boot_t_vec <- .compute_all_test_stat(num_list, denom_list, combn_mat = combn_short)
+    
+    if(round == 1 & return_pvalue){
+      list(val = max(abs(boot_t_vec)), boot_t_vec = boot_t_vec)
     } else {
-      .compute_max_accelerated(num_list, combn_mat = combn_short)
+      list(val = max(abs(boot_t_vec)), boot_t_vec = NA)
     }
   }
 
   round <- 1
+  round_1_boot_t_vec <- NA
+  
   while(TRUE){
     if(sum(idx_all) == 0) break()
 
     i <- 0 #debugging purposes
-    t_boot <- as.numeric(unlist(foreach::"%dopar%"(foreach::foreach(i = 1:trials),
-                                            func(i))))
-    cutoff <- as.numeric(stats::quantile(abs(t_boot), 1-alpha))
+    res <- foreach::"%dopar%"(foreach::foreach(i = 1:trials), func(i))
+    t_boot <- sapply(res, function(x){x$val})
+    if(round == 1 & return_pvalue) round_1_boot_t_vec <- sapply(res, function(x){x$boot_t_vec})
+    
+    cutoff <- stats::quantile(abs(t_boot), 1-alpha)
     idx <- intersect(which(abs(t_vec) >= cutoff), which(idx_all))
 
     if(length(idx) == 0) break()
 
     idx_all[idx] <- FALSE
-    round <- round+1
+    round <- round + 1
     if(verbose) print(paste0("In stepdown, finished round ", round, " with ",
                              sum(idx_all), " null hypothesis remaining"))
   }
 
-  which(idx_all)
+  if(return_pvalue){
+    stopifnot(length(t_vec) == nrow(round_1_boot_t_vec))
+    pval <- sapply(1:length(t_vec), function(i){
+      length(which(abs(t_vec[i]) > abs(round_1_boot_t_vec[i,])))/ncol(round_1_boot_t_vec)
+    })
+    list(null_idx = which(idx_all), pval = pval)
+  } else {
+    list(null_idx = which(idx_all), pval = NA)
+  }
 }
 
 #' Compute all of the denominators
