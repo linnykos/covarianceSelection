@@ -4,7 +4,7 @@ library(covarianceSelection)
 source("../simulation/simulation_helper.R")
 
 set.seed(10)
-ncores <- 15
+ncores <- 20
 doMC::registerDoMC(cores = ncores)
 verbose <- F
 
