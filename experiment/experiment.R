@@ -1,76 +1,30 @@
-rm(list = ls())
-library(simulation)
-library(covarianceSelection)
-source("../simulation/simulation_helper.R")
-
+d <- 5
+n <- 20
 set.seed(10)
-ncores <- 15
-doMC::registerDoMC(cores = ncores)
+x <- MASS::mvrnorm(n = n, mu = rep(0,d), Sigma = diag(d))
+y <- MASS::mvrnorm(n = n, mu = rep(0,d), Sigma = diag(d))
+# res <- cai_test(x,y, trials = 50)
 
-trials <- 10
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, c(0, 0.5, 1), c(0, 0.5, 1)))
-colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
-                        "percentage", "alpha")
+trials = 100
+cores = 1
 
-########3
+if(ncol(x) != ncol(y)) stop("x and y have different number of dimensions")
+if(!is.matrix(x) | !is.numeric(x)) stop("x is not a numeric matrix")
+if(!is.matrix(y) | !is.numeric(y)) stop("y is not a numeric matrix")
 
-generate_covariance <- function(d, percentage){
-  covar_base <- .generate_block(d, alpha = 0.9, beta = 0.1, spillover_percentage = 0,
-                                normalize = F)
-  covar_alt1 <- .generate_block(d, alpha = 0.9 - percentage*0.4, 
-                                beta = 0.1 + percentage*0.4, 
-                                spillover_percentage = 0,
-                                normalize = F)
-  covar_alt2 <- .generate_block(d, alpha = 0.9, beta = 0.1, spillover_percentage = percentage*(1/6),
-                                normalize = F)
-  
-  list(covar_base = covar_base, covar_alt1 = covar_alt1,
-       covar_alt2 = covar_alt2)
+doMC::registerDoMC(cores = cores)
+diag_idx <- which(lower.tri(diag(ncol(x)), diag = T))
+
+n1 <- nrow(x); n2 <- nrow(y)
+
+num_x <- .compute_sigma(x, diag_idx); num_y <- .compute_sigma(y, diag_idx)
+denom_x <- .compute_variance(x, num_x, diag_idx); denom_y <- .compute_variance(y, num_x, diag_idx)
+t_org <- .compute_covStat(num_x, num_y, denom_x, denom_y)
+
+func <- function(i){
+  set.seed(i*10)
+  g_x <- stats::rnorm(n1); g_y <- stats::rnorm(n2)
+  boot_num_x <- .compute_bootSigma(x, g_x, num_x, diag_idx)
+  boot_num_y <- .compute_bootSigma(y, g_y, num_y, diag_idx)
+  .compute_covStat(boot_num_x, boot_num_y, denom_x, denom_y)
 }
-
-generate_data <- function(covar_list, num_partition, n){
-  k <- sum(num_partition)
-  type_vec <- rep(1:3, times = num_partition)
-  dat_list <- vector("list", k)
-  d <- nrow(covar_list[[1]])
-  
-  func <- function(i){
-    if(type_vec[i] == 1) return(mvnfast::rmvn(n, rep(0, d), covar_list[[1]]))
-    if(type_vec[i] == 2) return(mvnfast::rmvn(n, rep(0, d), covar_list[[2]]))
-    if(type_vec[i] == 3) return(mvnfast::rmvn(n, rep(0, d), covar_list[[3]]))
-  }
-  
-  dat_list <- lapply(1:k, function(i){func(i)})
-  
-  # the nonparanormal transformation would happen here
-  dat_list
-}
-
-rule <- function(vec){
-  covar_list <- generate_covariance(d = vec["d"], percentage = vec["percentage"])
-  
-  print(paste0("Finish generating covariances: ", Sys.time()))
-  
-  dat <- generate_data(covar_list, num_partition = vec[1:3],  n = vec["n"])
-  
-  print(paste0("Finish generating data: ", Sys.time()))
-  
-  dat 
-}
-
-criterion <- function(dat, vec, y, ...){
-  set.seed(y)
-  
-  print(paste0("Starting to run the test: ", Sys.time()))
-  
-  res <- covarianceSelection::stepdown(dat, trials = 200, denominator = T, alpha = vec["alpha"],
-                                       cores = ncores, verbose = T)
-  
-  list(res = res)
-}
-
-###############3
-
-idx <- 1; y <- 1
-set.seed(y)
-dat <- rule(paramMat[idx,])

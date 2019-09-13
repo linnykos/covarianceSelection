@@ -120,11 +120,13 @@ test_that(".compute_all_denom works", {
 test_that("stepdown works", {
   set.seed(10)
   dat_list <- lapply(1:5, function(x){matrix(rnorm(100),10,10)})
-  res <- stepdown(dat_list, trials = 25)
+  res <- stepdown(dat_list, trials = 25, return_pvalue = F)
 
   expect_true(is.numeric(res$null_idx))
   expect_true(length(res$null_idx) > 0)
   expect_true(length(res$null_idx) <= 5*4/2)
+  expect_true(length(res$pval) == 1)
+  expect_true(all(is.na(res$pval)))
 })
 
 test_that("stepdown can return the p values", {
