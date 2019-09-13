@@ -64,7 +64,7 @@ criterion <- function(dat, vec, y, ...){
   
   if(verbose) print(paste0("Starting to run the test: ", Sys.time()))
   
-  obj <- covarianceSelection::stepdown(dat, trials = 200, cores = ncores, verbose = F)
+  obj <- covarianceSelection::stepdown_path(dat, trials = 200, cores = ncores, verbose = F)
   tmp <- lapply(seq(0, 1, length.out = vec["alpha_levels"]), function(alpha){
     covarianceSelection::stepdown_choose(obj, alpha = alpha, return_pvalue = T)
   })
@@ -87,8 +87,8 @@ criterion <- function(dat, vec, y, ...){
 
 print(Sys.time())
 res <- simulation::simulation_generator(rule, criterion, paramMat, trials = trials, cores = 1,
-                                        as_list = T, filepath = "../experiment/test_tmp.RData")
-save.image("../experiment/test_tmp_final.RData")
+                                        as_list = T, filepath = "../results/gaussian_tmp.RData")
+save.image("../results/gaussian.RData")
 print(Sys.time())
 
 #################
