@@ -60,7 +60,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, co
     t_boot <- sapply(res, function(x){x$val})
     if(round == 1 & return_pvalue) round_1_boot_t_vec <- sapply(res, function(x){x$boot_t_vec})
     
-    cutoff <- stats::quantile(abs(t_boot), 1-alpha)
+    cutoff <- stats::quantile(t_boot, 1-alpha)
     idx <- intersect(which(abs(t_vec) >= cutoff), which(idx_all))
 
     if(length(idx) == 0) break()
@@ -76,10 +76,11 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, co
     pval <- sapply(1:length(t_vec), function(i){
       length(which(abs(t_vec[i]) > abs(round_1_boot_t_vec[i,])))/ncol(round_1_boot_t_vec)
     })
-    list(null_idx = which(idx_all), pval = pval)
   } else {
-    list(null_idx = which(idx_all), pval = NA)
+    pval <- NA
   }
+  
+  list(null_idx = which(idx_all), pval = pval)
 }
 
 #' Compute all of the denominators

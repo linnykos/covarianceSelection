@@ -138,8 +138,9 @@ test_that("stepdown can return the p values", {
   expect_true(length(res$null_idx) > 0)
   expect_true(length(res$null_idx) <= 5*4/2)
   expect_true(is.numeric(res$pval))
-  expect_true(length(res$pval) == length(dat_list))
+  expect_true(length(res$pval) == 5*4/2)
   expect_true(sum(res$pval) > 0)
+  expect_true(all(!is.na(res$pval)))
 })
 
 test_that("stepdown can reject", {
