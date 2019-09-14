@@ -37,10 +37,36 @@ for(i in 1:5){
 }
 
 # plot naive pvals
-k <- 4
+k <- 1
 null_p <- unlist(lapply(1:5, function(x){res[[k]][[x]]$pval[idx]})) 
 alt_p <- unlist(lapply(1:5, function(x){res[[k]][[x]]$pval[-idx]})) 
 par(mfrow = c(1,2))
 hist(null_p, col = "gray", breaks = 20, xlim = c(0,1))
 hist(alt_p, col = "gray", breaks = 20, xlim = c(0,1))
 
+# compute the naive pvalue fdr curves
+hyp_tpr_list <- lapply(res, function(x){ #loop over simulation settings
+  sapply(x, function(y){ #loop over trials
+    new_vec <- stats::p.adjust(y$pval, method = "fdr")
+    
+    sapply(seq(0,1,length.out = 21), function(alpha){ #loop over alphas
+      length(which(idx %in% which(new_vec >= alpha)))/length(idx_null)
+    })
+  })
+})
+
+hyp_fpr_list <- lapply(res, function(x){
+  sapply(x, function(y){
+    new_vec <- stats::p.adjust(y$pval, method = "fdr")
+    
+    sapply(seq(0,1,length.out = 21), function(alpha){
+      length(which(!which(new_vec >= alpha) %in% idx))/(length(idx_all) - length(idx_null))
+    })
+  })
+})
+
+k <- 4
+plot(NA, xlim = c(0,1), ylim = c(0,1), asp = T)
+for(i in 1:5){
+  lines(c(1,hyp_fpr_list[[k]][,i],0), c(1,hyp_tpr_list[[k]][,i],0))
+}

@@ -55,6 +55,7 @@ genexp <- genexp[,idx]
 dat_list <- covarianceSelection::extractor(genexp) # 212 partitions
 dat_list <- lapply(dat_list, as.matrix, drop = F)
 
+# remove partitions too small
 idx <- which(sapply(dat_list, function(x){ifelse(nrow(x) >= 5, T, F)}))
 dat_list <- dat_list[idx] # 125 partitions
 

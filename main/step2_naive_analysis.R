@@ -20,11 +20,11 @@ edges_naive <- which(abs(tmp) > 1e-6, arr.ind = T)
 # form adjacency matrix
 if(verbose) print(paste0(Sys.time(), ": Graph has ", nrow(prec_mat_naive), " nodes and ",
                          nrow(edges_naive), " edges."))
-adj_gene <- matrix(0, d, d)
+adj_gene_naive <- matrix(0, d, d)
 for(i in 1:nrow(edges_naive)){
-  adj_gene[edges_naive[i,1], edges_naive[i,2]] <- 1; adj_gene[edges_naive[i,2], edges_naive[i,1]] <- 1
+  adj_gene_naive[edges_naive[i,1], edges_naive[i,2]] <- 1; adj_gene_naive[edges_naive[i,2], edges_naive[i,1]] <- 1
 }
-colnames(adj_gene) <- tada$Gene; rownames(adj_gene) <- tada$Gene
+colnames(adj_gene_naive) <- tada$Gene; rownames(adj_gene_naive) <- tada$Gene
 
 # run the HMRF
 set.seed(10)
@@ -32,10 +32,9 @@ seedindex <- rep(0, ncol(dat_pfc35))
 seedindex[which(tada$dn.LoF >= 3)] <- 1
 
 if(verbose) print(paste0(Sys.time(), ": HMRF"))
-hmrf_res <- covarianceSelection::hmrf(tada$pval.TADA, adj_gene, seedindex, pthres = pthres)
+hmrf_res <- covarianceSelection::hmrf(tada$pval.TADA, adj_gene_naive, seedindex, pthres = pthres)
 report <- covarianceSelection::report_results(tada$Gene, 1-hmrf_res$post, tada$pval.TADA, hmrf_res$Iupdate)
 cutoff <- sort(report$FDR, decreasing = FALSE)[num_target]
 autism_genes <- report$Gene[which(report$FDR <= cutoff)]
-
 
 save.image(file = paste0(save_filepath, "/step2_naive_analysis.RData"))

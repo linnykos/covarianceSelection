@@ -11,6 +11,9 @@ library(covarianceSelection)
 verbose <- T
 save_filepath <- "../results/"
 
-source("../main/step0_loading.R")
-source("../main/step1_screening.R")
-source("../main/step2_naive_analysis.R")
+# source("../main/step0_loading.R")
+# source("../main/step1_screening.R")
+# source("../main/step2_naive_analysis.R")
+
+load("../results/step2_naive_analysis.RData")
+source("../main/step3_subjectselection.R")
