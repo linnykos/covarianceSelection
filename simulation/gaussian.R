@@ -4,16 +4,16 @@ library(covarianceSelection)
 source("../simulation/simulation_helper.R")
 
 set.seed(10)
-ncores <- 20
+ncores <- 15
 doMC::registerDoMC(cores = ncores)
 verbose <- F
 
-trials <- 5
+trials <- 25
 paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, c(0, 0.3, 0.6, 1), 21))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha_levels")
 
-########3
+########
 
 generate_covariance <- function(d, percentage){
   covar_base <- .generate_block(d, alpha = 0.9, beta = 0.1, spillover_percentage = 0,
@@ -64,7 +64,8 @@ criterion <- function(dat, vec, y, ...){
   
   if(verbose) print(paste0("Starting to run the test: ", Sys.time()))
   
-  obj <- covarianceSelection::stepdown_path(dat, trials = 200, cores = ncores, verbose = F)
+  obj <- covarianceSelection::stepdown_path(dat, trials = 200, cores = ncores, verbose = F,
+                                            iterations = 10)
   tmp <- lapply(seq(0, 1, length.out = vec["alpha_levels"]), function(alpha){
     covarianceSelection::stepdown_choose(obj, alpha = alpha, return_pvalue = T)
   })

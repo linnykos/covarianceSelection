@@ -28,10 +28,10 @@ stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
     if(verbose && i %% floor(trials/10) == 0) cat('*')
     set.seed(round*10*i)
     noise_list <- lapply(dat_list, function(x){stats::rnorm(nrow(x))})
-    num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, num_list, diag_idx,
+    boot_num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, num_list, diag_idx,
                                                  remaining_idx = 1:len)
 
-    .compute_all_test_stat(num_list, denom_list, combn_mat = combn_mat)
+    .compute_all_test_stat(boot_num_list, denom_list, combn_mat = combn_mat)
   }
 
   boot_list <- lapply(1:iterations, function(x){
@@ -83,7 +83,7 @@ stepdown_choose <- function(stepdown_obj, alpha = 0.05, return_pvalue = F, verbo
   
   if(return_pvalue){
     pval <- sapply(1:length(stepdown_obj$t_vec), function(i){
-      length(which(abs(stepdown_obj$t_vec[i]) > abs(stepdown_obj$boot[[1]][,i])))/nrow(stepdown_obj$boot[[1]])
+      length(which(abs(stepdown_obj$boot[[1]][,i]) > abs(stepdown_obj$t_vec[i])))/nrow(stepdown_obj$boot[[1]])
     })
   } else {
     pval <- NA

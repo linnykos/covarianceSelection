@@ -37,10 +37,10 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, co
     if(any(is.na(combn_short))) return(Inf)
 
     remaining_idx <- unique(as.vector(combn_short))
-    num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, num_list, diag_idx,
+    boot_num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, num_list, diag_idx,
                                                   remaining_idx = remaining_idx)
 
-    boot_t_vec <- .compute_all_test_stat(num_list, denom_list, combn_mat = combn_short)
+    boot_t_vec <- .compute_all_test_stat(boot_num_list, denom_list, combn_mat = combn_short)
     
     if(round == 1 & return_pvalue){
       list(val = max(abs(boot_t_vec)), boot_t_vec = boot_t_vec)
@@ -74,7 +74,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, co
   if(return_pvalue){
     stopifnot(length(t_vec) == nrow(round_1_boot_t_vec))
     pval <- sapply(1:length(t_vec), function(i){
-      length(which(abs(t_vec[i]) > abs(round_1_boot_t_vec[i,])))/ncol(round_1_boot_t_vec)
+      length(which(abs(round_1_boot_t_vec[i,]) > abs(t_vec[i])))/ncol(round_1_boot_t_vec)
     })
   } else {
     pval <- NA

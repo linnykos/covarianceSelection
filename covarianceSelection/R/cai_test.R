@@ -18,7 +18,7 @@ cai_test <- function(x, y, trials = 100, cores = 1){
   n1 <- nrow(x); n2 <- nrow(y)
 
   num_x <- .compute_sigma(x, diag_idx); num_y <- .compute_sigma(y, diag_idx)
-  denom_x <- .compute_variance(x, num_x, diag_idx); denom_y <- .compute_variance(y, num_x, diag_idx)
+  denom_x <- .compute_variance(x, num_x, diag_idx); denom_y <- .compute_variance(y, num_y, diag_idx)
   t_org <- .compute_covStat(num_x, num_y, denom_x, denom_y)
 
   func <- function(i){
