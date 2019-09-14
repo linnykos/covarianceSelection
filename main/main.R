@@ -16,4 +16,5 @@ save_filepath <- "../results/"
 # source("../main/step2_naive_analysis.R")
 
 load("../results/step2_naive_analysis.RData")
+ncores <- 20
 source("../main/step3_subjectselection.R")
