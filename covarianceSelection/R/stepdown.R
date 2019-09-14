@@ -29,7 +29,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, co
 
   func <- function(i){
     if(verbose && i %% floor(trials/10) == 0) cat('*')
-    set.seed(round*10*i)
+    set.seed((round-1)*trials + i)
     noise_list <- lapply(dat_list, function(x){stats::rnorm(nrow(x))})
     
     remaining_pairs <- which(idx_all)
@@ -60,7 +60,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, co
     t_boot <- sapply(res, function(x){x$val})
     if(round == 1 & return_pvalue) round_1_boot_t_vec <- sapply(res, function(x){x$boot_t_vec})
     
-    cutoff <- stats::quantile(t_boot, 1-alpha)
+    cutoff <- stats::quantile(abs(t_boot), 1-alpha)
     idx <- intersect(which(abs(t_vec) >= cutoff), which(idx_all))
 
     if(length(idx) == 0) break()

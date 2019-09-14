@@ -26,7 +26,7 @@ stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
   
   func <- function(i, round){
     if(verbose && i %% floor(trials/10) == 0) cat('*')
-    set.seed(round*10*i)
+    set.seed((round-1)*trials + i)
     noise_list <- lapply(dat_list, function(x){stats::rnorm(nrow(x))})
     boot_num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, num_list, diag_idx,
                                                  remaining_idx = 1:len)
@@ -65,7 +65,7 @@ stepdown_choose <- function(stepdown_obj, alpha = 0.05, return_pvalue = F, verbo
     boot_mat <- stepdown_obj$boot[[round]][, which(idx_all), drop = F]
     t_boot <- apply(boot_mat, 1, function(x){abs(max(x))})
     
-    cutoff <- stats::quantile(t_boot, 1-alpha)
+    cutoff <- stats::quantile(abs(t_boot), 1-alpha)
     idx <- intersect(which(abs(stepdown_obj$t_vec) >= cutoff), which(idx_all))
 
     if(length(idx) == 0) break()
@@ -83,7 +83,12 @@ stepdown_choose <- function(stepdown_obj, alpha = 0.05, return_pvalue = F, verbo
   
   if(return_pvalue){
     pval <- sapply(1:length(stepdown_obj$t_vec), function(i){
-      length(which(abs(stepdown_obj$boot[[1]][,i]) > abs(stepdown_obj$t_vec[i])))/nrow(stepdown_obj$boot[[1]])
+      # aggregate all the potential test statistics
+      test_boot_vec <- unlist(lapply(1:length(stepdown_obj$boot), function(k){
+        stepdown_obj$boot[[k]][,i]
+      }))
+      
+      length(which(abs(test_boot_vec) > abs(stepdown_obj$t_vec[i])))/length(test_boot_vec)
     })
   } else {
     pval <- NA
