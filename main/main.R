@@ -1,6 +1,6 @@
 rm(list=ls())
 
-ncores <- 15
+ncores <- 20
 set.seed(10)
 doMC::registerDoMC(cores = ncores)
 
