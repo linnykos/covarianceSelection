@@ -9,8 +9,12 @@
 #' @return a \code{stepdown} object
 #' @export
 stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
-                          verbose = F){
+                          verbose = F, file = NA){
   doMC::registerDoMC(cores = cores)
+  boot_list <- vector("list", length = iterations)
+  if(!is.na(file)) save(boot_list, file = file)
+  
+  if(verbose)  print(paste0("Entered stepdown function: ", Sys.time()))
 
   dat_list <- lapply(dat_list, scale, center = T, scale = F)
   diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
@@ -34,12 +38,13 @@ stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
     .compute_all_test_stat(boot_num_list, denom_list, combn_mat = combn_mat)
   }
 
-  boot_list <- lapply(1:iterations, function(x){
+  for(x in 1:iterations){
     if(verbose) print(paste0("On iteration ", x))
     i <- 0 #debugging purposes
     
-    do.call(rbind, foreach::"%dopar%"(foreach::foreach(i = 1:trials), func(i, round = x)))
-  })
+    boot_list[[i]] <- do.call(rbind, foreach::"%dopar%"(foreach::foreach(i = 1:trials), func(i, round = x)))
+    if(!is.na(file)) save(boot_list, file = file)
+  }
 
   structure(list(t_vec = t_vec, boot = boot_list), class = "stepdown")
 }

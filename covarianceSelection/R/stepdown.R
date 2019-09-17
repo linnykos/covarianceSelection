@@ -13,6 +13,8 @@
 stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, cores = 1,
                      verbose = F){
   doMC::registerDoMC(cores = cores)
+  
+  if(verbose)  print(paste0("Entered stepdown function: ", Sys.time()))
 
   dat_list <- lapply(dat_list, scale, center = T, scale = F)
   len <- length(dat_list)
