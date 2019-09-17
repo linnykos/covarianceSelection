@@ -2,6 +2,7 @@ trials <- 200
 
 len <- length(dat_list)
 
+save(len, file = paste0(save_filepath, "/test.RData"))
 stepdown_obj <- covarianceSelection::stepdown_path(dat_list, trials = trials, cores = ncores, verbose = verbose,
                                           iterations = 7, file = paste0(save_filepath, "/step3_subjectselection_tmp2.RData"))
 save.image(file = paste0(save_filepath, "/step3_subjectselection_tmp.RData"))
