@@ -43,7 +43,8 @@ stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
     i <- 0 #debugging purposes
     
     boot_list[[i]] <- do.call(rbind, foreach::"%dopar%"(foreach::foreach(i = 1:trials), func(i, round = x)))
-    if(!is.na(file)) save(boot_list, file = file)
+    res <- list(t_vec = t_vec, boot = boot_list)
+    if(!is.na(file)) save(res, file = file)
   }
 
   structure(list(t_vec = t_vec, boot = boot_list), class = "stepdown")
