@@ -1,4 +1,4 @@
-trials <- 100
+trials <- 200
 
 len <- length(dat_list)
 
