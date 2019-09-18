@@ -42,7 +42,7 @@ stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
     if(verbose) print(paste0("On iteration ", x))
     i <- 0 #debugging purposes
     
-    boot_list[[i]] <- do.call(rbind, foreach::"%dopar%"(foreach::foreach(i = 1:trials), func(i, round = x)))
+    boot_list[[x]] <- do.call(rbind, foreach::"%dopar%"(foreach::foreach(i = 1:trials), func(i, round = x)))
     res <- list(t_vec = t_vec, boot = boot_list)
     if(!is.na(file)) save(res, file = file)
   }
