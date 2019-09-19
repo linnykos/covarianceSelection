@@ -47,7 +47,7 @@ zz <- (num_x - num_y)^2/(denom_x + denom_y)
 
 ############################
 
-ncores <- 10
+ncores <- 20
 trials <- 200
 
 save(trials, file = paste0(save_filepath, "/test.RData"))
