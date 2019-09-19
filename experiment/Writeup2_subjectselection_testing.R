@@ -1,3 +1,4 @@
+# in this test, we see if reducing the rank of the covariance helps at all
 rm(list=ls())
 
 ncores <- 20
