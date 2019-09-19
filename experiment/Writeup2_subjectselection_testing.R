@@ -31,19 +31,19 @@ dat_pfc35 <- lapply(dat_pfc35, function(x){
 #   scale(res, center = T, scale = T)
 # })
 
-dat_list <- dat_pfc35
-dat_list <- lapply(dat_list, scale, center = T, scale = F)
-diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
-len <- length(dat_list)
-combn_mat <- utils::combn(len, 2)
-
-num_list <- lapply(dat_list, function(x){.compute_sigma(x, diag_idx)})
-denom_list <- .compute_all_denom(dat_list, num_list, diag_idx)
-num_x <- num_list[[1]]
-num_y <- num_list[[3]]
-denom_x <- denom_list[[1]]
-denom_y <- denom_list[[3]]
-zz <- (num_x - num_y)^2/(denom_x + denom_y)
+# dat_list <- dat_pfc35
+# dat_list <- lapply(dat_list, scale, center = T, scale = F)
+# diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
+# len <- length(dat_list)
+# combn_mat <- utils::combn(len, 2)
+# 
+# num_list <- lapply(dat_list, function(x){.compute_sigma(x, diag_idx)})
+# denom_list <- .compute_all_denom(dat_list, num_list, diag_idx)
+# num_x <- num_list[[1]]
+# num_y <- num_list[[3]]
+# denom_x <- denom_list[[1]]
+# denom_y <- denom_list[[3]]
+# zz <- (num_x - num_y)^2/(denom_x + denom_y)
 
 ############################
 
