@@ -48,8 +48,7 @@ cai_test <- function(x, y, trials = 100, cores = 1){
   }
 
   if(prob == 1) max(abs(res)) else {
-    tmp <- sort(abs(res), decreasing = T)
-    tmp[min(max(round((1-prob)*length(tmp)), 1), length(tmp))]
+    quantile(abs(res), prob = prob)
   }
 }
 

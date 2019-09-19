@@ -1,67 +1,25 @@
 rm(list=ls())
-kite <- igraph::make_graph("Krackhardt_Kite")
-# plot(kite)
+load("/raid6/Kevin/covarianceSelection/results/step3_subjectselection.RData")
+prob = 0.9999
 
-g <- kite
-n <- igraph::vcount(g)
-tri_mat <- matrix(igraph::triangles(kite), nrow=3)
-n_tri <- ncol(tri_mat)
-s_idx <- n+n_tri+1
-t_idx <- s_idx+1
+dat_list <- lapply(dat_list, scale, center = T, scale = F)
+diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
+len <- length(dat_list)
+combn_mat <- utils::combn(len, 2)
 
-l <- 0; u <- n^3
-iter <- 1
+num_list <- lapply(dat_list, function(x){covarianceSelection:::.compute_sigma(x, diag_idx)})
+denom_list <- covarianceSelection:::.compute_all_denom(dat_list, num_list, diag_idx)
 
-while(u >= l + 1/(n*(n-1))){
-  print(iter)
-  alpha <- (l+u)/2
-  n_tri_count <- sapply(1:n, function(i){length(which(tri_mat == i))})
-  
-  # construct the adjacency matrix
-  adj_mat <- matrix(0, t_idx, t_idx)
-  for(i in 1:ncol(tri_mat)){
-    for(j in 1:nrow(tri_mat)){
-      idx1 <- tri_mat[j,i] # idx of node
-      idx2 <- n+i # idx of triangle
-      adj_mat[idx1, idx2] <- 1
-      adj_mat[idx2, idx1] <- 2
-    }
-  }
-  
-  for(i in 1:n){
-    adj_mat[s_idx, i] <- n_tri_count[i]
-  }
-  
-  for(i in 1:n_tri){
-    adj_mat[i+n, t_idx] <- 3*alpha
-  }
-  
-  ig <- igraph::graph.adjacency(adj_mat, mode="directed", weighted=TRUE)
-  res <- igraph::st_min_cuts(ig, source = s_idx, target = t_idx)
-  
-  # keep the smallest partition
-  idx <- which.min(sapply(res$partition1s, length))
-  partition <- as.numeric(res$partition1s[[idx]])
-  #print(partition)
-  
-  if(all(partition == s_idx)) {
-    u <- alpha
-  } else {
-    l <- alpha
-    set <- intersect(partition[-which(partition == s_idx)], 1:n)
-    print(set)
-  }
-  
-  iter <- iter + 1
+ncores <- 20
+doMC::registerDoMC(cores = ncores)
+
+func <- function(x){
+  print(x)
+  .compute_covStat(num_list[[combn_mat[1,x]]], num_list[[combn_mat[2,x]]],
+                   denom_list[[combn_mat[1,x]]], denom_list[[combn_mat[2,x]]],
+                   squared = squared, prob = prob)
 }
 
+t_vec <- foreach::"%dopar%"(foreach::foreach(i = 1:ncol(combn_mat)), func(i))
 
-# make the graph
-
-plot(ig, edge.label=igraph::E(ig)$weight)
-
-
-length(res$cuts)
-length(res$partition1s)
-
-igraph::incident(ig, 1, mode = "out")$weight
+save("/raid6/Kevin/covarianceSelection/results/step3_subjectselection_updated.RData")

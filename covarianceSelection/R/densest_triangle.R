@@ -1,6 +1,7 @@
 densest_triangle <- function(g){
+  stopifnot(igraph::vcount(g) > 0, igraph::ecount(g) > 0)
   n <- igraph::vcount(g)
-  tri_mat <- matrix(igraph::triangles(kite), nrow=3)
+  tri_mat <- matrix(igraph::triangles(g), nrow=3)
   n_tri <- ncol(tri_mat)
   s_idx <- n+n_tri+1
   t_idx <- s_idx+1
