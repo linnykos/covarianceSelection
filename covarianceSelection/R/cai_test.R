@@ -40,14 +40,16 @@ cai_test <- function(x, y, trials = 100, cores = 1){
   length(which(abs(t_boot) >= abs(t_org)))/trials
 }
 
-.compute_covStat <- function(num_x, num_y, denom_x, denom_y, squared = T){
+.compute_covStat <- function(num_x, num_y, denom_x, denom_y, squared = T, prob = 1){
   if(squared){
     res <- (num_x - num_y)^2/(denom_x + denom_y)
   } else {
     res <- abs(num_x - num_y)
   }
 
-  max(abs(res))
+  if(prob == 1) max(abs(res)) else {
+    quantile(abs(res), prob = prob)
+  }
 }
 
 #' Compute the bootstrap empirical covariance (numerator)

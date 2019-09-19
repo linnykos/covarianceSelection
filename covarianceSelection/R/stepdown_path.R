@@ -9,7 +9,7 @@
 #' @return a \code{stepdown} object
 #' @export
 stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
-                          verbose = F, file = NA){
+                          verbose = F, file = NA, prob = 1){
   doMC::registerDoMC(cores = cores)
   boot_list <- vector("list", length = iterations)
   if(!is.na(file)) save(boot_list, file = file)
@@ -24,7 +24,8 @@ stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
   num_list <- lapply(dat_list, function(x){.compute_sigma(x, diag_idx)})
   denom_list <- .compute_all_denom(dat_list, num_list, diag_idx)
 
-  t_vec <- .compute_all_test_stat(num_list, denom_list, combn_mat = combn_mat, squared = T)
+  t_vec <- .compute_all_test_stat(num_list, denom_list, combn_mat = combn_mat, squared = T,
+                                  prob = prob)
 
   if(verbose)  print(paste0("Starting to run heavy parallel computation: ", Sys.time()))
   
@@ -35,7 +36,7 @@ stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
     boot_num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, num_list, diag_idx,
                                                  remaining_idx = 1:len)
 
-    .compute_all_test_stat(boot_num_list, denom_list, combn_mat = combn_mat)
+    .compute_all_test_stat(boot_num_list, denom_list, combn_mat = combn_mat, prob = prob)
   }
 
   for(x in 1:iterations){

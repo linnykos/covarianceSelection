@@ -110,13 +110,13 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, co
 #' @return vector of all the bootstrap statistics
 .compute_all_test_stat <- function(num_list, denom_list,
                                    combn_mat = utils::combn(length(num_list), 2),
-                                   squared = T){
+                                   squared = T, prob = 1){
   stopifnot(length(num_list) == length(denom_list))
 
   sapply(1:ncol(combn_mat), function(x){
     .compute_covStat(num_list[[combn_mat[1,x]]], num_list[[combn_mat[2,x]]],
                      denom_list[[combn_mat[1,x]]], denom_list[[combn_mat[2,x]]],
-                     squared = squared)
+                     squared = squared, prob = prob)
   })
 }
 

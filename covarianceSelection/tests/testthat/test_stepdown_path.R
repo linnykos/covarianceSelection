@@ -24,6 +24,28 @@ test_that("stepdown_path works", {
   expect_true(all(dim_mat[2,] == 5*4/2))
 })
 
+test_that("stepdown_path works with probability", {
+  set.seed(10)
+  dat_list <- lapply(1:5, function(x){matrix(rnorm(100),10,10)})
+  res <- stepdown_path(dat_list, trials = 25, iterations = 20, prob = 0.5)
+  
+  expect_true(class(res) == "stepdown")
+  expect_true(is.list(res))
+  expect_true(all(names(res) == c("t_vec", "boot")))
+  expect_true(length(res$t_vec) == 5*4/2)
+  expect_true(is.numeric(res$t_vec))
+  expect_true(!is.matrix(res$t_vec))
+  
+  expect_true(is.list(res$boot))
+  expect_true(all(sapply(res$boot, is.numeric)))
+  expect_true(all(sapply(res$boot, is.matrix)))
+  expect_true(length(res$boot) == 20)
+  
+  dim_mat <- sapply(res$boot, dim)
+  expect_true(all(dim_mat[1,] == 25))
+  expect_true(all(dim_mat[2,] == 5*4/2))
+})
+
 #######################
 
 ## stepdown_choose is correct
