@@ -36,7 +36,7 @@ stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
     boot_num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, num_list, diag_idx,
                                                  remaining_idx = 1:len)
 
-    .compute_all_test_stat(boot_num_list, denom_list, combn_mat = combn_mat, prob = prob)
+    .compute_all_test_stat(boot_num_list, denom_list, combn_mat = combn_mat, prob = 1)
   }
 
   for(x in 1:iterations){

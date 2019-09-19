@@ -45,4 +45,4 @@ stepdown_res <- lapply(seq(0, 1, length.out = 21), function(alpha){
   covarianceSelection::stepdown_choose(stepdown_obj, alpha = alpha, return_pvalue = T)
 })
 
-save.image(file = paste0(save_filepath, "/step3_subjectselection_experiment.RData"))
+save.image(file = paste0(save_filepath, "/step3_subjectselection_experiment_3.RData"))
