@@ -53,7 +53,7 @@ trials <- 200
 save(trials, file = paste0(save_filepath, "/test.RData"))
 stepdown_obj <- covarianceSelection::stepdown_path(dat_pfc35, trials = trials, cores = ncores, verbose = verbose,
                                                    iterations = 7, file = paste0(save_filepath, "/step3_subjectselection_tmp2.RData"),
-                                                   prob = 0.999)
+                                                   prob = 0.9999)
 save.image(file = paste0(save_filepath, "/step3_subjectselection_tmp.RData"))
 stepdown_res <- lapply(seq(0, 1, length.out = 21), function(alpha){
   covarianceSelection::stepdown_choose(stepdown_obj, alpha = alpha, return_pvalue = T)
