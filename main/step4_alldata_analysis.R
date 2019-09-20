@@ -7,6 +7,8 @@ dat_all <- scale(dat_all)
 adj_all <- covarianceSelection::graphicalModel(dat_all, lambda = "lambda.min", verbose = T) 
 stopifnot(all(dim(adj_all) == nrow(tada)))
 
+save.image(file = paste0(save_filepath, "/step3_alldata_analysis.RData"))
+
 # run the HMRF
 set.seed(10)
 seedindex <- rep(0, ncol(adj_all))
