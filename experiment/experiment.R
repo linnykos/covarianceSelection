@@ -1,32 +1,32 @@
 rm(list=ls())
-load("/raid6/Kevin/covarianceSelection/results/step3_subjectselection.RData")
-prob = 0.99999
+tada <- read.csv("../../raw_data/TADA_Results_2231trios_1333trans_1601cases_5397controls_March26_pvalues.csv") # 18735 genes
+tada <- tada[,which(colnames(tada) %in% c("Gene", "dn.LoF", "qvalue", "pval.TADA"))]
+vec <- covarianceSelection::symbol_synonyms( tada$Gene, verbose = T)
+tada2 <- tada
 
-dat_list <- lapply(dat_list, scale, center = T, scale = F)
-diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
-len <- length(dat_list)
-combn_mat <- utils::combn(len, 2)
+unknown_genes_idx <- which(sapply(vec, length) == 0)
+vec2 <- vec[-unknown_genes_idx]; vec2 <- unlist(vec2)
 
-num_list <- lapply(dat_list, function(x){covarianceSelection:::.compute_sigma(x, diag_idx)})
-denom_list <- covarianceSelection:::.compute_all_denom(dat_list, num_list, diag_idx)
+# about to do something janky
+load("../results/step2_pfc35_analysis.RData")
 
-ncores <- 20
-doMC::registerDoMC(cores = ncores)
-
-func <- function(x){
-  print(x)
-  covarianceSelection:::.compute_covStat(num_list[[combn_mat[1,x]]], num_list[[combn_mat[2,x]]],
-                   denom_list[[combn_mat[1,x]]], denom_list[[combn_mat[2,x]]],
-                   squared = T, prob = prob)
+vec_mapping <- rep(NA, length(vec))
+for(i in 1:length(vec_mapping)){
+  if(i %% floor(length(vec_mapping)/10) == 0) cat('*')
+  if(length(vec[[i]]) > 0){
+    res <- which(tada$Gene == vec[[i]])
+    if(length(res) > 0){
+      vec_mapping[i] <- res
+    }
+  }
 }
 
-t_vec <- foreach::"%dopar%"(foreach::foreach(i = 1:ncol(combn_mat)), func(i))
+q_vec <- rep(NA, max(vec_mapping, na.rm = T))
+for(i in 1:length(vec_mapping)){
+  if(!is.na(vec_mapping[i])){
+    q_vec[vec_mapping[i]] <- tada2[i,"qvalue"]
+  }
+} #something weird going on... but let's go with it
 
-save(t_vec, file = "/raid6/Kevin/covarianceSelection/results/step3_subjectselection_updated.RData")
-
-################################
-
-# rm(list=ls())
-# load("/raid6/Kevin/covarianceSelection/results/step3_subjectselection.RData")
-# load("/raid6/Kevin/covarianceSelection/results/step3_subjectselection_updated.RData")
-# t_vec <- unlist(t_vec)
+cutoff <- quantile(q_vec, prob = 200/length(q_vec), na.rm = T)
+genes_nodawn <- tada$Gene[which(q_vec <= cutoff)]

@@ -7,7 +7,7 @@
 #'
 #' @return a precision matrix estimate, dxd
 #' @export
-graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F, tol = 1e-3){
+graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F, tol = 1e-6){
   n <- nrow(dat); d <- ncol(dat)
 
   if(verbose) print("Starting to estimate coefficients")
@@ -16,6 +16,7 @@ graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F, tol = 1e-3){
   
   adj_mat <- .symmetrize(coef_mat)
   adj_mat[which(abs(adj_mat) >= tol)] <- 1
+  adj_mat[which(abs(adj_mat) <= tol)] <- 0
   adj_mat
 }
 
@@ -27,7 +28,7 @@ graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F, tol = 1e-3){
     
     res <- glmnet::cv.glmnet(x = dat[,-x], y = dat[,x], intercept = F)
     vec <- rep(0, d)
-    vec[-x] <- as.numeric(stats::coef(res, s = "lambda.1se"))[-1]
+    vec[-x] <- as.numeric(stats::coef(res, s = lambda))[-1]
     vec
   }
   

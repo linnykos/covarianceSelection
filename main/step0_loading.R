@@ -34,7 +34,7 @@ genexp <- genexp[idx,] # 1294 x 14249
 
 #load tada dataset
 tada <- read.csv("../../raw_data/TADA_Results_2231trios_1333trans_1601cases_5397controls_March26_pvalues.csv") # 18735 genes
-tada <- tada[,c(1,3,17)]
+tada <- tada[,which(colnames(tada) %in% c("Gene", "dn.LoF", "qvalue", "pval.TADA"))]
 vec <- covarianceSelection::symbol_synonyms( tada$Gene, verbose = T)
 unknown_genes_idx <- which(sapply(vec, length) == 0)
 tada <- tada[-unknown_genes_idx,] # 18700 genes
