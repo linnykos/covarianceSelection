@@ -22,4 +22,6 @@ func <- function(x){
 
 t_vec <- foreach::"%dopar%"(foreach::foreach(i = 1:ncol(combn_mat)), func(i))
 
-save.image("/raid6/Kevin/covarianceSelection/results/step3_subjectselection_updated.RData")
+save(t_vec, "/raid6/Kevin/covarianceSelection/results/step3_subjectselection_updated.RData")
+
+################################
