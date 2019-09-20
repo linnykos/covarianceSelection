@@ -4,7 +4,7 @@
 \alias{stepdown}
 \title{Stepdown to test all pairs of datasets to see if they have equal covariance}
 \usage{
-stepdown(dat_list, trials = 100, alpha = 0.05, denominator = T,
+stepdown(dat_list, trials = 100, alpha = 0.05, return_pvalue = F,
   cores = 1, verbose = F)
 }
 \arguments{
@@ -14,11 +14,11 @@ stepdown(dat_list, trials = 100, alpha = 0.05, denominator = T,
 
 \item{alpha}{alpha level}
 
-\item{denominator}{boolean}
-
 \item{cores}{number of cores}
 
 \item{verbose}{boolean for verbose}
+
+\item{denominator}{boolean}
 }
 \value{
 indices for \code{combn(length(dat_list), 2)} that correspond to the

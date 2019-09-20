@@ -5,7 +5,8 @@
 \title{Compute the test statistic}
 \usage{
 .compute_all_test_stat(num_list, denom_list,
-  combn_mat = utils::combn(length(num_list), 2), squared = T)
+  combn_mat = utils::combn(length(num_list), 2), squared = T,
+  prob = 1)
 }
 \arguments{
 \item{num_list}{list of numerator vectors}

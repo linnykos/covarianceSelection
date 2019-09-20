@@ -4,7 +4,7 @@
 \alias{graphicalModel}
 \title{Graphical model estimate}
 \usage{
-graphicalModel(dat, lambda = "lambda.1se", verbose = F)
+graphicalModel(dat, lambda = "lambda.1se", verbose = F, tol = 0.001)
 }
 \arguments{
 \item{dat}{the nxd matrix}

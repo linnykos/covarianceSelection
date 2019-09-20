@@ -4,7 +4,8 @@
 \alias{stepdown_choose}
 \title{Stepdown choose}
 \usage{
-stepdown_choose(stepdown_obj, alpha = 0.05, verbose = F)
+stepdown_choose(stepdown_obj, alpha = 0.05, return_pvalue = F,
+  verbose = F)
 }
 \arguments{
 \item{stepdown_obj}{stepdown object}

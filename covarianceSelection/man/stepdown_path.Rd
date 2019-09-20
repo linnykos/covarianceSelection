@@ -4,15 +4,13 @@
 \alias{stepdown_path}
 \title{Stepdown path}
 \usage{
-stepdown_path(dat_list, trials = 100, denominator = T,
-  iterations = 15, cores = 1, verbose = F)
+stepdown_path(dat_list, trials = 100, iterations = 15, cores = 1,
+  verbose = F, file = NA, prob = 1)
 }
 \arguments{
 \item{dat_list}{list of data matrices with same number of columns}
 
 \item{trials}{number of trials}
-
-\item{denominator}{boolean}
 
 \item{iterations}{number of iterations}
 
