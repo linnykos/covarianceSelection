@@ -67,11 +67,14 @@ stepdown_res <- lapply(seq(0, 1, length.out = 21), function(alpha){
 
 ##########################
 
-idx <- stepdown_res[[3]]
+idx <- stepdown_res[[2]]
 # let's construct a graph
 n <- length(dat_list)
 g <- igraph::graph.empty(n = n, directed = F)
 combn_mat <- utils::combn(length(dat_list), 2)
 g <- igraph::add_edges(g, edges = combn_mat[,idx])
 save.image("/raid6/Kevin/covarianceSelection/results/step3_subjectselection_updated2.RData")
+
+zz <- clique_selection(g)
+binning(names(dat_list)[zz[[1]]])
 

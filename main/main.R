@@ -13,10 +13,12 @@ save_filepath <- "/raid6/Kevin/covarianceSelection/results"
 
 # source("../main/step0_loading.R")
 # source("../main/step1_screening.R")
-# source("../main/step2_naive_analysis.R")
+source("../main/step2_pfc35_analysis.R")
+source("../main/step3_alldata_analysis.R")
+source("../main/step4_nodawn_analysis.R")
 
-load("../results/step2_naive_analysis.RData")
-
-save_filepath <- "/raid6/Kevin/covarianceSelection/results"
-ncores <- 20
-source("../main/step3_subjectselection.R")
+# load("../results/step2_naive_analysis.RData")
+# 
+# save_filepath <- "/raid6/Kevin/covarianceSelection/results"
+# ncores <- 20
+# source("../main/step3_subjectselection.R")

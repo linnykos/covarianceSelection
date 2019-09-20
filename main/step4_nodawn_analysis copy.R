@@ -10,12 +10,7 @@ dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 3438
 dat_pfc35 <- scale(dat_pfc35)
 
 # estimate graphical model on PFC35 using cross-validated lasso for neighborhood selection
-prec_mat_naive <- covarianceSelection::graphicalModel(dat_pfc35, lambda = "lambda.min", verbose = T) 
-
-# grab the edges
-d <- ncol(dat_pfc35)
-tmp <- prec_mat_naive; tmp[lower.tri(tmp, diag = T)] <- 0
-edges_naive <- which(abs(tmp) > 1e-6, arr.ind = T)
+adj_naive <- covarianceSelection::graphicalModel(dat_pfc35, lambda = "lambda.min", verbose = T) 
 
 # form adjacency matrix
 if(verbose) print(paste0(Sys.time(), ": Graph has ", nrow(prec_mat_naive), " nodes and ",
