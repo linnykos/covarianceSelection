@@ -16,7 +16,7 @@ if(verbose) print(paste0(Sys.time(), ": HMRF"))
 hmrf_all <- covarianceSelection::hmrf(tada$pval.TADA, adj_all, seedindex, pthres = pthres) #??? WARNING???
 report_all <- covarianceSelection::report_results(tada$Gene, 1-hmrf_all$post, tada$pval.TADA, hmrf_all$Iupdate)
 cutoff <- sort(report_all$FDR, decreasing = FALSE)[num_target]
-genes_all <- report_all$Gene[which(report_all$FDR <= cutoff)]
+genes_all <- sort(as.character(report_all$Gene[which(report_all$FDR <= cutoff)]))
 
 rm(list = c("dat_all", "seedindex", "cutoff"))
 
