@@ -17,7 +17,7 @@ func <- function(x){
   print(x)
   covarianceSelection:::.compute_covStat(num_list[[combn_mat[1,x]]], num_list[[combn_mat[2,x]]],
                    denom_list[[combn_mat[1,x]]], denom_list[[combn_mat[2,x]]],
-                   squared = squared, prob = prob)
+                   squared = T, prob = prob)
 }
 
 t_vec <- foreach::"%dopar%"(foreach::foreach(i = 1:ncol(combn_mat)), func(i))
