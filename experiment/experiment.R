@@ -15,7 +15,7 @@ doMC::registerDoMC(cores = ncores)
 
 func <- function(x){
   print(x)
-  .compute_covStat(num_list[[combn_mat[1,x]]], num_list[[combn_mat[2,x]]],
+  covarianceSelection:::.compute_covStat(num_list[[combn_mat[1,x]]], num_list[[combn_mat[2,x]]],
                    denom_list[[combn_mat[1,x]]], denom_list[[combn_mat[2,x]]],
                    squared = squared, prob = prob)
 }
