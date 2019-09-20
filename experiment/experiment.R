@@ -1,6 +1,6 @@
 rm(list=ls())
 load("/raid6/Kevin/covarianceSelection/results/step3_subjectselection.RData")
-prob = 0.9999
+prob = 0.99999
 
 dat_list <- lapply(dat_list, scale, center = T, scale = F)
 diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
@@ -25,3 +25,8 @@ t_vec <- foreach::"%dopar%"(foreach::foreach(i = 1:ncol(combn_mat)), func(i))
 save(t_vec, file = "/raid6/Kevin/covarianceSelection/results/step3_subjectselection_updated.RData")
 
 ################################
+
+# rm(list=ls())
+# load("/raid6/Kevin/covarianceSelection/results/step3_subjectselection.RData")
+# load("/raid6/Kevin/covarianceSelection/results/step3_subjectselection_updated.RData")
+# t_vec <- unlist(t_vec)
