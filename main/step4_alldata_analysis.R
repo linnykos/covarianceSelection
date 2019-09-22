@@ -7,7 +7,7 @@ dat_all <- scale(dat_all)
 adj_all <- covarianceSelection::graphicalModel(dat_all, lambda = "lambda.min", verbose = T) 
 stopifnot(all(dim(adj_all) == nrow(tada)))
 
-save.image(file = paste0(save_filepath, "/step3_alldata_analysis.RData"))
+save.image(file = paste0(save_filepath, "/step4_alldata_analysis.RData"))
 
 # run the HMRF
 set.seed(10)
@@ -22,4 +22,4 @@ genes_all <- sort(as.character(report_all$Gene[which(report_all$FDR <= cutoff)])
 
 rm(list = c("dat_all", "seedindex", "cutoff"))
 
-save.image(file = paste0(save_filepath, "/step3_alldata_analysis.RData"))
+save.image(file = paste0(save_filepath, "/step4_alldata_analysis.RData"))

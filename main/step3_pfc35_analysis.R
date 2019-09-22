@@ -13,7 +13,7 @@ dat_pfc35 <- scale(dat_pfc35)
 adj_pfc35 <- covarianceSelection::graphicalModel(dat_pfc35, lambda = "lambda.min", verbose = T) 
 stopifnot(all(dim(adj_pfc35) == nrow(tada)))
 
-save.image(file = paste0(save_filepath, "/step2_pfc35_analysis.RData"))
+save.image(file = paste0(save_filepath, "/step3_pfc35_analysis.RData"))
 
 # run the HMRF
 set.seed(10)
@@ -28,4 +28,4 @@ genes_pfc35 <- sort(as.character(report_pfc35$Gene[which(report_pfc35$FDR <= cut
 
 rm(list = c("dat_pfc35", "seedindex", "cutoff"))
 
-save.image(file = paste0(save_filepath, "/step2_pfc35_analysis.RData"))
+save.image(file = paste0(save_filepath, "/step3_pfc35_analysis.RData"))

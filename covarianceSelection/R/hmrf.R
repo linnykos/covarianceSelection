@@ -13,13 +13,13 @@
 
 ##estimate Ising model parameters b,c
 .optimize_bc <- function(func, adj, i_vec, times, tol = 1e-5){
-  b <- 0; c <- 1
+  b <- 0; c <- 0
 
   graph_term <- i_vec%*%adj
   for (k in 1:times){
-    b_new <- stats::optimize(func, c(-2,2), c = c, graph_term = graph_term,
+    b_new <- stats::optimize(func, c(-2, 2), c = c, graph_term = graph_term,
                              i_vec = i_vec, maximum = T)$maximum
-    c_new <- stats::optimize(func, c(0.2,2), b = b_new, graph_term = graph_term,
+    c_new <- stats::optimize(func, c(-2, 2), b = b_new, graph_term = graph_term,
                              i_vec = i_vec, maximum = T)$maximum
     if (abs(b_new-b) < tol & abs(c_new-c) < tol){
       break()
@@ -59,7 +59,7 @@ hmrf <- function(pval, adj, seedindex, pthres = 0.05, iter = 100,
 
   z <- stats::qnorm(1-pval)
   i_vec <- as.numeric(pval<pthres)
-  b <- -Inf; c <- Inf
+  b <- 0; c <- 0
 
   mu1 <- mean(z[i_vec==1 & seedindex==0])
   sigmas <- stats::var(z)
@@ -79,8 +79,8 @@ hmrf <- function(pval, adj, seedindex, pthres = 0.05, iter = 100,
 
       new1 <- exp(b*i_vec[i] + c*i_vec[i]*adj[i,]%*%i_vec)
       new2 <- exp(b*(1-i_vec[i]) + c*(1-i_vec[i])*adj[i,]%*%i_vec_tmp)
-      p1 <- stats::dnorm(z[i], mu1*i_vec[i], sqrt(sigmas)) * new1/(new1+new2)
-      p2 <- stats::dnorm(z[i], mu1*(1-i_vec[i]), sqrt(sigmas)) * new2/(new1+new2)
+      p1 <- stats::dnorm(z[i], mu1*i_vec[i], sqrt(sigmas))/(1 + exp(new2-new1))
+      p2 <- stats::dnorm(z[i], mu1*(1-i_vec[i]), sqrt(sigmas))/(1 + exp(new1-new2))
 
       if (i_vec[i] == 1){
         posterior[i] <- p1/(p1+p2)
@@ -102,6 +102,53 @@ hmrf <- function(pval, adj, seedindex, pthres = 0.05, iter = 100,
 
   #un-permute the elements
   i_vec <- i_vec[order(idx)]; posterior <- posterior[order(idx)]
+  
+  if (!check_b(i_vec, b)) {
+    cat('\n\nWARNING: DAWN identified a large number of risk genes. 
+          Assumptions of the model may be false. 
+          The set of risk genes likely contains many false positives.\n')
+  }
+  if (!check_c(adj, i_vec, b, c)) {
+    cat('\n\nWARNING: Weak connectivity among risk genes in the input graph. 
+          Assumptions of the model appear to be false. 
+          The set of risk genes likely contains many false positives.\n')
+  }
 
   list(Iupdate = i_vec, post = posterior, b = b, c = c, mu1 = mu1, sigmas = sigmas)
 }
+
+
+## Check if b0 value is reasonable
+## Input:
+##      I - estimated hidden indicator vector
+##      b0 - estimated b0
+##      thres_b0 - threshold for evaluating b0
+## Output:
+##      pass - a boolean variable, True if b0 passes the test, False otherwise
+check_b <- function(i_vec, b, thres_b = 0.05){
+  ## Check if P(sum(I)>thres) < thres under the distribution that:
+  ## P(sum(I)) ~ binom(n,exp(b0)/(1+exp(b0)))
+  n <- length(i_vec)
+  q <- floor(n * thres_b);
+  p <- exp(b) / (1 + exp(b))
+  tail_prob <- pbinom(q = q, size=n, prob = p, lower.tail = F) ##P(sum(I)>thres)
+  
+  tail_prob < thres_b
+}
+
+## Check if b1 value is reasonable
+## Input:
+##      G - adjacency matrix for graph
+##      I - estimated hidden indicator vector
+##      b0 - estimated b0
+##      b1 - estimated b1
+##      thres_b1 - threshold for evaluating b1
+## Output:
+##      pass - a boolean variable, True if b0 passes the test, False otherwise
+check_c <- function(adj, i_vec, b, c, thres_c = 0.1) {
+  ## Check if b1*I'GI is significant comparing to b0*I
+  as.numeric(abs(c*i_vec%*%adj%*%i_vec / (b*sum(i_vec)))) > thres_c
+}
+
+
+
