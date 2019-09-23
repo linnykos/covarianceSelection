@@ -26,10 +26,18 @@ graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F, tol = 1e-6){
   func <- function(x){
     if(verbose & x %% floor(d/10) == 0) cat('*')
     
-    res <- glmnet::cv.glmnet(x = dat[,-x], y = dat[,x], intercept = F)
-    vec <- rep(0, d)
-    vec[-x] <- as.numeric(stats::coef(res, s = lambda))[-1]
-    vec
+    if(is.numeric(lambda)){
+      res <- glmnet::glmnet(x = dat[,-x], y = dat[,x], intercept = F)
+      vec <- rep(0, d)
+      vec[-x] <- as.numeric(stats::coef(res, s = lambda))[-1]
+      vec
+    } else {
+      res <- glmnet::cv.glmnet(x = dat[,-x], y = dat[,x], intercept = F)
+      vec <- rep(0, d)
+      vec[-x] <- as.numeric(stats::coef(res, s = lambda))[-1]
+      vec
+    }
+    
   }
   
   i <- 0 #debugging purposes only
