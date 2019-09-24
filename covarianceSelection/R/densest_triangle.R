@@ -1,4 +1,199 @@
-densest_triangle <- function(g){
+tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcount(g)/2)){
+  g <- igraph::as.undirected(g)
+  g <- igraph::simplify(g)
+  igraph::V(g)$name <- 1:n
+
+  initial_idx <- as.character(.tsourakakis_initialize(g))
+  node_set <- sort(c(as.character(igraph::neighbors(g, v = initial_idx)), initial_idx))
+  iter <- 1
+  
+  while(iter <= iter_max){
+    while(TRUE){
+      den_org <- .tsourakakis_obj(g, threshold, node_set)
+      node_candidate <- setdiff(as.character(igraph::V(g)$name), node_set)
+      next_set <- .find_candidate(g, threshold, node_set, node_candidate, den_org)
+      if(any(is.na(next_set))) break()
+      node_set <- next_set
+    }
+    
+    den_org <- .tsourakakis_obj(g, threshold, node_set)
+    next_set <- .find_candidate(g, threshold, node_set, NA, den_org)
+    if(any(is.na(next_set))) break()
+    node_set <- next_set
+    iter <- iter+1
+  }
+  
+  node_set
+}
+
+# if node_candidate = NA, we are subtracting, not adding
+.find_candidate <- function(g, threshold, node_set, node_candidate, den_org){
+  stopifnot(length(node_set) > 1)
+  
+  if(all(is.na(node_candidate))){
+    node_set <- sample(node_set)
+    n2 <- length(node_set)
+  } else {
+    stopifnot(!any(node_set %in% node_candidate))
+    node_candidate <- sample(node_candidate)
+    n2 <- length(node_candidate)
+  }
+  
+  for(i in 1:n2){
+    if(all(is.na(node_candidate))){
+      next_set <- node_set[-i]
+    } else {
+      next_set <- c(node_set, node_candidate[i])
+    }
+    
+    den_new <- .tsourakakis_obj(g, threshold, next_set)
+    if(den_new > den_org) break()
+  }
+  
+  if(den_new <= den_org) return(NA)
+  sort(next_set)
+}
+
+.tsourakakis_obj <- function(g, threshold, node_set){
+  g_sub <- igraph::induced_subgraph(g, node_set)
+  igraph::ecount(g_sub) - threshold * choose(length(node_set), 2)
+}
+
+.tsourakakis_initialize <- function(g){
+  tri_mat <- matrix(igraph::triangles(g), nrow=3)
+  n <- igraph::vcount(g)
+  n_tri_count <- sapply(1:n, function(i){length(which(tri_mat == i))})
+  deg_vec <- igraph::degree(g)
+  
+  idx <- which.max(n_tri_count/deg_vec)
+  igraph::V(g)$name[idx]
+}
+
+########################
+
+chen_2010 <- function(g, threshold = 0.95){
+  g <- igraph::as.undirected(g)
+  g <- igraph::simplify(g)
+  
+  n <- igraph::vcount(g)
+  if(igraph::ecount(g)/choose(n,2) >= threshold) return(as.numeric(igraph::V(g)$name))
+  igraph::V(g)$name <- 1:n
+  c_matrix <- .form_c_matrix(g)
+  
+  q <- dequer::deque()
+  dequer::push(q, .chen_object(g, c_matrix))
+  max_size <- 0
+  max_node_set <- numeric(0)
+  
+  while(length(q) > 0){
+    obj <- dequer::pop(q)
+    n_internal <- igraph::vcount(obj$g)
+    if(n_internal <= max_size) next()
+    
+    node_set_internal <- igraph::V(obj$g)$name
+    den <- .chen_check_density(g, node_set_internal)
+    if(den >= threshold){
+      max_size <- n_internal
+      node_set_internal <- node_set_internal
+    }
+    
+    res <- .chen_separate(obj$g, obj$c_matrix, threshold = threshold)
+    dequer::push(q, .chen_object(res$g1, res$c_matrix1))
+    dequer::push(q, .chen_object(res$g2, res$c_matrix2))
+  }
+  
+  node_set_internal
+}
+
+.chen_check_density <- function(g, node_set){
+  g_sub <- igraph::induced_subgraph(g, node_set)
+  igraph::ecount(g)/choose(igraph::vcount(g), 2)
+}
+
+.chen_separate <- function(g, c_matrix, threshold = 0.95, check = F){
+  if(check)  stopifnot(all(c_matrix[,1] %in% node_set), all(c_matrix[,2] %in% node_set))
+  n <- igraph::vcount(g)
+  node_set <- as.numeric(igraph::V(g)$name)
+  
+  idx <- 1
+  comp_res <- igraph::components(g)
+  
+  while(comp_res$no == 1){
+    g <- igraph::delete.edges(g, which(node_set %in% c_matrix[idx,1:2]))
+    comp_res <- igraph::components(g)
+  }
+  
+  comp_res <- igraph::components(g)
+  idx1 <- which(comp_res$membership == 1)
+  idx2 <- c(1:n)[-idx1]
+  
+  g1 <- igraph::induced_subgraph(g, idx1)
+  g2 <- igraph::induced_subgraph(g, idx2)
+  
+  c_matrix1 <- c_matrix[intersect(which(c_matrix[,1] %in% node_set[idx1]), 
+                                  which(c_matrix[,2] %in% node_set[idx1])),]
+  c_matrix2 <- c_matrix[intersect(which(c_matrix[,1] %in% node_set[idx2]), 
+                                  which(c_matrix[,2] %in% node_set[idx2])),]
+  
+  list(g1 = g1, g2 = g2, c_matrix1 = c_matrix1, c_matrix2 = c_matrix2)
+}
+
+.chen_object <- function(g, c_matrix, check = F){
+  node_set <- as.numeric(igraph::V(g)$name)
+  
+  if(check) stopifnot(all(c_matrix[,1] %in% node_set), all(c_matrix[,2] %in% node_set))
+  
+  structure(list(g = g, node_set = node_set, c_matrix = c_matrix),
+            class = "chen_object")
+}
+
+.form_c_matrix <- function(g){
+  adj <- as.matrix(igraph::as_adj(g))
+  n <- nrow(adj)
+  
+  combn_mat <- utils::combn(n, 2)
+  c_matrix <- matrix(0, nrow = ncol(combn_mat), ncol = 3)
+  c_matrix[,1:2] <- t(combn_mat)
+  for(i in 1:nrow(c_matrix)){
+    idx1 <- c_matrix[i,1]; idx2 <- c_matrix[i,2]
+    c_matrix[i,3] <- adj[idx1,]%*%adj[idx2,]/(.l2norm(adj[idx1,])*.l2norm(adj[idx2,]))
+  }
+  
+  c_matrix[order(c_matrix[,3]),]
+}
+
+########
+
+anderson_2009 <- function(g){
+  g <- igraph::as.undirected(g)
+  g <- igraph::simplify(g)
+  n <- igraph::vcount(g)
+  igraph::V(g)$name <- 1:n
+  
+  h_seq <- vector("list", n-1)
+  dens_vec <- rep(NA, length(h_seq))
+  h_seq[[1]] <- g
+  
+  for(i in 1:length(h_seq)){
+    total_deg <- igraph::ecount(h_seq[[i]])
+    n_sub <- igraph::vcount(h_seq[[i]])
+    dens_vec[[i]] <- ncol(tri_mat)/n_sub
+    
+    deg_vec <- igraph::degree(h_seq[[i]])
+    idx <- which.min(deg_vec)
+    
+    h_seq[[i+1]] <- igraph::delete_vertices(h_seq[[i]], idx)
+  }
+  
+  as.numeric(igraph::V(h_seq[[which.max(dens_vec)]])$name)
+}
+
+#####
+
+tsourakakis_2014_exact <- function(g){
+  g <- igraph::as.undirected(g)
+  g <- igraph::simplify(g)
+  
   stopifnot(igraph::vcount(g) > 0, igraph::ecount(g) > 0)
   n <- igraph::vcount(g)
   tri_mat <- matrix(igraph::triangles(g), nrow=3)
@@ -53,4 +248,30 @@ densest_triangle <- function(g){
   }
   
   set
+}
+
+######
+
+tsourakakis_2014_approximate <- function(g){
+  g <- igraph::as.undirected(g)
+  g <- igraph::simplify(g)
+  n <- igraph::vcount(g)
+  igraph::V(g)$name <- 1:n
+  
+  h_seq <- vector("list", n-2)
+  dens_vec <- rep(NA, length(h_seq))
+  h_seq[[1]] <- g
+  
+  for(i in 1:length(h_seq)){
+    tri_mat <- matrix(igraph::triangles(h_seq[[i]]), nrow=3)
+    n_sub <- igraph::vcount(h_seq[[i]])
+    dens_vec[[i]] <- ncol(tri_mat)/n_sub
+    
+    n_tri_count <- sapply(1:n_sub, function(i){length(which(tri_mat == i))})
+    idx <- which.min(n_tri_count)
+    
+    h_seq[[i+1]] <- igraph::delete_vertices(h_seq[[i]], idx)
+  }
+  
+  as.numeric(igraph::V(h_seq[[which.max(dens_vec)]])$name)
 }

@@ -12,6 +12,7 @@ compute_scale_free <- function(adj){
   tmp <- apply(adj,1,sum)
   x <- table(tmp)+1
   y <- as.numeric(names(x))+1
+  x <- as.numeric(x)
 
   stats::cor(log(x),log(y))^2
 }
