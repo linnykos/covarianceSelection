@@ -1,10 +1,12 @@
 rm(list=ls())
 load("/raid6/Kevin/covarianceSelection/results/step3_subjectselection_updated2.RData")
+
+doMC::registerDoMC(cores = 20)
+
 idx <- covarianceSelection:::tsourakakis_2014_approximate(g)
 dat_list <- lapply(dat_list[idx], scale)
 dat_our <- do.call(rbind, dat_list)
 adj_our <- covarianceSelection::graphicalModel(dat_our, lambda = "lambda.1se", verbose = T) 
-
 
 save.image(file = paste0(save_filepath, "/step4_ouranalysis_tmp.RData"))
 
