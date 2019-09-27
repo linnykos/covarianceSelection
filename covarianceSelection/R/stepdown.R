@@ -11,6 +11,7 @@
 #' hypotheses that passed
 #' @export
 stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, cores = 1,
+                     prob = 1,
                      verbose = F){
   doMC::registerDoMC(cores = cores)
   
@@ -25,7 +26,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, co
   num_list <- lapply(dat_list, function(x){.compute_sigma(x, diag_idx)})
   denom_list <- .compute_all_denom(dat_list, num_list, diag_idx)
 
-  t_vec <- .compute_all_test_stat(num_list, denom_list, combn_mat = combn_mat, squared = T)
+  t_vec <- .compute_all_test_stat(num_list, denom_list, combn_mat = combn_mat, squared = T, prob = 1)
   
   if(verbose)  print(paste0("Starting to run heavy parallel computation: ", Sys.time()))
 
@@ -42,7 +43,8 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, co
     boot_num_list <- .compute_all_numerator_bootstrap(dat_list, noise_list, num_list, diag_idx,
                                                   remaining_idx = remaining_idx)
 
-    boot_t_vec <- .compute_all_test_stat(boot_num_list, denom_list, combn_mat = combn_short)
+    boot_t_vec <- .compute_all_test_stat(boot_num_list, denom_list, combn_mat = combn_short,
+                                         prob = 1)
     
     if(round == 1 & return_pvalue){
       list(val = max(abs(boot_t_vec)), boot_t_vec = boot_t_vec)

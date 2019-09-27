@@ -5,3 +5,4 @@ validated_genes <- covarianceSelection::symbol_synonyms(validated_genes, verbose
 length(intersect(genes_pfc35, validated_genes))  # 5 genes it seems?
 length(intersect(genes_nodawn, validated_genes)) # it seems to be 32 genes?
 length(intersect(genes_all, validated_genes)) # it seems to be 30 genes?
+length(intersect(genes_our, validated_genes)) # seems to be 25 genes?
