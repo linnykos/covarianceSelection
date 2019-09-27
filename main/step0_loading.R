@@ -58,6 +58,7 @@ dat_list <- lapply(dat_list, as.matrix, drop = F)
 # remove partitions too small
 idx <- which(sapply(dat_list, function(x){ifelse(nrow(x) >= 5, T, F)}))
 dat_list <- dat_list[idx] # 125 partitions
+dat_list <- lapply(dat_list, scale)
 
 if(verbose) print(paste0("Dimension of genexp is: ", paste0(dim(genexp), collapse = ", ")))
 

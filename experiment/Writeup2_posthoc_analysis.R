@@ -75,6 +75,4 @@ combn_mat <- utils::combn(length(dat_list), 2)
 g <- igraph::add_edges(g, edges = combn_mat[,idx])
 save.image("/raid6/Kevin/covarianceSelection/results/step3_subjectselection_updated2.RData")
 
-zz <- clique_selection(g)
-binning(names(dat_list)[zz[[1]]])
 

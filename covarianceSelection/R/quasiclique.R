@@ -6,11 +6,15 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
   initial_idx <- as.character(.tsourakakis_initialize(g))
   node_set <- sort(c(as.character(igraph::neighbors(g, v = initial_idx)), initial_idx))
   iter <- 1
+  print(node_set)
   
   while(iter <= iter_max){
     while(TRUE){
+      print(node_set)
       den_org <- .tsourakakis_obj(g, threshold, node_set)
       node_candidate <- setdiff(as.character(igraph::V(g)$name), node_set)
+      print(node_candidate)
+      print(class(node_candidate))
       next_set <- .find_candidate(g, threshold, node_set, node_candidate, den_org)
       if(any(is.na(next_set))) break()
       node_set <- next_set
@@ -21,6 +25,7 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
     if(any(is.na(next_set))) break()
     node_set <- next_set
     iter <- iter+1
+    print(node_set)
   }
   
   node_set
@@ -28,7 +33,7 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
 
 # if node_candidate = NA, we are subtracting, not adding
 .find_candidate <- function(g, threshold, node_set, node_candidate, den_org){
-  stopifnot(length(node_set) > 1)
+  stopifnot(length(node_set) > 1, is.character(node_set), is.character(node_candidate))
   
   if(all(is.na(node_candidate))){
     node_set <- sample(node_set)
@@ -55,6 +60,8 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
 }
 
 .tsourakakis_obj <- function(g, threshold, node_set){
+  stopifnot(is.character(node_set))
+  
   g_sub <- igraph::induced_subgraph(g, node_set)
   igraph::ecount(g_sub) - threshold * choose(length(node_set), 2)
 }
@@ -66,7 +73,7 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
   deg_vec <- igraph::degree(g)
   
   idx <- which.max(n_tri_count/deg_vec)
-  igraph::V(g)$name[idx]
+  as.character(igraph::V(g)$name[idx])
 }
 
 ########################
@@ -90,7 +97,7 @@ chen_2010 <- function(g, threshold = 0.95){
     n_internal <- igraph::vcount(obj$g)
     if(n_internal <= max_size) next()
     
-    node_set_internal <- igraph::V(obj$g)$name
+    node_set_internal <- as.character(igraph::V(obj$g)$name)
     den <- .chen_check_density(g, node_set_internal)
     if(den >= threshold){
       max_size <- n_internal
@@ -102,18 +109,22 @@ chen_2010 <- function(g, threshold = 0.95){
     dequer::push(q, .chen_object(res$g2, res$c_matrix2))
   }
   
-  node_set_internal
+  as.numeric(node_set_internal)
 }
 
+# node set should be characters for safety
 .chen_check_density <- function(g, node_set){
+  stopifnot(is.character(node_set), all(node_set %in% as.character(igraph::V(g)$name)))
+  
   g_sub <- igraph::induced_subgraph(g, node_set)
-  igraph::ecount(g)/choose(igraph::vcount(g), 2)
+  igraph::ecount(g_sub)/choose(igraph::vcount(g_sub), 2)
 }
 
 .chen_separate <- function(g, c_matrix, threshold = 0.95, check = F){
-  if(check)  stopifnot(all(c_matrix[,1] %in% node_set), all(c_matrix[,2] %in% node_set))
   n <- igraph::vcount(g)
   node_set <- as.numeric(igraph::V(g)$name)
+  stopifnot(length(node_set) == n)
+  if(check)  stopifnot(all(c_matrix[,1] %in% node_set), all(c_matrix[,2] %in% node_set))
   
   idx <- 1
   comp_res <- igraph::components(g)
@@ -177,7 +188,7 @@ anderson_2009 <- function(g){
   for(i in 1:length(h_seq)){
     total_deg <- igraph::ecount(h_seq[[i]])
     n_sub <- igraph::vcount(h_seq[[i]])
-    dens_vec[[i]] <- ncol(tri_mat)/n_sub
+    dens_vec[[i]] <- total_deg/n_sub
     
     deg_vec <- igraph::degree(h_seq[[i]])
     idx <- which.min(deg_vec)
