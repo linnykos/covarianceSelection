@@ -7,7 +7,7 @@
 #'
 #' @return numeric (p-value)
 #' @export
-cai_test <- function(x, y, trials = 100, cores = 1){
+cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
   if(ncol(x) != ncol(y)) stop("x and y have different number of dimensions")
   if(!is.matrix(x) | !is.numeric(x)) stop("x is not a numeric matrix")
   if(!is.matrix(y) | !is.numeric(y)) stop("y is not a numeric matrix")
@@ -19,14 +19,14 @@ cai_test <- function(x, y, trials = 100, cores = 1){
 
   num_x <- .compute_sigma(x, diag_idx); num_y <- .compute_sigma(y, diag_idx)
   denom_x <- .compute_variance(x, num_x, diag_idx); denom_y <- .compute_variance(y, num_y, diag_idx)
-  t_org <- .compute_covStat(num_x, num_y, denom_x, denom_y)
+  t_org <- .compute_covStat(num_x, num_y, denom_x, denom_y, prob = prob)
 
   func <- function(i){
     set.seed(i*10)
     g_x <- stats::rnorm(n1); g_y <- stats::rnorm(n2)
     boot_num_x <- .compute_bootSigma(x, g_x, num_x, diag_idx)
     boot_num_y <- .compute_bootSigma(y, g_y, num_y, diag_idx)
-    .compute_covStat(boot_num_x, boot_num_y, denom_x, denom_y)
+    .compute_covStat(boot_num_x, boot_num_y, denom_x, denom_y, prob = 1)
   }
 
   if(is.na(cores)){

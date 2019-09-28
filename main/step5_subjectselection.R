@@ -14,6 +14,6 @@ stepdown_res <- lapply(seq(0, 1, length.out = 21), function(alpha){
 save.image(file = paste0(save_filepath, "/step5_subjectselection.RData"))
 
 ######
-sapply(stepdown_res, function(x){
-  length(x$null_idx)
-})
+# sapply(stepdown_res, function(x){
+#   length(x$null_idx)
+# })
