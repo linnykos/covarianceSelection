@@ -133,8 +133,12 @@ chen_2010 <- function(g, threshold = 0.95){
   comp_res <- igraph::components(g)
   
   while(comp_res$no == 1){
-    g <- igraph::delete.edges(g, which(node_set %in% c_matrix[idx,1:2]))
-    comp_res <- igraph::components(g)
+    edge_id <- igraph::get.edge.ids(g, which(node_set %in% c_matrix[idx,1:2]))
+    if(edge_id != 0){
+      g <- igraph::delete.edges(g, edge_id)
+      comp_res <- igraph::components(g)
+    } 
+    
     idx <- idx + 1
   }
   

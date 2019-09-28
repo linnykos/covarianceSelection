@@ -39,6 +39,21 @@ test_that("tsourakakis_2014_approximate works for detecting the larger clique", 
   expect_true(all(res == as.character((n/3+1):n)))
 })
 
+test_that("tsourakakis_2014_approximate works a random graph", {
+  set.seed(10)
+  n <- 30
+  combn_mat <- utils::combn(n, 2)
+  edge_mat <- combn_mat[,sample(1:ncol(combn_mat), round(ncol(combn_mat)/2))]
+  g <- igraph::graph.empty(n = n, directed = F)
+  g <- igraph::add_edges(g, edges = edge_mat)
+  res <- tsourakakis_2014_approximate(g)
+  
+  expect_true(is.numeric(res))
+  expect_true(!any(is.na(res)))
+  expect_true(!any(is.nan(res)))
+  expect_true(length(res) > 0)
+})
+
 #################3
 
 ## anderson_2009 is correct
@@ -78,6 +93,21 @@ test_that("anderson_2009 works for detecting the larger clique", {
   res <- anderson_2009(g)
   
   expect_true(all(res == as.character((n/3+1):n)))
+})
+
+test_that("anderson_2009 works a random graph", {
+  set.seed(10)
+  n <- 30
+  combn_mat <- utils::combn(n, 2)
+  edge_mat <- combn_mat[,sample(1:ncol(combn_mat), round(ncol(combn_mat)/2))]
+  g <- igraph::graph.empty(n = n, directed = F)
+  g <- igraph::add_edges(g, edges = edge_mat)
+  res <- anderson_2009(g)
+  
+  expect_true(is.numeric(res))
+  expect_true(!any(is.na(res)))
+  expect_true(!any(is.nan(res)))
+  expect_true(length(res) > 0)
 })
 
 
@@ -211,6 +241,22 @@ test_that("chen_2010 works for detecting the larger clique", {
   expect_true(all(res == as.character((n/3+1):n)))
 })
 
+test_that("chen_2010 works a random graph", {
+  set.seed(10)
+  n <- 30
+  combn_mat <- utils::combn(n, 2)
+  edge_mat <- combn_mat[,sample(1:ncol(combn_mat), round(ncol(combn_mat)/2))]
+  g <- igraph::graph.empty(n = n, directed = F)
+  g <- igraph::add_edges(g, edges = edge_mat)
+  res <- chen_2010(g)
+  
+  expect_true(is.numeric(res))
+  expect_true(!any(is.na(res)))
+  expect_true(!any(is.nan(res)))
+  expect_true(length(res) > 0)
+})
+
+
 ###############
 
 ## .tsourakakis_initialize is correct
@@ -323,4 +369,20 @@ test_that("tsourakakis_2013 works", {
   expect_true(is.character(res))
   expect_true(length(res) == 1)
 })
+
+test_that("tsourakakis_2013 works a random graph", {
+  set.seed(10)
+  n <- 30
+  combn_mat <- utils::combn(n, 2)
+  edge_mat <- combn_mat[,sample(1:ncol(combn_mat), round(ncol(combn_mat)/2))]
+  g <- igraph::graph.empty(n = n, directed = F)
+  g <- igraph::add_edges(g, edges = edge_mat)
+  res <- tsourakakis_2013(g)
+  
+  expect_true(is.numeric(res))
+  expect_true(!any(is.na(res)))
+  expect_true(!any(is.nan(res)))
+  expect_true(length(res) > 0)
+})
+
 
