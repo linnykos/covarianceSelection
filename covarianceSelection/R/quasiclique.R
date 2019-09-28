@@ -101,8 +101,10 @@ chen_2010 <- function(g, threshold = 0.95){
     den <- .chen_check_density(g, node_set_internal)
     if(den >= threshold){
       max_size <- n_internal
-      node_set_internal <- node_set_internal
+      max_node_set <- node_set_internal
     }
+    
+    if(igraph::ecount(obj$g) == 0 | nrow(obj$c_matrix) == 0) next()
     
     res <- .chen_separate(obj$g, obj$c_matrix, threshold = threshold)
     dequer::push(q, .chen_object(res$g1, res$c_matrix1))
@@ -115,6 +117,7 @@ chen_2010 <- function(g, threshold = 0.95){
 # node set should be characters for safety
 .chen_check_density <- function(g, node_set){
   stopifnot(is.character(node_set), all(node_set %in% as.character(igraph::V(g)$name)))
+  if(length(node_set) == 1) return(0)
   
   g_sub <- igraph::induced_subgraph(g, node_set)
   igraph::ecount(g_sub)/choose(igraph::vcount(g_sub), 2)
@@ -132,19 +135,20 @@ chen_2010 <- function(g, threshold = 0.95){
   while(comp_res$no == 1){
     g <- igraph::delete.edges(g, which(node_set %in% c_matrix[idx,1:2]))
     comp_res <- igraph::components(g)
+    idx <- idx + 1
   }
   
-  comp_res <- igraph::components(g)
   idx1 <- which(comp_res$membership == 1)
   idx2 <- c(1:n)[-idx1]
+  stopifnot(length(idx1) > 0 & length(idx2) > 0)
   
   g1 <- igraph::induced_subgraph(g, idx1)
   g2 <- igraph::induced_subgraph(g, idx2)
   
   c_matrix1 <- c_matrix[intersect(which(c_matrix[,1] %in% node_set[idx1]), 
-                                  which(c_matrix[,2] %in% node_set[idx1])),]
+                                  which(c_matrix[,2] %in% node_set[idx1])),,drop = F]
   c_matrix2 <- c_matrix[intersect(which(c_matrix[,1] %in% node_set[idx2]), 
-                                  which(c_matrix[,2] %in% node_set[idx2])),]
+                                  which(c_matrix[,2] %in% node_set[idx2])),,drop = F]
   
   list(g1 = g1, g2 = g2, c_matrix1 = c_matrix1, c_matrix2 = c_matrix2)
 }
@@ -158,8 +162,10 @@ chen_2010 <- function(g, threshold = 0.95){
             class = "chen_object")
 }
 
+# diagonal of adj must be 1 to prevent the computed quantity from being undefined
 .form_c_matrix <- function(g){
   adj <- as.matrix(igraph::as_adj(g))
+  diag(adj) <- 1
   n <- nrow(adj)
   
   combn_mat <- utils::combn(n, 2)
@@ -170,7 +176,7 @@ chen_2010 <- function(g, threshold = 0.95){
     c_matrix[i,3] <- adj[idx1,]%*%adj[idx2,]/(.l2norm(adj[idx1,])*.l2norm(adj[idx2,]))
   }
   
-  c_matrix[order(c_matrix[,3]),]
+  c_matrix[order(c_matrix[,3]),,drop = F]
 }
 
 ########
