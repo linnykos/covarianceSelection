@@ -1,54 +1,36 @@
 rm(list=ls())
-load("../results/step3_alldata_analysis.RData")
+load("../results/step4_ouranalysis_tmp.RData")
 
-set.seed(10)
-seedindex <- rep(0, ncol(adj_all))
-seedindex[which(tada$dn.LoF >= 3)] <- 1
+res <- tsourakakis_2013(g)
+###########
+threshold = 0.95
+iter_max = round(igraph::vcount(g)/2)
 
-if(verbose) print(paste0(Sys.time(), ": HMRF"))
-hmrf_all <- covarianceSelection::hmrf(tada$pval.TADA, adj_all, seedindex, pthres = pthres)
-####################
+g <- igraph::as.undirected(g)
+g <- igraph::simplify(g)
+igraph::V(g)$name <- 1:n
 
-pval = tada$pval.TADA
-adj = adj_all
-iter = 100
-verbose = FALSE
-tol = 1e-3
-pthres = 0.05
- 
-stopifnot(length(pval) == length(seedindex), all(dim(adj) == length(pval)))
+initial_idx <- as.character(.tsourakakis_initialize(g))
+node_set <- sort(c(as.character(igraph::neighbors(g, v = initial_idx)), initial_idx))
+iter <- 1
+# print(node_set)
 
-#permute all the entries to avoid emphasis on current order
-d <- length(pval)
-idx <- sample(1:d)
-pval <- pval[idx]; adj <- adj[idx,idx]; seedindex <- seedindex[idx]
-
-z <- stats::qnorm(1-pval)
-i_vec <- as.numeric(pval<pthres)
-b <- -Inf; c <- Inf
-
-mu1 <- mean(z[i_vec==1 & seedindex==0])
-sigmas <- stats::var(z)
-posterior <- rep(0,d)
-
-# res <- .optimize_bc(.partial_likelihood, adj, i_vec, 20)
-##############
-
-func <- .partial_likelihood
-tol = 1e-5
-times <- 20
-b <- 0; c <- 0
-
-graph_term <- i_vec%*%adj
-for (k in 1:times){
-  b_new <- stats::optimize(func, c(-20, 2), c = c, graph_term = graph_term,
-                           i_vec = i_vec, maximum = T)$maximum
-  c_new <- stats::optimize(func, c(-2, 2), b = b_new, graph_term = graph_term,
-                           i_vec = i_vec, maximum = T)$maximum
-  if (abs(b_new-b) < tol & abs(c_new-c) < tol){
-    break()
+while(iter <= iter_max){
+  while(TRUE){
+    # print(node_set)
+    den_org <- .tsourakakis_obj(g, threshold, node_set)
+    node_candidate <- setdiff(as.character(igraph::V(g)$name), node_set)
+    # print(node_candidate)
+    # print(class(node_candidate))
+    next_set <- .find_candidate(g, threshold, node_set, node_candidate, den_org)
+    if(any(is.na(next_set))) break()
+    node_set <- next_set
   }
-  print(paste0("b: ", b_new, "// c: ", c_new))
   
-  b <- b_new; c <- c_new
+  den_org <- .tsourakakis_obj(g, threshold, node_set)
+  next_set <- .find_candidate(g, threshold, node_set, NA, den_org)
+  if(any(is.na(next_set))) break()
+  node_set <- next_set
+  iter <- iter+1
+  # print(node_set)
 }

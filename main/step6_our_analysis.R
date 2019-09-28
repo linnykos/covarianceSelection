@@ -1,11 +1,21 @@
-trials <- 100
+if(verbose) print(paste0(Sys.time(), "Start of step 6: Our data analysis"))
 
-save(trials, file = paste0(save_filepath, "/test.RData"))
-stepdown_obj <- covarianceSelection::stepdown_path(dat_list, trials = trials, cores = ncores, verbose = verbose,
-                                          iterations = 7, file = paste0(save_filepath, "/step3_subjectselection_tmp2.RData"))
-save.image(file = paste0(save_filepath, "/step3_subjectselection_tmp.RData"))
-stepdown_res <- lapply(seq(0, 1, length.out = 21), function(alpha){
-  covarianceSelection::stepdown_choose(stepdown_obj, alpha = alpha, return_pvalue = T)
-})
+idx_our <- covarianceSelection:::tsourakakis_2014_approximate(g)
+dat_our <- do.call(rbind, dat_list[idx_our])
+dat_our <- scale(dat_our)
+adj_our <- covarianceSelection::graphicalModel(dat_our, lambda = "lambda.1se", verbose = T) 
 
-save.image(file = paste0(save_filepath, "/step3_subjectselection.RData"))
+save.image(file = paste0(save_filepath, "/step6_ourdata_analysis.RData"))
+
+# run the HMRF
+set.seed(10)
+seedindex <- rep(0, ncol(adj_our))
+seedindex[which(tada$dn.LoF >= 3)] <- 1
+
+if(verbose) print(paste0(Sys.time(), ": HMRF"))
+hmrf_our <- covarianceSelection::hmrf(tada$pval.TADA, adj_our, seedindex, pthres = pthres) #??? WARNING???
+report_our <- covarianceSelection::report_results(tada$Gene, 1-hmrf_our$post, tada$pval.TADA, hmrf_our$Iupdate)
+cutoff <- sort(report_our$FDR, decreasing = FALSE)[num_target]
+genes_our <- sort(as.character(report_our$Gene[which(report_our$FDR <= cutoff)]))
+
+save.image(file = paste0(save_filepath, "/step6_ourdata_analysis.RData"))
