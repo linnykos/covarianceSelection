@@ -28,7 +28,7 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
     # print(node_set)
   }
   
-  node_set
+  as.numeric(node_set)
 }
 
 # if node_candidate = NA, we are subtracting, not adding
