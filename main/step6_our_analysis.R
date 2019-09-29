@@ -1,6 +1,6 @@
 if(verbose) print(paste0(Sys.time(), "Start of step 6: Our data analysis"))
 
-idx_our <- covarianceSelection:::tsourakakis_2014_approximate(g)
+idx_our <- covarianceSelection:::tsourakakis_2013(g)
 dat_our <- do.call(rbind, dat_list[idx_our])
 dat_our <- scale(dat_our)
 adj_our <- covarianceSelection::graphicalModel(dat_our, lambda = "lambda.1se", verbose = T) 

@@ -4,7 +4,7 @@ if(verbose) print(paste0(Sys.time(), "Start of step 5: Subject selection"))
 
 save(trials, file = paste0(save_filepath, "/test.RData"))
 stepdown_obj <- covarianceSelection::stepdown_path(dat_list, trials = trials, cores = ncores, verbose = verbose,
-                                          iterations = 7, prob = 0.9999,
+                                          iterations = 7, prob = 0.99,
                                           file = paste0(save_filepath, "/step5_subjectselection_tmp2.RData"))
 save.image(file = paste0(save_filepath, "/step5_subjectselection_tmp.RData"))
 stepdown_res <- lapply(seq(0, 1, length.out = 21), function(alpha){

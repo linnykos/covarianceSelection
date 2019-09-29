@@ -17,7 +17,7 @@ source("../main/step2_nodawn_analysis.R")
 source("../main/step3_pfc35_analysis.R")
 source("../main/step4_alldata_analysis.R")
 source("../main/step5_subjectselection.R")
-
+source("../main/step6_our_analysis.R")
 
 # load("../results/step2_naive_analysis.RData")
 # 
