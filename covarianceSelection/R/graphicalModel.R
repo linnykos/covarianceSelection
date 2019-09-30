@@ -12,12 +12,14 @@ graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F, tol = 1e-6){
 
   if(verbose) print("Starting to estimate coefficients")
   coef_list <- .compute_reg_coefficients_cv(dat, lambda = lambda, verbose = verbose)
-  coef_mat <- do.call(cbind, coef_list)
+  coef_mat <- sapply(coef_list, function(x){ x$vec })
+  lambda_vec <- sapply(coef_list, function(x){ x$lambda })
   
   adj_mat <- .symmetrize(coef_mat)
   adj_mat[which(abs(adj_mat) >= tol)] <- 1
   adj_mat[which(abs(adj_mat) <= tol)] <- 0
-  adj_mat
+  
+  list(adj_mat = adj_mat, lambda_vec = lambda_vec)
 }
 
 .compute_reg_coefficients_cv <- function(dat, lambda = "lambda.1se", verbose = F){
@@ -30,12 +32,14 @@ graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F, tol = 1e-6){
       res <- glmnet::glmnet(x = dat[,-x], y = dat[,x], intercept = F)
       vec <- rep(0, d)
       vec[-x] <- as.numeric(stats::coef(res, s = lambda))[-1]
-      vec
+      
+      list(vec = vec, lambda = lambda)
     } else {
       res <- glmnet::cv.glmnet(x = dat[,-x], y = dat[,x], intercept = F)
       vec <- rep(0, d)
       vec[-x] <- as.numeric(stats::coef(res, s = lambda))[-1]
-      vec
+      
+      list(vec = vec, lambda = res[[which(names(res) == lambda)]])
     }
     
   }

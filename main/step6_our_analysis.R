@@ -1,9 +1,17 @@
 if(verbose) print(paste0(Sys.time(), "Start of step 6: Our data analysis"))
 
-idx_our <- covarianceSelection:::tsourakakis_2013(g)
+n <- length(dat_list)
+g_selected <- igraph::graph.empty(n = n, directed = F)
+combn_mat <- utils::combn(length(dat_list), 2)
+g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[3]]$null_idx])
+
+idx_our <- covarianceSelection:::tsourakakis_2013(g_selected)
 dat_our <- do.call(rbind, dat_list[idx_our])
 dat_our <- scale(dat_our)
-adj_our <- covarianceSelection::graphicalModel(dat_our, lambda = "lambda.1se", verbose = T) 
+res <- covarianceSelection::graphicalModel(dat_our, lambda = "lambda.1se", verbose = T) 
+adj_our <- res$adj_mat
+lambda_our <- res$lambda_vec
+stopifnot(all(dim(adj_our) == nrow(tada)))
 
 save.image(file = paste0(save_filepath, "/step6_ourdata_analysis.RData"))
 
@@ -17,5 +25,7 @@ hmrf_our <- covarianceSelection::hmrf(tada$pval.TADA, adj_our, seedindex, pthres
 report_our <- covarianceSelection::report_results(tada$Gene, 1-hmrf_our$post, tada$pval.TADA, hmrf_our$Iupdate)
 cutoff <- sort(report_our$FDR, decreasing = FALSE)[num_target]
 genes_our <- sort(as.character(report_our$Gene[which(report_our$FDR <= cutoff)]))
+
+rm(list = c("dat_our", "seedindex", "cutoff", "res"))
 
 save.image(file = paste0(save_filepath, "/step6_ourdata_analysis.RData"))
