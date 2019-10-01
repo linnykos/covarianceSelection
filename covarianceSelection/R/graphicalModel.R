@@ -14,13 +14,25 @@ graphicalModel <- function(dat, lambda = "lambda.1se", verbose = F, tol = 1e-6){
   coef_list <- .compute_reg_coefficients_cv(dat, lambda = lambda, verbose = verbose)
   coef_mat <- sapply(coef_list, function(x){ x$vec })
   lambda_vec <- sapply(coef_list, function(x){ x$lambda })
+  if(abs(diff(range(lambda_vec))) <= tol) lambda_vec <- min(lambda_vec)
   
   adj_mat <- .symmetrize(coef_mat)
   adj_mat[which(abs(adj_mat) >= tol)] <- 1
   adj_mat[which(abs(adj_mat) <= tol)] <- 0
+  adj_mat <- Matrix::Matrix(adj_mat, sparse = T)
   
   list(adj_mat = adj_mat, lambda_vec = lambda_vec)
 }
+
+graphicalModel_range <- function(dat, lambda_min, lambda_max, lambda_length = 15, verbose = F, tol = 1e-6){
+  lambda_seq <- exp(seq(log(lambda_min), log(lambda_max), length.out = lambda_length))
+  
+  sapply(lambda_seq, function(x){
+    graphicalModel(dat, lambda = x, verbose = verbose, tol = tol)
+  })
+}
+
+##################
 
 .compute_reg_coefficients_cv <- function(dat, lambda = "lambda.1se", verbose = F){
   d <- ncol(dat)
