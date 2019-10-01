@@ -15,3 +15,10 @@ dat_pfc35 <- scale(dat_pfc35)
 # estimate graphical model on PFC35 using cross-validated lasso for neighborhood selection
 res <- covarianceSelection:::graphicalModel_range(dat_pfc35, lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
 save.image("../experiment/tmp.RData")
+
+##########
+
+apply(res, 2, function(x){
+  mat <- as.matrix(x[1][[1]])
+  covarianceSelection::compute_scale_free(mat)
+})
