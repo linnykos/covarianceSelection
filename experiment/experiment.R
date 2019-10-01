@@ -2,15 +2,16 @@ rm(list=ls())
 ncores <- 20
 set.seed(10)
 doMC::registerDoMC(cores = ncores)
-load("/raid6/Kevin/covarianceSelection/results/step3_subjectselection.RData")
+load("raid6/Kevin/covarianceSelection/results/step2_nodawn_analysis.RData")
 
-combn_mat <- utils::combn(length(dat_list), 2)
-combn_mat <- combn_mat[,sample(1:ncol(combn_mat), 1000)]
-pval_vec <- sapply(1:ncol(combn_mat), function(i){
-  x <- combn_mat[,i]
-  res <- covarianceSelection::cai_test(dat_list[[x[1]]], dat_list[[x[2]]], cores = ncores, prob = 0.99)
-  print(paste0("Indicies ", i, " : value ", round(res, 3)))
-  res
-})
+#####
+set.seed(10)
+if(verbose) print(paste0(Sys.time(), "Start of step 2: Naive analysis"))
 
-save.image("/raid6/Kevin/covarianceSelection/results/tmp.RData")
+selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
+dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 3438
+dat_pfc35 <- scale(dat_pfc35)
+
+# estimate graphical model on PFC35 using cross-validated lasso for neighborhood selection
+res <- covarianceSelection:::graphicalModel_range(dat_pfc35, lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
+save.image("../experiment/tmp.RData")

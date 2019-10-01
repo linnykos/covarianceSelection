@@ -28,6 +28,7 @@ graphicalModel_range <- function(dat, lambda_min, lambda_max, lambda_length = 15
   lambda_seq <- exp(seq(log(lambda_min), log(lambda_max), length.out = lambda_length))
   
   sapply(lambda_seq, function(x){
+    if(verbose) print(x)
     graphicalModel(dat, lambda = x, verbose = verbose, tol = tol)
   })
 }
