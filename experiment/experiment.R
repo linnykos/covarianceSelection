@@ -2,7 +2,7 @@ rm(list=ls())
 ncores <- 20
 set.seed(10)
 doMC::registerDoMC(cores = ncores)
-load("raid6/Kevin/covarianceSelection/results/step2_nodawn_analysis.RData")
+load("/raid6/Kevin/covarianceSelection/results/step2_nodawn_analysis.RData")
 
 #####
 set.seed(10)
