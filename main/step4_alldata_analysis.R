@@ -22,6 +22,6 @@ save.image(file = paste0(save_filepath, "/step4_alldata_analysis.RData"))
 # cutoff <- sort(report_all$FDR, decreasing = FALSE)[num_target]
 # genes_all <- sort(as.character(report_all$Gene[which(report_all$FDR <= cutoff)]))
 
-rm(list = c("dat_all", "seedindex", "cutoff", "res"))
+rm(list = c("dat_all", "seedindex", "cutoff"))
 
 save.image(file = paste0(save_filepath, "/step4_alldata_analysis.RData"))

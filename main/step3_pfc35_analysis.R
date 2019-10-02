@@ -28,6 +28,6 @@ save.image(file = paste0(save_filepath, "/step3_pfc35_analysis.RData"))
 # cutoff <- sort(report_pfc35$FDR, decreasing = FALSE)[num_target]
 # genes_pfc35 <- sort(as.character(report_pfc35$Gene[which(report_pfc35$FDR <= cutoff)]))
 
-rm(list = c("dat_pfc35", "seedindex", "cutoff", "res"))
+rm(list = c("dat_pfc35", "seedindex", "cutoff"))
 
 save.image(file = paste0(save_filepath, "/step3_pfc35_analysis.RData"))
