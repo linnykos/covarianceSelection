@@ -5,23 +5,24 @@ dat_all <- scale(dat_all, scale = F)
 
 # estimate graphical model on PFC35 using cross-validated lasso for neighborhood selection
 res <- covarianceSelection:::graphicalModel_range(dat_all, lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
-# adj_all <- res$adj_mat
-# lambda_all <- res$lambda_vec
-# stopifnot(all(dim(adj_all) == nrow(tada)))
-
 save.image(file = paste0(save_filepath, "/step4_alldata_analysis.RData"))
 
-# # run the HMRF
-# set.seed(10)
-# seedindex <- rep(0, ncol(adj_all))
-# seedindex[which(tada$dn.LoF >= 3)] <- 1
-# 
-# if(verbose) print(paste0(Sys.time(), ": HMRF"))
-# hmrf_all <- covarianceSelection::hmrf(tada$pval.TADA, adj_all, seedindex, pthres = pthres) #??? WARNING???
-# report_all <- covarianceSelection::report_results(tada$Gene, 1-hmrf_all$post, tada$pval.TADA, hmrf_all$Iupdate)
-# cutoff <- sort(report_all$FDR, decreasing = FALSE)[num_target]
-# genes_all <- sort(as.character(report_all$Gene[which(report_all$FDR <= cutoff)]))
+scale_idx <- sapply(res, function(x){covarianceSelection::compute_scale_free(x$adj_mat)})
+idx <- which.max(scale_idx)
+adj_all <- res[[idx]]$adj_mat
+stopifnot(all(dim(adj_all) == nrow(tada)))
 
-rm(list = c("dat_all", "seedindex", "cutoff"))
+# run the HMRF
+set.seed(10)
+seedindex <- rep(0, ncol(adj_all))
+seedindex[which(tada$dn.LoF >= 3)] <- 1
+
+if(verbose) print(paste0(Sys.time(), ": HMRF"))
+hmrf_all <- covarianceSelection::hmrf(tada$pval.TADA, adj_all, seedindex, pthres = pthres) 
+report_all <- covarianceSelection::report_results(tada$Gene, 1-hmrf_all$post, tada$pval.TADA, hmrf_all$Iupdate)
+cutoff <- sort(report_all$FDR, decreasing = FALSE)[num_target]
+genes_all <- sort(as.character(report_all$Gene[which(report_all$FDR <= cutoff)]))
+
+rm(list = c("dat_all", "seedindex", "cutoff", "res", "scale_idx", "idx"))
 
 save.image(file = paste0(save_filepath, "/step4_alldata_analysis.RData"))

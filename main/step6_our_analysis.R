@@ -7,13 +7,15 @@ g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[3]]
 
 idx_our <- covarianceSelection:::tsourakakis_2013(g_selected)
 dat_our <- do.call(rbind, dat_list[idx_our])
-dat_our <- scale(dat_our)
-res <- covarianceSelection::graphicalModel(dat_our, lambda = "lambda.1se", verbose = T) 
-adj_our <- res$adj_mat
-lambda_our <- res$lambda_vec
-stopifnot(all(dim(adj_our) == nrow(tada)))
+dat_our <- scale(dat_our, scale = F)
 
+res <- covarianceSelection:::graphicalModel_range(dat_our, lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
 save.image(file = paste0(save_filepath, "/step6_ourdata_analysis.RData"))
+
+scale_idx <- sapply(res, function(x){covarianceSelection::compute_scale_free(x$adj_mat)})
+idx <- which.max(scale_idx)
+adj_our <- res[[idx]]$adj_mat
+stopifnot(all(dim(adj_our) == nrow(tada)))
 
 # run the HMRF
 set.seed(10)
