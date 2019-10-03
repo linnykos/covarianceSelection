@@ -7,9 +7,9 @@ dat_all <- scale(dat_all, scale = F)
 res <- covarianceSelection:::graphicalModel_range(dat_all, lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
 save.image(file = paste0(save_filepath, "/step4_alldata_analysis.RData"))
 
-scale_idx <- sapply(res, function(x){covarianceSelection::compute_scale_free(x$adj_mat)})
+scale_idx <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
 idx <- which.max(scale_idx)
-adj_all <- res[[idx]]$adj_mat
+adj_all <- as.matrix(res[[idx]]$adj_mat)
 stopifnot(all(dim(adj_all) == nrow(tada)))
 
 # run the HMRF
