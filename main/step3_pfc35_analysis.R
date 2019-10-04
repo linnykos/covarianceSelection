@@ -29,6 +29,6 @@ report_pfc35 <- covarianceSelection::report_results(tada$Gene, 1-hmrf_pfc35$post
 cutoff <- sort(report_pfc35$FDR, decreasing = FALSE)[num_target]
 genes_pfc35 <- sort(as.character(report_pfc35$Gene[which(report_pfc35$FDR <= cutoff)]))
 
-rm(list = c("dat_pfc35", "seedindex", "cutoff", "scale_idx", "idx", "res"))
+rm(list = c("dat_pfc35", "seedindex", "cutoff", "scale_idx", "idx", "res", "selected_idx"))
 
 save.image(file = paste0(save_filepath, "/step3_pfc35_analysis.RData"))

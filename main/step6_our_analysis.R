@@ -19,7 +19,7 @@ stopifnot(all(dim(adj_our) == nrow(tada)))
 
 # run the HMRF
 set.seed(10)
-seedindex <- rep(0, ncol(adj_our))
+seedindex <- rep( 0, ncol(adj_our))
 seedindex[which(tada$dn.LoF >= 3)] <- 1
 
 if(verbose) print(paste0(Sys.time(), ": HMRF"))
@@ -28,6 +28,6 @@ report_our <- covarianceSelection::report_results(tada$Gene, 1-hmrf_our$post, ta
 cutoff <- sort(report_our$FDR, decreasing = FALSE)[num_target]
 genes_our <- sort(as.character(report_our$Gene[which(report_our$FDR <= cutoff)]))
 
-rm(list = c("dat_our", "seedindex", "cutoff", "res"))
+rm(list = c("dat_our", "seedindex", "cutoff", "res", "combn_mat", "n", "g_selected"))
 
 save.image(file = paste0(save_filepath, "/step6_ourdata_analysis.RData"))
