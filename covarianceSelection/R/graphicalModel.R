@@ -17,8 +17,8 @@ graphicalModel <- function(dat, primary_idx, lambda = "lambda.1se", verbose = F,
   if(abs(diff(range(lambda_vec))) <= tol) lambda_vec <- min(lambda_vec)
   stopifnot(nrow(coef_mat) == ncol(dat), ncol(coef_mat) == length(primary_idx))
   
-  adj_mat <- cbind(coef_mat, matrix(0, nrow = nrow(coef_mat), ncol = ncol(coef_mat) - nrow(coef_mat)))
-  adj_mat <- .symmetrize(coef_mat)
+  adj_mat <- cbind(coef_mat, matrix(0, nrow = nrow(coef_mat), ncol = nrow(coef_mat) - ncol(coef_mat)))
+  adj_mat <- .symmetrize(adj_mat)
   adj_mat[which(abs(adj_mat) >= tol)] <- 1
   adj_mat[which(abs(adj_mat) <= tol)] <- 0
   adj_mat <- Matrix::Matrix(adj_mat, sparse = T)

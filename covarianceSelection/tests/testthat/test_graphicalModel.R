@@ -4,62 +4,27 @@ context("Test graphical model")
 
 test_that("graphicalModel works", {
   set.seed(10)
-  dat <- matrix(rnorm(500), 50, 10)
+  dat <- matrix(rnorm(50^2), 50, 50)
+  primary_idx <- 1:10
+  lambda = 0.01
 
-  res <- graphicalModel(dat)
+  res <- graphicalModel(dat, primary_idx, lambda)
 
-  expect_true(is.matrix(res))
-  expect_true(ncol(res) == nrow(res))
-  expect_true(sum(abs(res - t(res))) < 1e-5)
+  adj_mat <- as.matrix(res$adj_mat)
+  expect_true(is.matrix(adj_mat))
+  expect_true(ncol(adj_mat) == nrow(adj_mat))
+  expect_true(sum(abs(adj_mat - t(adj_mat))) < 1e-5)
 })
 
-test_that("graphicalModel converges to identity", {
+test_that("graphicalModel resspects primary genes", {
   set.seed(10)
-  dat <- MASS::mvrnorm(1000, rep(0, 10), diag(10))
-
-  res <- graphicalModel(dat)
-
-  expect_true(sum(abs(res - diag(10)))/10^2 < 1e-2)
+  dat <- matrix(rnorm(50^2), 50, 50)
+  primary_idx <- 1:10
+  lambda = 0.01
+  
+  res <- graphicalModel(dat, primary_idx, lambda)
+  
+  adj_mat <- as.matrix(res$adj_mat)
+  expect_true(all(sum(abs(adj_mat[11:50, 11:50])) <= 1e-6))
+  expect_true(sum(abs(adj_mat)) > 1e-6)
 })
-
-test_that("graphicalModel converges to something", {
-  set.seed(10)
-  L <- huge::huge.generator(n = 1000, d = 12, graph = "hub", g = 4, verbose = F)
-
-  res <- graphicalModel(L$data)
-
-  expect_true(sum(abs(res - L$omega))/12^2 < 0.1)
-})
-
-########################
-
-## .compute_reg_coefficients_cv is correct
-
-test_that(".compute_reg_coefficients_cv works", {
-  set.seed(10)
-  dat <- matrix(rnorm(500), 50, 10)
-
-  res <- .compute_reg_coefficients_cv(dat)
-
-  expect_true(is.list(res))
-  expect_true(length(res) == ncol(dat))
-  expect_true(all(sapply(res, length) == ncol(dat)))
-})
-
-#######################
-
-## .compute_sigma_vec is correct
-
-test_that(".compute_sigma_vec works", {
-  set.seed(10)
-  dat <- matrix(rnorm(500), 50, 10)
-
-  coef_list <- .compute_reg_coefficients_cv(dat)
-  coef_mat <- do.call(cbind, coef_list)
-  res <- .compute_sigma_vec(dat, coef_mat)
-
-  expect_true(is.numeric(res))
-  expect_true(length(res) == ncol(dat))
-})
-
-
