@@ -3,7 +3,7 @@ if(verbose) print(paste0(Sys.time(), "Start of step 6: Our data analysis"))
 n <- length(dat_list)
 g_selected <- igraph::graph.empty(n = n, directed = F)
 combn_mat <- utils::combn(length(dat_list), 2)
-g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[2]]$null_idx])
+g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[3]]$null_idx])
 
 idx_our <- covarianceSelection:::tsourakakis_2013(g_selected)
 dat_our <- do.call(rbind, dat_list[idx_our])
