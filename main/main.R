@@ -7,6 +7,7 @@ doMC::registerDoMC(cores = ncores)
 library(devtools)
 devtools::install_github("linnylin92/covarianceSelection", subdir = "covarianceSelection", force = T)
 library(covarianceSelection)
+library(org.Hs.eg.db)
 
 verbose <- T
 save_filepath <- "/raid6/Kevin/covarianceSelection/results"
