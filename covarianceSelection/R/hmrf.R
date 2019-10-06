@@ -2,13 +2,13 @@
 .partial_likelihood <- function(b, c, graph_term, i_vec){
   d <- length(i_vec)
 
-  fv.fun <- function(i){
-    new1 <- exp(b*i_vec[i]+c*i_vec[i]*graph_term[i])
-    new2 <- exp(b*(1-i_vec[i])+c*(1-i_vec[i])*graph_term[i])
+  fv_fun <- function(i){
+    new1 <- exp(b*i_vec[i] + c*i_vec[i]*graph_term[i])
+    new2 <- exp(b*(1-i_vec[i]) + c*(1-i_vec[i])*graph_term[i])
     fvalue <- log(new1/(new1+new2))
   }
 
-  sum(sapply(1:d,fv.fun))
+  sum(sapply(1:d, fv_fun))
 }
 
 ##estimate Ising model parameters b,c
@@ -17,9 +17,9 @@
 
   graph_term <- i_vec%*%adj
   for (k in 1:times){
-    b_new <- stats::optimize(func, c(-2, 2), c = c, graph_term = graph_term,
+    b_new <- stats::optimize(func, c(-20, 0), c = c, graph_term = graph_term,
                              i_vec = i_vec, maximum = T)$maximum
-    c_new <- stats::optimize(func, c(-2, 2), b = b_new, graph_term = graph_term,
+    c_new <- stats::optimize(func, c(0, 10), b = b_new, graph_term = graph_term,
                              i_vec = i_vec, maximum = T)$maximum
     if (abs(b_new-b) < tol & abs(c_new-c) < tol){
       break()
@@ -61,8 +61,10 @@ hmrf <- function(pval, adj, seedindex, pthres = 0.05, iter = 100,
   i_vec <- as.numeric(pval<pthres)
   b <- 0; c <- 0
 
-  mu1 <- mean(z[i_vec==1 & seedindex==0])
-  sigmas <- stats::var(z)
+  non_seedidx <- (seedindex==0)
+  mu1 <- mean(z[i_vec==1 & non_seedidx])
+  sigmas1 <- (sd(z[i_vec == 0]))^2
+  sigmas2 <- (sd(z[i_vec == 1 & non_seedidx]))^2
   posterior <- rep(0,d)
 
   for (iteri in 1:iter){
@@ -77,10 +79,10 @@ hmrf <- function(pval, adj, seedindex, pthres = 0.05, iter = 100,
     for (i in 1:d){
       i_vec_tmp <- i_vec; i_vec_tmp[i] <- 1-i_vec[i]
 
-      new1 <- exp(b*i_vec[i] + c*i_vec[i]*adj[i,]%*%i_vec)
-      new2 <- exp(b*(1-i_vec[i]) + c*(1-i_vec[i])*adj[i,]%*%i_vec_tmp)
-      p1 <- stats::dnorm(z[i], mu1*i_vec[i], sqrt(sigmas))/(1 + exp(new2-new1))
-      p2 <- stats::dnorm(z[i], mu1*(1-i_vec[i]), sqrt(sigmas))/(1 + exp(new1-new2))
+      new1 <- b*i_vec[i] + c*i_vec[i]*adj[i,]%*%i_vec
+      new2 <- b*(1-i_vec[i]) + c*(1-i_vec[i])*adj[i,]%*%i_vec_tmp
+      p1 <- stats::dnorm(z[i], mu1*i_vec[i], sqrt(sigmas2 * i_vec[i] + sigmas1 * (1 - i_vec[i])))/(1 + exp(new2-new1))
+      p2 <- stats::dnorm(z[i], mu1*(1-i_vec[i]), sqrt(sigmas2 * (1 - i_vec[i]) + sigmas1 * i_vec[i]))/(1 + exp(new1-new2))
 
       if (i_vec[i] == 1){
         posterior[i] <- p1/(p1+p2)
@@ -92,10 +94,11 @@ hmrf <- function(pval, adj, seedindex, pthres = 0.05, iter = 100,
       if (seedindex[i] != 0){ i_vec[i] <- 1 }
     }
 
-    mu1 <- sum(posterior[seedindex==0]*z[seedindex==0])/sum(posterior[seedindex==0])
-    sigmas2 <- sum(posterior[seedindex==0]*(z[seedindex==0]-mu1)^2)/sum(posterior[seedindex==0])
-    sigmas1 <- sum((1-posterior[seedindex==0])*(z[seedindex==0])^2)/sum(1-posterior[seedindex==0])
-    sigmas <- (sigmas1*sum(posterior[seedindex==0])+sigmas2*sum(1-posterior[seedindex==0])) / length(posterior)
+    mu1 <- sum(posterior[non_seedidx]*z[non_seedidx])/sum(posterior[non_seedidx])
+    sigmas2 <- sum(posterior[non_seedidx]*(z[non_seedidx]-mu1)^2)/sum(posterior[non_seedidx])
+    sigmas1 <- sum((1-posterior[non_seedidx])*(z[non_seedidx])^2)/sum(1-posterior[non_seedidx])
+    sigmas <- (sigmas1*sum(posterior[non_seedidx]) + sigmas2*sum(1-posterior[non_seedidx])) / length(posterior[non_seedidx])
+    sigmas1 <- sigmas; sigmas2 <- sigmas
 
     if(verbose) print(paste0("Iteration: ",iteri," has ", sum(i_vec)," genes set with Iupdate = 1."))
   }

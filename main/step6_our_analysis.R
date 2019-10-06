@@ -9,7 +9,7 @@ idx_our <- covarianceSelection:::tsourakakis_2013(g_selected)
 dat_our <- do.call(rbind, dat_list[idx_our])
 dat_our <- scale(dat_our, scale = F)
 
-res <- covarianceSelection:::graphicalModel_range(dat_our, lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
+res <- covarianceSelection:::graphicalModel_range(dat_our, screening_res$primary, lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
 save.image(file = paste0(save_filepath, "/step6_ourdata_analysis.RData"))
 
 scale_idx <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})

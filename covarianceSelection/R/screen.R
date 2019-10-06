@@ -13,13 +13,17 @@
 #' @return list of primary and secondary genes, each a vector of integers
 #' between 1 and \code{ncol(dat)}
 #' @export
-screen <- function(dat, pv, p_thres = 0.1, cor_thres){
+screen <- function(dat, pv, p_thres = 0.1, cor_thres = 0.7){
   stopifnot(ncol(dat) == length(pv))
   stopifnot(is.numeric(dat), is.matrix(dat))
 
   n <- nrow(dat); d <- ncol(dat)
+  
+  cor_mat <- abs(stats::cor(dat))
 
   primary <- which(pv < p_thres)
+  idx <- which(colSums(cor_mat[primary, primary] > cor_thres) > 0)
+  primary <- primary[idx]
 
   candidates <- c(1:d)[-primary]
   if(length(candidates) == 0) {
@@ -27,9 +31,10 @@ screen <- function(dat, pv, p_thres = 0.1, cor_thres){
   }
   
   #find the largest correlation of secondary genes to primary genes
-  cor_mat <- abs(stats::cor(dat))
   cor_vec <- apply(cor_mat[candidates, primary], 1, max)
   secondary <- candidates[which(cor_vec >= cor_thres)]
+  
+  stopifnot(length(intersect(primary, secondary)) == 0)
 
   list(primary = sort(primary), secondary = sort(secondary))
 }

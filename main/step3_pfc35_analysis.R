@@ -10,7 +10,7 @@ dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 3438
 dat_pfc35 <- scale(dat_pfc35, scale = F)
 
 # estimate graphical model on PFC35 using cross-validated lasso for neighborhood selection
-res <- covarianceSelection:::graphicalModel_range(dat_pfc35, lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
+res <- covarianceSelection:::graphicalModel_range(dat_pfc35, screening_res$primary, lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
 
 save.image(file = paste0(save_filepath, "/step3_pfc35_analysis.RData"))
 scale_idx <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
