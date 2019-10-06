@@ -3,14 +3,14 @@ num_target <- 200
 
 #####
 set.seed(10)
-if(verbose) print(paste0(Sys.time(), "Start of step 2: Naive analysis"))
+if(verbose) print(paste0(Sys.time(), "Start of step 3: Naive analysis"))
 
 selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
 dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 3438
 dat_pfc35 <- scale(dat_pfc35, scale = F)
 
 # estimate graphical model on PFC35 using cross-validated lasso for neighborhood selection
-res <- covarianceSelection:::graphicalModel_range(dat_pfc35, screening_res$primary, lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
+res <- covarianceSelection:::graphicalModel_range(dat_pfc35, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
 
 save.image(file = paste0(save_filepath, "/step3_pfc35_analysis.RData"))
 scale_idx <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})

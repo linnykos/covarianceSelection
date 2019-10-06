@@ -40,9 +40,10 @@ graphicalModel_range <- function(dat,  primary_idx, lambda_min, lambda_max, lamb
 .compute_reg_coefficients_cv <- function(dat, primary_idx = 1:ncol(dat), lambda = "lambda.1se", verbose = F){
   d <- ncol(dat)
 
-  func <- function(x){
-    if(verbose & x %% floor(d/10) == 0) cat('*')
+  func <- function(i){
+    if(verbose & i %% floor(length(primary_idx)/10) == 0) cat('*')
     
+    x <- primary_idx[i]
     if(is.numeric(lambda)){
       res <- glmnet::glmnet(x = dat[,-x], y = dat[,x], intercept = F, lambda = lambda)
       vec <- rep(0, d)
@@ -60,7 +61,7 @@ graphicalModel_range <- function(dat,  primary_idx, lambda_min, lambda_max, lamb
   }
   
   i <- 0 #debugging purposes only
-  foreach::"%dopar%"(foreach::foreach(i = primary_idx), func(i))
+  foreach::"%dopar%"(foreach::foreach(i = 1:length(primary_idx)), func(i))
 }
 
 .l2norm <- function(vec){
