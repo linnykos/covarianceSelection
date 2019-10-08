@@ -23,21 +23,22 @@ screen <- function(dat, pv, p_thres = 0.1, num_genes = 3500){
   cor_mat <- abs(stats::cor(dat))
 
   primary <- which(pv < p_thres)
-  idx <- which(colSums(cor_mat[primary, primary] > cor_thres) > 0)
-  primary <- primary[idx]
+  # idx <- which(colSums(cor_mat[primary, primary] > cor_thres) > 0)
+  # primary <- primary[idx]
 
   candidates <- c(1:d)[-primary]
   if(length(candidates) == 0 | length(primary) >= num_genes) {
-    return(list(primary = primary, secondary = NA))
+    return(list(primary = primary, secondary = NA, cor_thres = NA))
   }
   
   #find the largest correlation of secondary genes to primary genes
   cor_vec <- apply(cor_mat[candidates, primary], 1, max)
   # secondary <- candidates[which(cor_vec >= cor_thres)]
   idx <- order(cor_vec, decreasing = T)[1:(num_genes - length(primary))]
+  cor_thres <- min(cor_vec[idx])
   secondary <- candidates[idx]
   
   stopifnot(length(intersect(primary, secondary)) == 0)
 
-  list(primary = sort(primary), secondary = sort(secondary))
+  list(primary = sort(primary), secondary = sort(secondary), cor_thres = cor_thres)
 }

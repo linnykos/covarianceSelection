@@ -11,7 +11,7 @@ dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 13964
 screening_res <- covarianceSelection::screen(dat_pfc35, pv = tada$pval.TADA, p_thres = p_thres_screening, 
                                              num_genes = num_genes)
 
-# 1605 primary, 1460 secondary, total of 3065
+# 265 primary, 3235 secondary, total of 3500
 
 # apply the new gene list
 for(i in 1:length(dat_list)){
