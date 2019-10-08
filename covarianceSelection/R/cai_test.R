@@ -4,6 +4,7 @@
 #' @param y data matrix
 #' @param trials number of trials
 #' @param cores number of cores
+#' @param prob numeric between 0 and 1
 #'
 #' @return numeric (p-value)
 #' @export
@@ -48,7 +49,7 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
   }
 
   if(prob == 1) max(abs(res)) else {
-    quantile(abs(res), prob = prob)
+    stats::quantile(abs(res), prob = prob)
   }
 }
 
@@ -56,7 +57,7 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
 #'
 #' @param mat data matrix
 #' @param noise_vec vector of noise
-#' @param cov_mat vectorized covariance matrix of length \code{idx}
+#' @param cov_vec vectorized covariance matrix of length \code{idx}
 #' @param idx vector of the indices of the lower triangle
 #'
 #' @return vector

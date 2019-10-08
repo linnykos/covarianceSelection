@@ -3,12 +3,16 @@
 #' @param dat_list list of data matrices with same number of columns
 #' @param trials number of trials
 #' @param alpha alpha level
-#' @param denominator boolean
+#' @param return_pvalue boolean if the naive p-values should be returned
 #' @param cores number of cores
+#' @param prob numeric between 0 and 1
 #' @param verbose boolean for verbose
+#' @param only_test_stat boolean if only the test statistic should be return
 #'
-#' @return indices for \code{combn(length(dat_list), 2)} that correspond to the
-#' hypotheses that passed
+#' @return if \code{only_test_stat} is \code{FALSE}:
+#' a list containing \code{null_idx} for indices for \code{combn(length(dat_list), 2)} that correspond to the
+#' hypotheses that passed and \code{pval} (which will be \code{NA} if \code{return_pvalue} is
+#' \code{FALSE}) or the p-values
 #' @export
 stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, cores = 1,
                      prob = 1, verbose = F, only_test_stat = F){
@@ -108,6 +112,7 @@ stepdown <- function(dat_list, trials = 100, alpha = 0.05, return_pvalue = F, co
 #' @param denom_list list of denominator vectors
 #' @param combn_mat matrix of pairs to test for
 #' @param squared boolean on whether or not to square the test statistic
+#' @param prob numeric between 0 and 1
 #'
 #' @return vector of all the bootstrap statistics
 .compute_all_test_stat <- function(num_list, denom_list,

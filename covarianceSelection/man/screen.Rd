@@ -4,16 +4,16 @@
 \alias{screen}
 \title{Screening data}
 \usage{
-screen(dat, pv, p_thres = 0.1, cor_thres)
+screen(dat, pv, p_thres = 0.1, cor_thres = 0.7)
 }
 \arguments{
 \item{dat}{the nxd matrix}
 
 \item{pv}{vector of d pvalues}
 
-\item{pthres}{numeric}
+\item{p_thres}{numeric}
 
-\item{num_genes}{numeric}
+\item{cor_thres}{numeric}
 }
 \value{
 list of primary and secondary genes, each a vector of integers
@@ -21,7 +21,7 @@ between 1 and \code{ncol(dat)}
 }
 \description{
 We use a screening method where genes with \code{pv} lower than
-\code{pthres} are primary genes. \code{num_genes} are selected, where
-the remaining secondary genes are selected based on having the having
-(absolute) Pearson correlation with any of the primary genes.
+\code{p_thres} are primary genes, and the secondary genes are selected based on having the having
+(absolute) Pearson correlation with any of the primary genes
+higher than \code{cor_thres}
 }

@@ -1,14 +1,14 @@
 #' Screening data
 #'
 #' We use a screening method where genes with \code{pv} lower than
-#' \code{pthres} are primary genes. \code{num_genes} are selected, where
-#' the remaining secondary genes are selected based on having the having
-#' (absolute) Pearson correlation with any of the primary genes.
+#' \code{p_thres} are primary genes, and the secondary genes are selected based on having the having
+#' (absolute) Pearson correlation with any of the primary genes
+#' higher than \code{cor_thres}
 #'
 #' @param dat the nxd matrix
 #' @param pv vector of d pvalues
-#' @param pthres numeric
-#' @param num_genes numeric
+#' @param p_thres numeric
+#' @param cor_thres numeric
 #'
 #' @return list of primary and secondary genes, each a vector of integers
 #' between 1 and \code{ncol(dat)}

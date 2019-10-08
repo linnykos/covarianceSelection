@@ -17,6 +17,10 @@ stepdown_path(dat_list, trials = 100, iterations = 15, cores = 1,
 \item{cores}{number of cores}
 
 \item{verbose}{boolean for verbose}
+
+\item{file}{temporary save filepath}
+
+\item{prob}{numeric between 0 and 1}
 }
 \value{
 a \code{stepdown} object

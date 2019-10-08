@@ -17,8 +17,8 @@ Imports:
     binaryLogic,
     mgcv,
     org.Hs.eg.db,
-    DBI
+    DBI,
+    dequer
 Suggests:
     testthat
-LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 6.1.1

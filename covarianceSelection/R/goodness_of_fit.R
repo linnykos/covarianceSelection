@@ -10,7 +10,6 @@
 #' @param trials number of trials
 #' @param cores number of cores
 #' @param verbose boolean
-#' @param prob parameter for robustness
 #'
 #' @return vector of p-values
 #' @export

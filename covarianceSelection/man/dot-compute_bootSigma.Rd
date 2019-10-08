@@ -11,9 +11,9 @@
 
 \item{noise_vec}{vector of noise}
 
-\item{idx}{vector of the indices of the lower triangle}
+\item{cov_vec}{vectorized covariance matrix of length \code{idx}}
 
-\item{cov_mat}{vectorized covariance matrix of length \code{idx}}
+\item{idx}{vector of the indices of the lower triangle}
 }
 \value{
 vector

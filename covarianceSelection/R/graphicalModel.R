@@ -2,10 +2,14 @@
 #'
 #' Estimated using neighbhorhood selection, cross validation to select lambda
 #'
-#' @param dat the nxd matrix
+#' @param dat the matrix with \code{n} rows and \code{d} columns
+#' @param primary_idx index vector that is a subset of \code{1:ncol(dat)}
+#' @param lambda either a character vector (\code{"lambda.1se"} or \code{"lambda.min"}) or a numeric positive scalar
 #' @param verbose boolean
+#' @param tol numeric
 #'
-#' @return a precision matrix estimate, dxd
+#' @return a list that contains an \code{d} by \code{d} \code{sparseMatrix} encoding the
+#' estimated adjacency matrix and a numeric vector \code{lambda_vec}
 #' @export
 graphicalModel <- function(dat, primary_idx, lambda = "lambda.1se", verbose = F, tol = 1e-6){
   n <- nrow(dat); d <- ncol(dat)
@@ -26,6 +30,18 @@ graphicalModel <- function(dat, primary_idx, lambda = "lambda.1se", verbose = F,
   list(adj_mat = adj_mat, lambda_vec = lambda_vec)
 }
 
+#' Graphical model estimate for a range of lambda values
+#'
+#' @param dat the matrix with \code{n} rows and \code{d} columns
+#' @param primary_idx index vector that is a subset of \code{1:ncol(dat)}
+#' @param lambda_min minimum value of \code{lambda} when using \code{graphicalModel}
+#' @param lambda_max maximum value of \code{lambda} when using \code{graphicalModel}
+#' @param lambda_length number of \code{lambda} values to try (exponential growth)
+#' @param verbose boolean
+#' @param tol numeric
+#'
+#' @return a list, each being an output for \code{graphicalModel} for a different value of \code{lambda}
+#' @export
 graphicalModel_range <- function(dat,  primary_idx, lambda_min, lambda_max, lambda_length = 15, verbose = F, tol = 1e-6){
   lambda_seq <- exp(seq(log(lambda_min), log(lambda_max), length.out = lambda_length))
   

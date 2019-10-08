@@ -3,22 +3,21 @@
 \docType{data}
 \name{tada}
 \alias{tada}
-\title{TADA dataset}
-\format{A data frame with 18735 rows (18735 genes) and 17 columns.
+\title{Partitioning of the regions in the brain}
+\format{A data frame with four columns
 \describe{
-  \item{Gene}{Gene name}
-  \item{pval.TADA}{pvalue}
+  \item{Gene}{gene name}
+  \item{dn.LoF}{number of measured de novo loss-of-function mutations}
+  \item{qvalue}{q-values based on the p-values}
+  \item{pval.TADA}{p-values based on the TADA model}
 }}
 \source{
-The methodology to calculate these values were based on
-"He, X., Sanders, S. J., Liu, L., De Rubeis, S., Lim, E. T., Sutcliffe, J. S.,
-... & Devlin, B. (2013). Integrated model of de novo and inherited genetic
-variants yields greater power to identify risk genes. PLoS genetics, 9(8), e1003671.",
-but the dataset itself comes from 
-"De Rubeis, Silvia, et al. "Synaptic, transcriptional and chromatin genes disrupted in autism." Nature 515.7526 (2014): 209."
+Based on
+"De Rubeis, Silvia, et al. "Synaptic, transcriptional and chromatin genes disrupted in autism." 
+Nature 515.7526 (2014): 209."
 }
 \description{
-TADA dataset
+Partitioning of the regions in the brain
 }
 \author{
 Kevin Lin \email{kevinl1@andrew.cmu.edu}

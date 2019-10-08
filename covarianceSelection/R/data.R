@@ -1,5 +1,38 @@
 #' Partitioning of the regions in the brain
 #'
+#' @name validated_genes
+#' @docType data
+#' @format A data frame with one column
+#' \describe{
+#'   \item{Gene}{gene name}
+#' }
+#' @author Kevin Lin \email{kevinl1@andrew.cmu.edu}
+#' @source Genes based on the findings of
+#' "Satterstrom, F. Kyle, et al. "Large-scale exome sequencing study implicates both developmental 
+#' and functional changes in the neurobiology of autism." (2019)."
+#' @keywords data
+NULL
+
+#' Partitioning of the regions in the brain
+#'
+#' @name tada
+#' @docType data
+#' @format A data frame with four columns
+#' \describe{
+#'   \item{Gene}{gene name}
+#'   \item{dn.LoF}{number of measured de novo loss-of-function mutations}
+#'   \item{qvalue}{q-values based on the p-values}
+#'   \item{pval.TADA}{p-values based on the TADA model}
+#' }
+#' @author Kevin Lin \email{kevinl1@andrew.cmu.edu}
+#' @source Based on
+#' "De Rubeis, Silvia, et al. "Synaptic, transcriptional and chromatin genes disrupted in autism." 
+#' Nature 515.7526 (2014): 209."
+#' @keywords data
+NULL
+
+#' Partitioning of the regions in the brain
+#'
 #' @name region_subregion
 #' @docType data
 #' @format A data frame with two columns
@@ -43,40 +76,6 @@ NULL
 #' @keywords data
 NULL
 
-#' Gene synonyms
-#'
-#' @name synonyms
-#' @docType data
-#' @format A list
-#' \describe{
-#'   \item{hash}{A \code{hash} object where each key is a symbol and each value is an integer.
-#'   The integer references which element in \code{syn.list} corresponds to the key.}
-#'   \item{syn.list}{A list where each element (named) is a vector of synonym symbols (characters)}
-#' }
-#' @author Kevin Lin \email{kevinl1@andrew.cmu.edu}
-#' @source The dataset is based on outputs in \url{http://biomart.genenames.org/martform/#!/default/HGNC?datasets=hgnc_gene_mart}.
-#' @keywords data
-NULL
-
-#' TADA dataset
-#'
-#' @name tada
-#' @docType data
-#' @format A data frame with 18735 rows (18735 genes) and 17 columns.
-#' \describe{
-#'   \item{Gene}{Gene name}
-#'   \item{pval.TADA}{pvalue}
-#' }
-#' @author Kevin Lin \email{kevinl1@andrew.cmu.edu}
-#' @source The methodology to calculate these values were based on
-#' "He, X., Sanders, S. J., Liu, L., De Rubeis, S., Lim, E. T., Sutcliffe, J. S.,
-#' ... & Devlin, B. (2013). Integrated model of de novo and inherited genetic
-#' variants yields greater power to identify risk genes. PLoS genetics, 9(8), e1003671.",
-#' but the dataset itself comes from 
-#' "De Rubeis, Silvia, et al. "Synaptic, transcriptional and chromatin genes disrupted in autism." Nature 515.7526 (2014): 209."
-#' @keywords data
-NULL
-
 #' Genes expressed in brain
 #'
 #' @name brain_expression
@@ -89,19 +88,4 @@ NULL
 #' @author Kevin Lin \email{kevinl1@andrew.cmu.edu}
 #' @source The dataset came from Bernie Devlin.
 #' @keywords data 
-NULL
-
-#' Iossifov genes
-#'
-#' @name iossifov
-#' @docType data
-#' @format A vector of characters, length 251
-#' @author Kevin Lin \email{kevinl1@andrew.cmu.edu}
-#' @source The partitionings were based on the data used in
-#' "Iossifov, I., ORoak, B. J., Sanders, S. J., Ronemus, M., Krumm, N., Levy,
-#' D., Stessman, H. A., Witherspoon, K. T., Vives, L., and Patterson, K. E. (2014).
-#' The contribution of de novo coding mutations to autism spectrum disorder.
-#' Nature, 515(7526):216–221.
-
-#' @keywords data
 NULL

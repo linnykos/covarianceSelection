@@ -17,8 +17,6 @@ goodness_of_fit(dat_list, num_partitions, trials = 500, cores = 1,
 \item{cores}{number of cores}
 
 \item{verbose}{boolean}
-
-\item{prob}{parameter for robustness}
 }
 \value{
 vector of p-values

@@ -1,6 +1,20 @@
+#' Quasiclique based on Tsourakakis et al. (2013)
+#'
+#' @param g \code{igraph} object
+#' @param threshold numeric between 0 and 1
+#' @param iter_max numeric
+#' 
+#' @source Tsourakakis, Charalampos, et al. "Denser than the densest subgraph: 
+#' Extracting optimal quasi-cliques with quality guarantees." 
+#' Proceedings of the 19th ACM SIGKDD international conference on Knowledge 
+#' discovery and data mining. ACM, 2013.
+#'
+#' @return numeric index subset of \code{1:igraph::vcount(g)}
+#' @export
 tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcount(g)/2)){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
+  n <- igraph::vcount(g)
   igraph::V(g)$name <- 1:n
 
   initial_idx <- as.character(.tsourakakis_initialize(g))
@@ -78,6 +92,16 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
 
 ########################
 
+#' Quasiclique based on Chen and Saad (2010)
+#'
+#' @param g \code{igraph} object
+#' @param threshold numeric between 0 and 1
+#' 
+#' @source Chen, Jie, and Yousef Saad. "Dense subgraph extraction with application to community 
+#' detection." IEEE Transactions on knowledge and data engineering 24.7 (2010): 1216-1230.
+#'
+#' @return numeric index subset of \code{1:igraph::vcount(g)}
+#' @export
 chen_2010 <- function(g, threshold = 0.95){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
@@ -185,6 +209,15 @@ chen_2010 <- function(g, threshold = 0.95){
 
 ########
 
+#' Quasiclique based on Anderson and Chellapilla (2009)
+#'
+#' @param g \code{igraph} object
+#' 
+#' @source Andersen, Reid, and Kumar Chellapilla. "Finding dense subgraphs with size bounds." 
+#' International Workshop on Algorithms and Models for the Web-Graph. Springer, Berlin, Heidelberg, 2009.
+#'
+#' @return numeric index subset of \code{1:igraph::vcount(g)}
+#' @export
 anderson_2009 <- function(g){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
@@ -211,6 +244,17 @@ anderson_2009 <- function(g){
 
 #####
 
+#' Triangle densest subgraph based on Tsourakakis (2014), exact algorithm
+#' 
+#' This code is extremely slow due to the multiple calls to \code{igraph::st_min_cuts}
+#'
+#' @param g \code{igraph} object
+#' 
+#' @source Tsourakakis, Charalampos E. "A novel approach to finding near-cliques: 
+#' The triangle-densest subgraph problem." arXiv preprint arXiv:1405.1477 (2014).
+#'
+#' @return numeric index subset of \code{1:igraph::vcount(g)}
+#' @export
 tsourakakis_2014_exact <- function(g){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
@@ -273,6 +317,15 @@ tsourakakis_2014_exact <- function(g){
 
 ######
 
+#' Triangle densest subgraph based on Tsourakakis (2014), approximate algorithm
+#'
+#' @param g \code{igraph} object
+#' 
+#' @source Tsourakakis, Charalampos E. "A novel approach to finding near-cliques: 
+#' The triangle-densest subgraph problem." arXiv preprint arXiv:1405.1477 (2014).
+#'
+#' @return numeric index subset of \code{1:igraph::vcount(g)}
+#' @export
 tsourakakis_2014_approximate <- function(g){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)

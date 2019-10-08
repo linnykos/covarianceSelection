@@ -5,6 +5,8 @@
 #' @param iterations number of iterations
 #' @param cores number of cores
 #' @param verbose boolean for verbose
+#' @param file temporary save filepath
+#' @param prob numeric between 0 and 1
 #'
 #' @return a \code{stepdown} object
 #' @export
@@ -55,6 +57,7 @@ stepdown_path <- function(dat_list, trials = 100, iterations = 15, cores = 1,
 #'
 #' @param stepdown_obj stepdown object
 #' @param alpha alpha level
+#' @param return_pvalue boolean if the naive p-values should be returned
 #' @param verbose boolean for verbose
 #'
 #' @return indices for \code{combn(length(dat_list), 2)} that correspond to the

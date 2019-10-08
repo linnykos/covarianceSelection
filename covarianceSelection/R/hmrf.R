@@ -63,8 +63,8 @@ hmrf <- function(pval, adj, seedindex, pthres = 0.05, iter = 100,
 
   non_seedidx <- (seedindex==0)
   mu1 <- mean(z[i_vec==1 & non_seedidx])
-  sigmas1 <- (sd(z[i_vec == 0]))^2
-  sigmas2 <- (sd(z[i_vec == 1 & non_seedidx]))^2
+  sigmas1 <- (stats::sd(z[i_vec == 0]))^2
+  sigmas2 <- (stats::sd(z[i_vec == 1 & non_seedidx]))^2
   posterior <- rep(0,d)
 
   for (iteri in 1:iter){
@@ -134,7 +134,7 @@ check_b <- function(i_vec, b, thres_b = 0.05){
   n <- length(i_vec)
   q <- floor(n * thres_b);
   p <- exp(b) / (1 + exp(b))
-  tail_prob <- pbinom(q = q, size=n, prob = p, lower.tail = F) ##P(sum(I)>thres)
+  tail_prob <- stats::pbinom(q = q, size=n, prob = p, lower.tail = F) ##P(sum(I)>thres)
   
   tail_prob < thres_b
 }

@@ -12,6 +12,8 @@ stepdown_choose(stepdown_obj, alpha = 0.05, return_pvalue = F,
 
 \item{alpha}{alpha level}
 
+\item{return_pvalue}{boolean if the naive p-values should be returned}
+
 \item{verbose}{boolean for verbose}
 }
 \value{

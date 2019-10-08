@@ -16,6 +16,8 @@
 \item{combn_mat}{matrix of pairs to test for}
 
 \item{squared}{boolean on whether or not to square the test statistic}
+
+\item{prob}{numeric between 0 and 1}
 }
 \value{
 vector of all the bootstrap statistics
