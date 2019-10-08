@@ -24,6 +24,7 @@ seedindex <- rep(0, ncol(adj_pfc35))
 seedindex[which(tada$dn.LoF >= 3)] <- 1
 
 if(verbose) print(paste0(Sys.time(), ": HMRF"))
+set.seed(10)
 hmrf_pfc35 <- covarianceSelection::hmrf(tada$pval.TADA, adj_pfc35, seedindex, pthres = pthres)
 report_pfc35 <- covarianceSelection::report_results(tada$Gene, 1-hmrf_pfc35$post, tada$pval.TADA, hmrf_pfc35$Iupdate)
 cutoff <- sort(report_pfc35$FDR, decreasing = FALSE)[num_target]

@@ -1,5 +1,5 @@
-p_thres_screening <- 0.1 
-cor_thres_screening <- 0.75
+p_thres_screening <- 0.01 
+num_genes <- 3500
 
 ###
 
@@ -9,7 +9,7 @@ selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
 dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 13964
 
 screening_res <- covarianceSelection::screen(dat_pfc35, pv = tada$pval.TADA, p_thres = p_thres_screening, 
-                                             cor_thres = cor_thres_screening)
+                                             num_genes = num_genes)
 
 # 1605 primary, 1460 secondary, total of 3065
 

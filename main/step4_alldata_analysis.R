@@ -18,6 +18,7 @@ seedindex <- rep(0, ncol(adj_all))
 seedindex[which(tada$dn.LoF >= 3)] <- 1
 
 if(verbose) print(paste0(Sys.time(), ": HMRF"))
+set.seed(10)
 hmrf_all <- covarianceSelection::hmrf(tada$pval.TADA, adj_all, seedindex, pthres = pthres) 
 report_all <- covarianceSelection::report_results(tada$Gene, 1-hmrf_all$post, tada$pval.TADA, hmrf_all$Iupdate)
 cutoff <- sort(report_all$FDR, decreasing = FALSE)[num_target]
