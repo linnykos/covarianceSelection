@@ -10,7 +10,7 @@ dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 3065
 dat_pfc35 <- scale(dat_pfc35, scale = F)
 
 # estimate graphical model on PFC35 using cross-validated lasso for neighborhood selection
-res <- covarianceSelection:::graphicalModel_range(dat_pfc35, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
+res <- covarianceSelection::graphicalModel_range(dat_pfc35, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
 save.image(file = paste0(save_filepath, "/step3_pfc35_analysis.RData"))
 
 scale_vec_pfc35 <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
@@ -29,6 +29,8 @@ hmrf_pfc35 <- covarianceSelection::hmrf(tada$pval.TADA, adj_pfc35, seedindex, pt
 report_pfc35 <- covarianceSelection::report_results(tada$Gene, 1-hmrf_pfc35$post, tada$pval.TADA, hmrf_pfc35$Iupdate)
 cutoff <- sort(report_pfc35$FDR, decreasing = FALSE)[num_target]
 genes_pfc35 <- sort(as.character(report_pfc35$Gene[which(report_pfc35$FDR <= cutoff)]))
+
+adj_pfc35 <- Matrix::Matrix(adj_pfc35, sparse = T)
 
 rm(list = c("dat_pfc35", "seedindex", "cutoff", "idx", "res", "selected_idx"))
 

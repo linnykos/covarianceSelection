@@ -5,11 +5,11 @@ g_selected <- igraph::graph.empty(n = n, directed = F)
 combn_mat <- utils::combn(length(dat_list), 2)
 g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[3]]$null_idx])
 
-idx_our <- covarianceSelection:::tsourakakis_2013(g_selected)
+idx_our <- covarianceSelection::tsourakakis_2013(g_selected)
 dat_our <- do.call(rbind, dat_list[idx_our])
 dat_our <- scale(dat_our, scale = F)
 
-res <- covarianceSelection:::graphicalModel_range(dat_our, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
+res <- covarianceSelection::graphicalModel_range(dat_our, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
 save.image(file = paste0(save_filepath, "/step6_ourdata_analysis.RData"))
 
 scale_vec_our <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
@@ -28,6 +28,8 @@ hmrf_our <- covarianceSelection::hmrf(tada$pval.TADA, adj_our, seedindex, pthres
 report_our <- covarianceSelection::report_results(tada$Gene, 1-hmrf_our$post, tada$pval.TADA, hmrf_our$Iupdate)
 cutoff <- sort(report_our$FDR, decreasing = FALSE)[num_target]
 genes_our <- sort(as.character(report_our$Gene[which(report_our$FDR <= cutoff)]))
+
+adj_our <- Matrix::Matrix(adj_our, sparse = T)
 
 rm(list = c("dat_our", "seedindex", "cutoff", "res", "combn_mat", "n", "g_selected"))
 

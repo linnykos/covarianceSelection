@@ -4,7 +4,7 @@ dat_all <- do.call(rbind, dat_list) # 107 x 3438
 dat_all <- scale(dat_all, scale = F)
 
 # estimate graphical model on PFC35 using cross-validated lasso for neighborhood selection
-res <- covarianceSelection:::graphicalModel_range(dat_all, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
+res <- covarianceSelection::graphicalModel_range(dat_all, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35, verbose = T) 
 save.image(file = paste0(save_filepath, "/step4_alldata_analysis.RData"))
 
 scale_vec_all <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
@@ -24,6 +24,8 @@ report_all <- covarianceSelection::report_results(tada$Gene, 1-hmrf_all$post, ta
 cutoff <- sort(report_all$FDR, decreasing = FALSE)[num_target]
 genes_all <- sort(as.character(report_all$Gene[which(report_all$FDR <= cutoff)]))
 
-rm(list = c("dat_all", "seedindex", "cutoff", "res", "scale_idx", "idx"))
+adj_all <- Matrix::Matrix(adj_all, sparse = T)
+
+rm(list = c("dat_all", "seedindex", "cutoff", "res", "idx"))
 
 save.image(file = paste0(save_filepath, "/step4_alldata_analysis.RData"))
