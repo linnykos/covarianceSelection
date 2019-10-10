@@ -1,4 +1,5 @@
 p_thres_screening <- 0.01 
+p_primary <- 0.1
 num_genes <- 3500
 
 ###
@@ -13,12 +14,18 @@ screening_res <- covarianceSelection::screen(dat_pfc35, pv = tada$pval.TADA, p_t
 
 # 265 primary, 3235 secondary, total of 3500
 
+# reorder which genes are primary and which are secondary
+all_idx <- c(screening_res$primary, screening_res$secondary)
+screening_res$primary <- all_idx[which(tada$pval.TADA[all_idx] < p_primary)]
+screening_res$secondary <- setdiff(all_idx, screening_res$primary)
+
 # apply the new gene list
 for(i in 1:length(dat_list)){
   dat_list[[i]] <- dat_list[[i]][,c(screening_res$primary, screening_res$secondary)]
 }
 tada <- tada[c(screening_res$primary, screening_res$secondary),]
-                   
+
+                
 if(verbose) print(paste0("Dimension of dat_list is: ", unique(sapply(dat_list, ncol)), collapse = ", "))
 
 rm(list = c("selected_idx", "dat_pfc35", "i"))

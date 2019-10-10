@@ -8,18 +8,18 @@ num_our <- length(intersect(genes_our, validated_genes)) # seems to be 31 genes?
 
 ########
 
-tmp_pfc35 <- as.character(report_pfc35[which(report_pfc35$FDR <= 0.01), "Gene"])
-tmp_all <- as.character(report_all[which(report_all$FDR <= 0.01), "Gene"])
-tmp_our <- as.character(report_our[which(report_our$FDR <= 0.01), "Gene"])
-
-length(intersect(tmp_pfc35, validated_genes))
-length(intersect(tmp_all, validated_genes))
-length(intersect(tmp_our, validated_genes))
-
-length(intersect(tmp_pfc35, validated_genes))/length(tmp_pfc35)
-length(intersect(tmp_all, validated_genes))/length(tmp_all)
-length(intersect(tmp_our, validated_genes))/length(tmp_our)
-
+# tmp_pfc35 <- as.character(report_pfc35[which(report_pfc35$FDR <= 0.01), "Gene"])
+# tmp_all <- as.character(report_all[which(report_all$FDR <= 0.01), "Gene"])
+# tmp_our <- as.character(report_our[which(report_our$FDR <= 0.01), "Gene"])
+# 
+# length(intersect(tmp_pfc35, validated_genes))
+# length(intersect(tmp_all, validated_genes))
+# length(intersect(tmp_our, validated_genes))
+# 
+# length(intersect(tmp_pfc35, validated_genes))/length(tmp_pfc35)
+# length(intersect(tmp_all, validated_genes))/length(tmp_all)
+# length(intersect(tmp_our, validated_genes))/length(tmp_our)
+# 
 
 rm(list = c("validated_genes"))
 
