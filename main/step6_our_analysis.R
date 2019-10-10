@@ -11,7 +11,7 @@ dat_our <- scale(dat_our, scale = F)
 
 res <- covarianceSelection::graphicalModel_range(dat_our, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35,  
                                                  lambda_length = 30, verbose = T) 
-save.image(file = paste0(save_filepath, "/step6_ourdata_analysis.RData"))
+save.image(file = paste0(save_filepath, "/step6_ourdata_analysis", filepath_suffix, ".RData"))
 
 scale_vec_our <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
 idx <- which.max(scale_vec_our)
@@ -34,4 +34,4 @@ adj_our <- Matrix::Matrix(adj_our, sparse = T)
 
 rm(list = c("dat_our", "seedindex", "cutoff", "res", "combn_mat", "n", "g_selected"))
 
-save.image(file = paste0(save_filepath, "/step6_ourdata_analysis.RData"))
+save.image(file = paste0(save_filepath, "/step6_ourdata_analysis", filepath_suffix, ".RData"))

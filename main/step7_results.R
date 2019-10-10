@@ -23,5 +23,5 @@ num_our <- length(intersect(genes_our, validated_genes)) # seems to be 31 genes?
 
 rm(list = c("validated_genes"))
 
-save.image(file = paste0(save_filepath, "/step7_results.RData"))
+save.image(file = paste0(save_filepath, "/step7_results", filepath_suffix, ".RData"))
 

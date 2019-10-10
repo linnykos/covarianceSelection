@@ -30,4 +30,4 @@ if(verbose) print(paste0("Dimension of dat_list is: ", unique(sapply(dat_list, n
 
 rm(list = c("selected_idx", "dat_pfc35", "i"))
 
-save.image(file = paste0(save_filepath, "/step1_screening.RData"))
+save.image(file = paste0(save_filepath, "/step1_screening", filepath_suffix, ".RData"))
