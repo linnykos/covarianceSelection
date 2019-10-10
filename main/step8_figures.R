@@ -1,11 +1,8 @@
-trials <- 100
+adj_pfc35 = as.matrix(adj_pfc35)
+idx = which(colSums(adj_pfc35) == 0)
+adj = adj_pfc35[-idx, -idx]
+g = igraph::graph_from_adjacency_matrix(adj)
 
-save(trials, file = paste0(save_filepath, "/test.RData"))
-stepdown_obj <- covarianceSelection::stepdown_path(dat_list, trials = trials, cores = ncores, verbose = verbose,
-                                          iterations = 7, file = paste0(save_filepath, "/step3_subjectselection_tmp2.RData"))
-save.image(file = paste0(save_filepath, "/step3_subjectselection_tmp.RData"))
-stepdown_res <- lapply(seq(0, 1, length.out = 21), function(alpha){
-  covarianceSelection::stepdown_choose(stepdown_obj, alpha = alpha, return_pvalue = T)
-})
-
-save.image(file = paste0(save_filepath, "/step3_subjectselection.RData"))
+png("../figures/test.png", height = 1500, width = 1500, res = 300, units = "px")
+plot(g)
+graphics.off()

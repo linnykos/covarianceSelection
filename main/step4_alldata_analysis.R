@@ -30,3 +30,8 @@ adj_all <- Matrix::Matrix(adj_all, sparse = T)
 rm(list = c("dat_all", "seedindex", "cutoff", "res", "idx"))
 
 save.image(file = paste0(save_filepath, "/step4_alldata_analysis", filepath_suffix, ".RData"))
+
+########################
+
+# plot(exp(seq(log(0.01), log(0.35), length.out = length(scale_vec_all))), scale_vec_all)
+

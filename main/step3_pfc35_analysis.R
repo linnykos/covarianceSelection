@@ -37,3 +37,7 @@ adj_pfc35 <- Matrix::Matrix(adj_pfc35, sparse = T)
 rm(list = c("dat_pfc35", "seedindex", "cutoff", "idx", "res", "selected_idx"))
 
 save.image(file = paste0(save_filepath, "/step3_pfc35_analysis", filepath_suffix, ".RData"))
+
+########################
+
+# plot(exp(seq(log(0.01), log(0.35), length.out = length(scale_vec_pfc35))), scale_vec_pfc35)

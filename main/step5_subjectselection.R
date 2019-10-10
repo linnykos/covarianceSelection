@@ -1,5 +1,5 @@
 trials <- 100
-prob_val <- 1-1e-5
+prob_val <- 1-1e-4
 
 if(verbose) print(paste0(Sys.time(), "Start of step 5: Subject selection"))
 
