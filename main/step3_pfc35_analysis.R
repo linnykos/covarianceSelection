@@ -16,8 +16,8 @@ save.image(file = paste0(save_filepath, "/step3_pfc35_analysis", filepath_suffix
 
 scale_vec_pfc35 <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
 edges_vec_pfc35 <- sapply(res, function(x){sum(as.matrix(x$adj_mat))/2})
-# idx <- which.max(scale_vec_pfc35)
-idx <- 22
+idx <- which.max(scale_vec_pfc35)
+# idx <- 22
 adj_pfc35 <- as.matrix(res[[idx]]$adj_mat)
 stopifnot(all(dim(adj_pfc35) == nrow(tada)))
 
