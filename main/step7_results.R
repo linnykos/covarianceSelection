@@ -8,6 +8,7 @@ num_our <- length(intersect(genes_our, validated_genes)) # 30/179 genes?
 
 c(num_pfc35, num_nodawn, num_all, num_our)
 c(length(genes_pfc35), length(genes_nodawn), length(genes_all), length(genes_our))
+c(hmrf_pfc35$b, hmrf_all$b, hmrf_our$b)
 c(hmrf_pfc35$c, hmrf_all$c, hmrf_our$c)
 c(sum(as.matrix(adj_pfc35))/2, sum(as.matrix(adj_all))/2, sum(as.matrix(adj_our))/2)
 

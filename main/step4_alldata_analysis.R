@@ -11,7 +11,7 @@ save.image(file = paste0(save_filepath, "/step4_alldata_analysis", filepath_suff
 scale_vec_all <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
 edges_vec_all <- sapply(res, function(x){sum(as.matrix(x$adj_mat))/2})
 # idx <- which.max(scale_vec_all)
-idx <- 27
+idx <- 21
 adj_all <- as.matrix(res[[idx]]$adj_mat)
 stopifnot(all(dim(adj_all) == nrow(tada)))
 

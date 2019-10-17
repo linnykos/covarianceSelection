@@ -17,9 +17,9 @@
 
   graph_term <- i_vec%*%adj
   for (k in 1:times){
-    b_new <- stats::optimize(func, c(-2, 0), c = c, graph_term = graph_term,
+    b_new <- stats::optimize(func, c(-10, 0), c = c, graph_term = graph_term,
                              i_vec = i_vec, maximum = T)$maximum
-    c_new <- stats::optimize(func, c(0.1, 2), b = b_new, graph_term = graph_term,
+    c_new <- stats::optimize(func, c(0, 5), b = b_new, graph_term = graph_term,
                              i_vec = i_vec, maximum = T)$maximum
     if (abs(b_new-b) < tol & abs(c_new-c) < tol){
       break()
