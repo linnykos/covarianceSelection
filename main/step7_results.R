@@ -15,6 +15,8 @@ cbind(exp(seq(log(0.01), log(0.35), length.out = 30)), edges_vec_pfc35, scale_ve
 cbind(exp(seq(log(0.01), log(0.35), length.out = 30)), edges_vec_all, scale_vec_all)
 cbind(exp(seq(log(0.01), log(0.35), length.out = 30)), edges_vec_our, scale_vec_our)
 
+covarianceSelection::binning(names(dat_list)[idx_our])
+
 rm(list = c("validated_genes"))
 
 save.image(file = paste0(save_filepath, "/step7_results", filepath_suffix, ".RData"))
