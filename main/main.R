@@ -11,7 +11,7 @@ library(org.Hs.eg.db)
 
 verbose <- T
 save_filepath <- "/raid6/Kevin/covarianceSelection/results"
-filepath_suffix <- "_new_primary"
+filepath_suffix <- ""
 
 source("../main/step0_loading.R")
 source("../main/step1_screening.R")
@@ -21,6 +21,8 @@ source("../main/step4_alldata_analysis.R")
 
 # source("../main/step5_subjectselection.R")
 rm(list=ls())
+filepath_suffix <- ""
+fdr_cutoff <- 0.01 
 load("/raid6/Kevin/covarianceSelection/results/step5_subjectselection_new_primary.RData")
 
 

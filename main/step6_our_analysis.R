@@ -1,5 +1,3 @@
-fdr_cutoff <- 0.01 # REMOVE THIS DUPLICATE
-
 if(verbose) print(paste0(Sys.time(), "Start of step 6: Our data analysis"))
 
 n <- length(dat_list)
