@@ -9,6 +9,7 @@ res <- covarianceSelection::graphicalModel_range(dat_all, 1:length(screening_res
 save.image(file = paste0(save_filepath, "/step4_alldata_analysis", filepath_suffix, ".RData"))
 
 scale_vec_all <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
+edges_vec_all <- sapply(res, function(x){sum(as.matrix(x$adj_mat))/2})
 idx <- which.max(scale_vec_all)
 adj_all <- as.matrix(res[[idx]]$adj_mat)
 stopifnot(all(dim(adj_all) == nrow(tada)))
@@ -22,12 +23,11 @@ if(verbose) print(paste0(Sys.time(), ": HMRF"))
 set.seed(10)
 hmrf_all <- covarianceSelection::hmrf(tada$pval.TADA, adj_all, seedindex, pthres = pthres) 
 report_all <- covarianceSelection::report_results(tada$Gene, 1-hmrf_all$post, tada$pval.TADA, hmrf_all$Iupdate)
-cutoff <- sort(report_all$FDR, decreasing = FALSE)[num_target]
-genes_all <- sort(as.character(report_all$Gene[which(report_all$FDR <= cutoff)]))
+genes_all <- sort(as.character(report_all$Gene[which(report_all$FDR <= fdr_cutoff)]))
 
 adj_all <- Matrix::Matrix(adj_all, sparse = T)
 
-rm(list = c("dat_all", "seedindex", "cutoff", "res", "idx"))
+rm(list = c("dat_all", "seedindex", "res", "idx"))
 
 save.image(file = paste0(save_filepath, "/step4_alldata_analysis", filepath_suffix, ".RData"))
 

@@ -1,5 +1,5 @@
 pthres <- 0.05
-num_target <- 200
+fdr_cutoff <- 0.01
 
 #####
 set.seed(10)
@@ -16,6 +16,7 @@ res <- covarianceSelection::graphicalModel_range(dat_pfc35, 1:length(screening_r
 save.image(file = paste0(save_filepath, "/step3_pfc35_analysis", filepath_suffix, ".RData"))
 
 scale_vec_pfc35 <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
+edges_vec_pfc35 <- sapply(res, function(x){sum(as.matrix(x$adj_mat))/2})
 idx <- which.max(scale_vec_pfc35)
 adj_pfc35 <- as.matrix(res[[idx]]$adj_mat)
 stopifnot(all(dim(adj_pfc35) == nrow(tada)))
@@ -29,12 +30,11 @@ if(verbose) print(paste0(Sys.time(), ": HMRF"))
 set.seed(10)
 hmrf_pfc35 <- covarianceSelection::hmrf(tada$pval.TADA, adj_pfc35, seedindex, pthres = pthres)
 report_pfc35 <- covarianceSelection::report_results(tada$Gene, 1-hmrf_pfc35$post, tada$pval.TADA, hmrf_pfc35$Iupdate)
-cutoff <- sort(report_pfc35$FDR, decreasing = FALSE)[num_target]
-genes_pfc35 <- sort(as.character(report_pfc35$Gene[which(report_pfc35$FDR <= cutoff)]))
+genes_pfc35 <- sort(as.character(report_pfc35$Gene[which(report_pfc35$FDR <= fdr_cutoff)]))
 
 adj_pfc35 <- Matrix::Matrix(adj_pfc35, sparse = T)
 
-rm(list = c("dat_pfc35", "seedindex", "cutoff", "idx", "res", "selected_idx"))
+rm(list = c("dat_pfc35", "seedindex", "idx", "res", "selected_idx"))
 
 save.image(file = paste0(save_filepath, "/step3_pfc35_analysis", filepath_suffix, ".RData"))
 
