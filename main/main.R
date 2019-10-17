@@ -21,10 +21,8 @@ source("../main/step4_alldata_analysis.R")
 
 # source("../main/step5_subjectselection.R")
 rm(list=ls())
-filepath_suffix <- ""
-fdr_cutoff <- 0.01 
 load("/raid6/Kevin/covarianceSelection/results/step5_subjectselection_new_primary.RData")
-
+load("/raid6/Kevin/covarianceSelection/results/step4_alldata_analysis.RData")
 
 source("../main/step6_our_analysis.R")
 source("../main/step7_results.R")
