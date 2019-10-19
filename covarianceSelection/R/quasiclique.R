@@ -11,14 +11,23 @@
 #'
 #' @return numeric index subset of \code{1:igraph::vcount(g)}
 #' @export
-tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcount(g)/2)){
+tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcount(g)/2),
+                             core_set = NA){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
   n <- igraph::vcount(g)
   igraph::V(g)$name <- 1:n
 
-  initial_idx <- as.character(.tsourakakis_initialize(g))
-  node_set <- sort(c(as.character(igraph::neighbors(g, v = initial_idx)), initial_idx))
+  if(all(is.na(core_set))){
+    initial_idx <- as.character(.tsourakakis_initialize(g))
+  } else {
+    stopifnot(all(core_set %in% 1:n))
+    intial_idx <- sort(unique(as.character(core_set)))
+  }
+  
+  node_set <- sort(unique(unlist(lapply(initial_idx, function(x){
+    c(as.character(igraph::neighbors(g, v = x)), x)
+  }))))
   iter <- 1
   # print(node_set)
   
@@ -29,13 +38,13 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
       node_candidate <- setdiff(as.character(igraph::V(g)$name), node_set)
       # print(node_candidate)
       # print(class(node_candidate))
-      next_set <- .find_candidate(g, threshold, node_set, node_candidate, den_org)
+      next_set <- .find_candidate(g, threshold, node_set, node_candidate, den_org, remove = F)
       if(any(is.na(next_set))) break()
       node_set <- next_set
     }
     
     den_org <- .tsourakakis_obj(g, threshold, node_set)
-    next_set <- .find_candidate(g, threshold, node_set, NA, den_org)
+    next_set <- .find_candidate(g, threshold, node_set, node_candidate, den_org, remove = T)
     if(any(is.na(next_set))) break()
     node_set <- next_set
     iter <- iter+1
@@ -46,21 +55,21 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
 }
 
 # if node_candidate = NA, we are subtracting, not adding
-.find_candidate <- function(g, threshold, node_set, node_candidate, den_org){
+.find_candidate <- function(g, threshold, node_set, node_candidate, den_org, remove = F){
   stopifnot(length(node_set) > 1, is.character(node_set))
   
-  if(all(is.na(node_candidate))){
-    node_set <- sample(node_set)
-    n2 <- length(node_set)
+  if(remove) {
+    stopifnot(all(node_candidate %in% node_set))
+    node_diff <- setdiff(node_set, node_candidate)
   } else {
     stopifnot(!any(node_set %in% node_candidate))
-    node_candidate <- sample(node_candidate)
-    n2 <- length(node_candidate)
   }
+  node_candidate <- sample(node_candidate)
+  n2 <- length(node_candidate)
   
   for(i in 1:n2){
-    if(all(is.na(node_candidate))){
-      next_set <- node_set[-i]
+    if(remove){
+      next_set <- c(node_diff, node_candidate[-i])
     } else {
       next_set <- c(node_set, node_candidate[i])
     }
@@ -102,7 +111,7 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
 #'
 #' @return numeric index subset of \code{1:igraph::vcount(g)}
 #' @export
-chen_2010 <- function(g, threshold = 0.95){
+chen_2010 <- function(g, threshold = 0.95, core_set = NA){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
   
@@ -110,6 +119,10 @@ chen_2010 <- function(g, threshold = 0.95){
   if(igraph::ecount(g)/choose(n,2) >= threshold) return(as.numeric(igraph::V(g)$name))
   igraph::V(g)$name <- 1:n
   c_matrix <- .form_c_matrix(g)
+  
+  if(!all(is.na(core_set))){
+    stopifnot(all(core_set %in% 1:n))
+  }
   
   q <- dequer::deque()
   dequer::push(q, .chen_object(g, c_matrix))
@@ -130,7 +143,7 @@ chen_2010 <- function(g, threshold = 0.95){
     
     if(igraph::ecount(obj$g) == 0 | nrow(obj$c_matrix) == 0) next()
     
-    res <- .chen_separate(obj$g, obj$c_matrix, threshold = threshold)
+    res <- .chen_separate(obj$g, obj$c_matrix, threshold = threshold, core_set = core_set)
     dequer::push(q, .chen_object(res$g1, res$c_matrix1))
     dequer::push(q, .chen_object(res$g2, res$c_matrix2))
   }
@@ -147,7 +160,7 @@ chen_2010 <- function(g, threshold = 0.95){
   igraph::ecount(g_sub)/choose(igraph::vcount(g_sub), 2)
 }
 
-.chen_separate <- function(g, c_matrix, threshold = 0.95, check = F){
+.chen_separate <- function(g, c_matrix, threshold = 0.95, check = F, core_set = NA){
   n <- igraph::vcount(g)
   node_set <- as.numeric(igraph::V(g)$name)
   stopifnot(length(node_set) == n)
@@ -156,11 +169,24 @@ chen_2010 <- function(g, threshold = 0.95){
   idx <- 1
   comp_res <- igraph::components(g)
   
+  
   while(comp_res$no == 1){
     edge_id <- igraph::get.edge.ids(g, which(node_set %in% c_matrix[idx,1:2]))
     if(edge_id != 0){
-      g <- igraph::delete.edges(g, edge_id)
-      comp_res <- igraph::components(g)
+      g2 <- igraph::delete.edges(g, edge_id)
+      comp_res2 <- igraph::components(g2)
+      
+      # do not consider deleting edges that would separate elements in the core_set
+      if(!all(is.na(core_set))){
+        comp_number <- comp_res2$membership[which(node_set %in% core_set)]
+        if(length(unique(comp_number)) == 1) {
+          g <- g2
+          comp_res <- comp_res2
+        }
+      } else {
+        g <- g2
+        comp_res <- comp_res2
+      }
     } 
     
     idx <- idx + 1
@@ -218,23 +244,38 @@ chen_2010 <- function(g, threshold = 0.95){
 #'
 #' @return numeric index subset of \code{1:igraph::vcount(g)}
 #' @export
-anderson_2009 <- function(g){
+anderson_2009 <- function(g, core_set = NA){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
   n <- igraph::vcount(g)
   igraph::V(g)$name <- 1:n
   
-  h_seq <- vector("list", n-1)
+  if(!all(is.na(core_set))){
+    stopifnot(all(core_set %in% 1:n))
+    core_set_size <- length(core_set)
+    valid_idx <- which(!1:n %in% core_set)
+  } else {
+    core_set_size <- 0
+    valid_idx <- 1:n
+  }
+  
+  h_seq <- vector("list", n-1-core_set_size)
   dens_vec <- rep(NA, length(h_seq))
   h_seq[[1]] <- g
   
   for(i in 1:length(h_seq)){
     total_deg <- igraph::ecount(h_seq[[i]])
     n_sub <- igraph::vcount(h_seq[[i]])
-    dens_vec[[i]] <- total_deg/n_sub
+    dens_vec[i] <- total_deg/n_sub
     
     deg_vec <- igraph::degree(h_seq[[i]])
-    idx <- which.min(deg_vec)
+    
+    if(!all(is.na(core_set))) {
+      idx <- which.min(deg_vec[valid_idx])
+      idx <- c(1:n)[valid_idx][idx]
+    } else {
+      idx <- which.min(deg_vec)
+    }
     
     h_seq[[i+1]] <- igraph::delete_vertices(h_seq[[i]], idx)
   }
@@ -326,23 +367,38 @@ tsourakakis_2014_exact <- function(g){
 #'
 #' @return numeric index subset of \code{1:igraph::vcount(g)}
 #' @export
-tsourakakis_2014_approximate <- function(g){
+tsourakakis_2014_approximate <- function(g, core_set = NA){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
   n <- igraph::vcount(g)
   igraph::V(g)$name <- 1:n
   
-  h_seq <- vector("list", n-2)
+  if(!all(is.na(core_set))){
+    stopifnot(all(core_set %in% 1:n))
+    core_set_size <- length(core_set)
+    valid_idx <- which(!1:n %in% core_set)
+  } else {
+    core_set_size <- 0
+    valid_idx <- 1:n
+  }
+  
+  h_seq <- vector("list", n-2-core_set_size)
   dens_vec <- rep(NA, length(h_seq))
   h_seq[[1]] <- g
   
   for(i in 1:length(h_seq)){
     tri_mat <- matrix(igraph::triangles(h_seq[[i]]), nrow=3)
     n_sub <- igraph::vcount(h_seq[[i]])
-    dens_vec[[i]] <- ncol(tri_mat)/n_sub
+    dens_vec[i] <- ncol(tri_mat)/n_sub
     
     n_tri_count <- sapply(1:n_sub, function(i){length(which(tri_mat == i))})
-    idx <- which.min(n_tri_count)
+
+    if(!all(is.na(core_set))) {
+      idx <- which.min(n_tri_count[valid_idx])
+      idx <- c(1:n)[valid_idx][idx]
+    } else {
+      idx <- which.min(n_tri_count)
+    }
     
     h_seq[[i+1]] <- igraph::delete_vertices(h_seq[[i]], idx)
   }
