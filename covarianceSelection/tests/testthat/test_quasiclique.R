@@ -423,4 +423,17 @@ test_that("tsourakakis_2013 works a random graph", {
   expect_true(length(res) > 0)
 })
 
+test_that("tsourakakis_2013 works with a core set", {
+  set.seed(10)
+  n <- 30
+  combn_mat <- utils::combn(n-10, 2)
+  edge_mat <- combn_mat[,sample(1:ncol(combn_mat), round(ncol(combn_mat)/2))]
+  edge_mat <- cbind(edge_mat, rbind(20:29, 21:30))
+  g <- igraph::graph.empty(n = n, directed = F)
+  g <- igraph::add_edges(g, edges = edge_mat)
+  res <- tsourakakis_2013(g, core_set = c(10:14, n))
+  
+  expect_true(n %in% res)
+})
+
 

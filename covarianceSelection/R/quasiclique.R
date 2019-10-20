@@ -22,7 +22,8 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
     initial_idx <- as.character(.tsourakakis_initialize(g))
   } else {
     stopifnot(all(core_set %in% 1:n))
-    intial_idx <- sort(unique(as.character(core_set)))
+    core_set <- as.character(core_set)
+    initial_idx <- sort(unique(as.character(core_set)))
   }
   
   node_set <- sort(unique(unlist(lapply(initial_idx, function(x){
@@ -44,14 +45,14 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
     }
     
     den_org <- .tsourakakis_obj(g, threshold, node_set)
-    next_set <- .find_candidate(g, threshold, node_set, node_candidate, den_org, remove = T)
+    next_set <- .find_candidate(g, threshold, node_set, node_set[!which(node_set %in% core_set)], den_org, remove = T)
     if(any(is.na(next_set))) break()
     node_set <- next_set
     iter <- iter+1
     # print(node_set)
   }
   
-  as.numeric(node_set)
+  sort(as.numeric(node_set))
 }
 
 # if node_candidate = NA, we are subtracting, not adding
@@ -149,7 +150,7 @@ chen_2010 <- function(g, threshold = 0.95, core_set = NA){
     dequer::push(q, .chen_object(res$g2, res$c_matrix2))
   }
   
-  as.numeric(node_set_internal)
+  sort(as.numeric(node_set_internal))
 }
 
 # node set should be characters for safety
@@ -282,7 +283,7 @@ anderson_2009 <- function(g, core_set = NA){
     h_seq[[i+1]] <- igraph::delete_vertices(h_seq[[i]], idx)
   }
   
-  as.numeric(igraph::V(h_seq[[which.max(dens_vec)]])$name)
+  sort(as.numeric(igraph::V(h_seq[[which.max(dens_vec)]])$name))
 }
 
 #####
@@ -405,5 +406,5 @@ tsourakakis_2014_approximate <- function(g, core_set = NA){
     h_seq[[i+1]] <- igraph::delete_vertices(h_seq[[i]], idx)
   }
   
-  as.numeric(igraph::V(h_seq[[which.max(dens_vec)]])$name)
+  sort(as.numeric(igraph::V(h_seq[[which.max(dens_vec)]])$name))
 }
