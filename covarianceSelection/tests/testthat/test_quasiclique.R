@@ -54,6 +54,19 @@ test_that("tsourakakis_2014_approximate works a random graph", {
   expect_true(length(res) > 0)
 })
 
+test_that("tsourakakis_2014_approximate works with a core set", {
+  set.seed(10)
+  n <- 30
+  combn_mat <- utils::combn(n-10, 2)
+  edge_mat <- combn_mat[,sample(1:ncol(combn_mat), round(ncol(combn_mat)/2))]
+  edge_mat <- cbind(edge_mat, rbind(20:29, 21:30))
+  g <- igraph::graph.empty(n = n, directed = F)
+  g <- igraph::add_edges(g, edges = edge_mat)
+  res <- tsourakakis_2014_approximate(g, core_set = c(10:14, n))
+  
+  expect_true(n %in% res)
+})
+
 #################3
 
 ## anderson_2009 is correct
@@ -110,6 +123,18 @@ test_that("anderson_2009 works a random graph", {
   expect_true(length(res) > 0)
 })
 
+test_that("anderson_2009 works with a core set", {
+  set.seed(10)
+  n <- 30
+  combn_mat <- utils::combn(n-10, 2)
+  edge_mat <- combn_mat[,sample(1:ncol(combn_mat), round(ncol(combn_mat)/2))]
+  edge_mat <- cbind(edge_mat, rbind(20:29, 21:30))
+  g <- igraph::graph.empty(n = n, directed = F)
+  g <- igraph::add_edges(g, edges = edge_mat)
+  res <- anderson_2009(g, core_set = c(10:14, n))
+  
+  expect_true(n %in% res)
+})
 
 #######################
 
@@ -254,6 +279,19 @@ test_that("chen_2010 works a random graph", {
   expect_true(!any(is.na(res)))
   expect_true(!any(is.nan(res)))
   expect_true(length(res) > 0)
+})
+
+test_that("chen_2010 works with a core set", {
+  set.seed(10)
+  n <- 30
+  combn_mat <- utils::combn(n-10, 2)
+  edge_mat <- combn_mat[,sample(1:ncol(combn_mat), round(ncol(combn_mat)/2))]
+  edge_mat <- cbind(edge_mat, rbind(20:29, 21:30))
+  g <- igraph::graph.empty(n = n, directed = F)
+  g <- igraph::add_edges(g, edges = edge_mat)
+  res <- chen_2010(g, core_set = c(10:14, n))
+  
+  expect_true(n %in% res)
 })
 
 

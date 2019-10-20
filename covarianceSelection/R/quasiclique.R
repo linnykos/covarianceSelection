@@ -144,6 +144,7 @@ chen_2010 <- function(g, threshold = 0.95, core_set = NA){
     if(igraph::ecount(obj$g) == 0 | nrow(obj$c_matrix) == 0) next()
     
     res <- .chen_separate(obj$g, obj$c_matrix, threshold = threshold, core_set = core_set)
+    if(all(is.na(res))) next()
     dequer::push(q, .chen_object(res$g1, res$c_matrix1))
     dequer::push(q, .chen_object(res$g2, res$c_matrix2))
   }
@@ -171,6 +172,7 @@ chen_2010 <- function(g, threshold = 0.95, core_set = NA){
   
   
   while(comp_res$no == 1){
+    if(idx > nrow(c_matrix)) return(NA)
     edge_id <- igraph::get.edge.ids(g, which(node_set %in% c_matrix[idx,1:2]))
     if(edge_id != 0){
       g2 <- igraph::delete.edges(g, edge_id)
@@ -271,7 +273,7 @@ anderson_2009 <- function(g, core_set = NA){
     deg_vec <- igraph::degree(h_seq[[i]])
     
     if(!all(is.na(core_set))) {
-      idx <- which.min(deg_vec[valid_idx])
+      idx <- which.min(deg_vec[igraph::V(h_seq[[i]])$name %in% valid_idx])
       idx <- c(1:n)[valid_idx][idx]
     } else {
       idx <- which.min(deg_vec)
@@ -394,7 +396,7 @@ tsourakakis_2014_approximate <- function(g, core_set = NA){
     n_tri_count <- sapply(1:n_sub, function(i){length(which(tri_mat == i))})
 
     if(!all(is.na(core_set))) {
-      idx <- which.min(n_tri_count[valid_idx])
+      idx <- which.min(n_tri_count[igraph::V(h_seq[[i]])$name %in% valid_idx])
       idx <- c(1:n)[valid_idx][idx]
     } else {
       idx <- which.min(n_tri_count)
