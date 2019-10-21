@@ -11,7 +11,7 @@ test_that("spectral_selection works", {
   g <- igraph::add_edges(g, edges = edges[, indices_list[[8]]])
 
   set.seed(10)
-  res <- spectral_selection(g, K = 3, target_idx <- c(1:3, 16, 21))
+  res <- spectral_selection(g)
 
   expect_true(length(res) <= num_partition)
 })

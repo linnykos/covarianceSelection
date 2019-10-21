@@ -46,9 +46,9 @@ spectral_selection <- function(g, K_vec = 2:5, threshold = 0.95){
   res <- sapply(K_vec, function(K){
     clustering <- .spectral_cluster(g, K)
     
-    size_vec <- table(clustering$cluster)
+    size_vec <- table(clustering)
     den_vec <- sapply(1:K, function(i){
-      idx <- which(clustering$cluster == i)
+      idx <- which(clustering == i)
       igraph::ecount(igraph::induced_subgraph(g, idx))/(choose(length(idx), 2))
     })
     
@@ -56,7 +56,7 @@ spectral_selection <- function(g, K_vec = 2:5, threshold = 0.95){
     if(length(idx) == 0) return(elements = NA, den = 0)
     cluster_idx <- (c(1:K)[idx])[which.max(size_vec[idx])]
     
-    which(clustering$cluster == cluster_idx)
+    which(clustering == cluster_idx)
   })
   
   res[[which.max(sapply(res, length))]]

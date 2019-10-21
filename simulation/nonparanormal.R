@@ -2,6 +2,12 @@ rm(list=ls())
 library(simulation)
 library(covarianceSelection)
 
+set.seed(10)
+ncores <- 15
+doMC::registerDoMC(cores = ncores)
+verbose <- F
+
+trials <- 5
 paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 100, c(0, 0.3, 0.6, 1), 21))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha_levels")
@@ -39,17 +45,13 @@ generate_data <- function(covar_list, num_partition, n, den_list){
   dat_list <- vector("list", k)
   d <- nrow(covar_list[[1]])
   
-  func <- function(i){
-    mvnfast::rmvn(n, rep(0, d), covar_list[[typ_vec[i]]])
-  }
-  
-  dat_list <- lapply(1:k, function(i){func(i)})
+  dat_list <- lapply(1:k, function(i){ mvnfast::rmvn(n, rep(0, d), covar_list[[type_vec[i]]]) })
   
   # nonparanormal transform
   dat_list <- lapply(1:length(dat_list), function(x){
-    covarianceSelection::nonparanormal_transformation(dat[[x]], den_list, 
-                                                      mean_vec = rep(0, vec["d"]),
-                                                      sd_vec = sqrt(diag(cov_list[[type_vec[i]]])))
+    covarianceSelection::nonparanormal_transformation(dat_list[[x]], den_list, 
+                                                      mean_vec = rep(0, d),
+                                                      sd_vec = sqrt(diag(covar_list[[type_vec[x]]])))
   })
   
   dat_list
@@ -66,26 +68,27 @@ rule <- function(vec){
   
   if(verbose) print(paste0("Finish generating data: ", Sys.time()))
   
-  dat_list
+  dat
 }
 
 criterion <- function(dat, vec, y){
   set.seed(y)
+  alpha_vec <- seq(0, 1, length.out = vec["alpha_levels"])
   
   if(verbose) print(paste0("Starting to run the test: ", Sys.time()))
   
   obj <- covarianceSelection::stepdown_path(dat, trials = 200, cores = ncores, verbose = F,
                                             iterations = 10)
-  tmp <- lapply(seq(0, 1, length.out = vec["alpha_levels"]), function(alpha){
+  tmp <- lapply(alpha_vec, function(alpha){
     covarianceSelection::stepdown_choose(obj, alpha = alpha, return_pvalue = T)
   })
   
   # reformat
-  indices_list <- vector("list", length =  vec["alpha_levels"]+1)
-  for(i in 1:vec["alpha_levels"]){
+  indices_list <- vector("list", length = length(alpha_vec))
+  for(i in 1:length(alpha_vec)){
     indices_list[[i]] <- tmp[[i]]$null_idx
   }
-  names(indices_list) <- paste0("stepdown_", seq(0, 1, length.out = vec["alpha_levels"]))
+  names(indices_list) <- paste0("stepdown_", seq(0, 1, length.out = length(alpha_vec)))
   
   naive_pval_vec <- tmp[[1]]$pval
   
@@ -102,13 +105,13 @@ criterion <- function(dat, vec, y){
        bh_indices_list = bh_indices_list)
 }
 
-# set.seed(1); criterion(rule(paramMat[1,]), paramMat[1,], 1)
+# idx <- 1; y <- 1; set.seed(y); criterion(rule(paramMat[idx,]), paramMat[idx,], y)
 # set.seed(2); criterion(rule(paramMat[10,]), paramMat[10,], 2)
 
 ###########################
 
 res <- simulation::simulation_generator(rule = rule, criterion = criterion,
-                                        paramMat = paramMat, trials = 20,
+                                        paramMat = paramMat, trials = trials,
                                         cores = 15, as_list = T,
                                         filepath = "../results/nonparanormal_tmp.RData",
                                         verbose = T)

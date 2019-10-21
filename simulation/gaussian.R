@@ -39,7 +39,7 @@ generate_data <- function(covar_list, num_partition, n){
     mvnfast::rmvn(n, rep(0, d), covar_list[[typ_vec[i]]])
   }
   
-  dat_list <- lapply(1:k, function(i){func(i)})
+  dat_list <- lapply(1:k, function(i){ mvnfast::rmvn(n, rep(0, d), covar_list[[type_vec[i]]]) })
   
   dat_list
 }
