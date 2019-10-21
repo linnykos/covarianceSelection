@@ -7,7 +7,7 @@ colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha_levels")
 
 # collect all the marginal densities
-load("../data/newGenexp.RData")
+load("../../raw_data/newGenexp.RData")
 rownames(genexp) <- genexp[,1]
 genexp <- genexp[,-1]
 genexp <- t(genexp)
