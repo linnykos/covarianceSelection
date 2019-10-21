@@ -116,9 +116,9 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
 chen_2010 <- function(g, threshold = 0.95, core_set = NA){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
+  n <- igraph::vcount(g)
   igraph::V(g)$name <- 1:n
   
-  n <- igraph::vcount(g)
   if(igraph::ecount(g)/choose(n,2) >= threshold) return(as.numeric(igraph::V(g)$name))
   c_matrix <- .form_c_matrix(g)
   

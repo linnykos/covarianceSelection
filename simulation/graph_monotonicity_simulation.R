@@ -21,18 +21,22 @@ criterion <- function(dat, vec, y){
   
   i <- 1
   res <- rep(NA, vec["spacing"])
+  den_vec <- rep(NA, vec["spacing"])
+  
   set.seed(10*y)
   while(i <= vec["spacing"]){
     print(i)
     if(vec["quasi_method"] == 1){
-      res[i] <- length(covarianceSelection::tsourakakis_2013(g))
+      node_set <- covarianceSelection::tsourakakis_2013(g)
     } else if(vec["quasi_method"] == 2){
-      res[i] <- length(covarianceSelection::chen_2010(g))
+      node_set <- covarianceSelection::chen_2010(g)
     } else if(vec["quasi_method"] == 3){
-      res[i] <- length(covarianceSelection::anderson_2009(g))
+      node_set <- covarianceSelection::anderson_2009(g)
     } else {
-      res[i] <- length(covarianceSelection::tsourakakis_2014_approximate(g))
+      node_set <- covarianceSelection::tsourakakis_2014_approximate(g)
     }
+    res[i] <- length(node_set)
+    den_vec[i] <- .graph_density(g, node_set)
     
     # remove indices for the next iteration
     if(vec["remove_method"] == 1){
@@ -43,4 +47,6 @@ criterion <- function(dat, vec, y){
     
     i <- i+1
   }
+  
+  list(len_vec = res, den_vec = den_vec)
 }

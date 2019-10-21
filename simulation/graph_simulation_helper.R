@@ -26,3 +26,7 @@
   
   g
 }
+
+.graph_density <- function(g, node_set){
+  igraph::ecount(igraph::induced_subgraph(g, node_set))/choose(length(node_set),2)
+}
