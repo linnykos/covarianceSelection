@@ -5,7 +5,14 @@ g_selected <- igraph::graph.empty(n = n, directed = F)
 combn_mat <- utils::combn(length(dat_list), 2)
 g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[3]]$null_idx])
 
-idx_our <- covarianceSelection::tsourakakis_2013(g_selected)
+# construct the core set
+selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
+g_sub <- igraph::induced_subgraph(g_selected, selected_idx)
+core_set <- selected_idx[covarianceSelection::tsourakakis_2013(g_sub)]
+
+idx_our <- covarianceSelection::chen_2010(g_selected, core_set = core_set)
+## covarianceSelection::binning(names(dat_list)[idx_our]); covarianceSelection::binning(names(dat_list))
+## igraph::ecount(igraph::induced_subgraph(g_selected, idx_our))/(length(idx_our)*(length(idx_our)-1)/2)
 dat_our <- do.call(rbind, dat_list[idx_our])
 dat_our <- scale(dat_our, scale = F)
 
