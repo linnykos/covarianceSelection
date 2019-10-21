@@ -12,7 +12,7 @@
   adj <- igraph::as_adj(g)
   diag(adj) <- 0
 
-  U <- mgcv::slanczos(adj, K)$vectors
+  U <- eigen(adj)$vectors[,1:K]
   U <- .row_norm(U)
   stats::kmeans(U, centers=K, nstart=20)$cluster
 }
@@ -27,9 +27,9 @@
 #'
 #' @return the new matrix after row-normalization.
 .row_norm <- function(A) {
-  A_rownorm <- sqrt(rowSums(A^2))
+  A_rownorm <- apply(A, 1, .l2norm)
   i_nonzero <- which(A_rownorm > 0)
-  A[i_nonzero, ] <- apply(A[i_nonzero, ], 2, function(x){x / A_rownorm[i_nonzero]})
+  A[i_nonzero, ] <- apply(A[i_nonzero, ], 2, function(x){x/.l2norm(x)})
   A
 }
 
@@ -39,18 +39,25 @@
 #'
 #' @param g \code{igraph} object
 #' @param K number of clusters
-#' @param target_idx which indices to select cluster based on
 #'
 #' @return vector
 #' @export
-spectral_selection <- function(g, K = 2, target_idx = NA){
-  clustering <- .spectral_cluster(g, K)
-  if(any(!is.na(target_idx))){
-    tab <- table(clustering[target_idx])
-  } else {
-    tab <- table(clustering)
-  }
-
-  idx <- as.numeric(names(tab)[which.max(tab)])
-  which(clustering == idx)
+spectral_selection <- function(g, K_vec = 2:5, threshold = 0.95){
+  res <- sapply(K_vec, function(K){
+    clustering <- .spectral_cluster(g, K)
+    
+    size_vec <- table(clustering$cluster)
+    den_vec <- sapply(1:K, function(i){
+      idx <- which(clustering$cluster == i)
+      igraph::ecount(igraph::induced_subgraph(g, idx))/(choose(length(idx), 2))
+    })
+    
+    idx <- which(den_vec >= threshold)
+    if(length(idx) == 0) return(elements = NA, den = 0)
+    cluster_idx <- (c(1:K)[idx])[which.max(size_vec[idx])]
+    
+    which(clustering$cluster == cluster_idx)
+  })
+  
+  res[[which.max(sapply(res, length))]]
 }

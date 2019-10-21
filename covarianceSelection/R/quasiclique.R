@@ -30,6 +30,7 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
     c(as.character(igraph::neighbors(g, v = x)), x)
   }))))
   iter <- 1
+  if(length(node_set) == n) return(sort(as.numeric(node_set)))
   # print(node_set)
   
   while(iter <= iter_max){
@@ -115,10 +116,10 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
 chen_2010 <- function(g, threshold = 0.95, core_set = NA){
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
+  igraph::V(g)$name <- 1:n
   
   n <- igraph::vcount(g)
   if(igraph::ecount(g)/choose(n,2) >= threshold) return(as.numeric(igraph::V(g)$name))
-  igraph::V(g)$name <- 1:n
   c_matrix <- .form_c_matrix(g)
   
   if(!all(is.na(core_set))){

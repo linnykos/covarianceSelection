@@ -1,19 +1,23 @@
-rm(list = ls())
+rm(list=ls())
 library(simulation)
 library(covarianceSelection)
-source("../simulation/simulation_helper.R")
 
-set.seed(10)
-ncores <- 15
-doMC::registerDoMC(cores = ncores)
-verbose <- F
-
-trials <- 5
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, c(0, 0.3, 0.6, 1), 21))
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 100, c(0, 0.3, 0.6, 1), 21))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha_levels")
 
-########
+# collect all the marginal densities
+load("../data/newGenexp.RData")
+rownames(genexp) <- genexp[,1]
+genexp <- genexp[,-1]
+genexp <- t(genexp)
+genexp <- as.data.frame(genexp)
+set.seed(10)
+idx <- sample(1:ncol(genexp), paramMat[1,"d"])
+
+den_list <- lapply(idx, function(i){stats::density(genexp[,i])})
+
+#############
 
 generate_covariance <- function(d, percentage){
   covar_base <- .generate_block(d, alpha = 0.9, beta = 0.1, spillover_percentage = 0,
@@ -29,7 +33,7 @@ generate_covariance <- function(d, percentage){
        covar_alt2 = covar_alt2)
 }
 
-generate_data <- function(covar_list, num_partition, n){
+generate_data <- function(covar_list, num_partition, n, den_list){
   k <- sum(num_partition)
   type_vec <- rep(1:3, times = num_partition)
   dat_list <- vector("list", k)
@@ -41,22 +45,31 @@ generate_data <- function(covar_list, num_partition, n){
   
   dat_list <- lapply(1:k, function(i){func(i)})
   
+  # nonparanormal transform
+  dat_list <- lapply(1:length(dat_list), function(x){
+    covarianceSelection::nonparanormal_transformation(dat[[x]], den_list, 
+                                                      mean_vec = rep(0, vec["d"]),
+                                                      sd_vec = sqrt(diag(cov_list[[type_vec[i]]])))
+  })
+  
   dat_list
 }
+
+################
 
 rule <- function(vec){
   covar_list <- generate_covariance(d = vec["d"], percentage = vec["percentage"])
   
   if(verbose) print(paste0("Finish generating covariances: ", Sys.time()))
   
-  dat <- generate_data(covar_list, num_partition = vec[1:3],  n = vec["n"])
+  dat <- generate_data(covar_list, num_partition = vec[1:3],  n = vec["n"], den_list)
   
   if(verbose) print(paste0("Finish generating data: ", Sys.time()))
   
-  dat 
+  dat_list
 }
 
-criterion <- function(dat, vec, y, ...){
+criterion <- function(dat, vec, y){
   set.seed(y)
   
   if(verbose) print(paste0("Starting to run the test: ", Sys.time()))
@@ -89,29 +102,14 @@ criterion <- function(dat, vec, y, ...){
        bh_indices_list = bh_indices_list)
 }
 
-## idx <- 8; y <- 3; set.seed(y); dat1 <- rule(paramMat[idx,]); set.seed(y); dat2 <- rule(paramMat[idx,])
-## idx <- 4; y <- 1; set.seed(y); res <- criterion(rule(paramMat[idx,]), paramMat[idx,], y)
+# set.seed(1); criterion(rule(paramMat[1,]), paramMat[1,], 1)
+# set.seed(2); criterion(rule(paramMat[10,]), paramMat[10,], 2)
 
-################
+###########################
 
-print(Sys.time())
-res <- simulation::simulation_generator(rule, criterion, paramMat, trials = trials, cores = 1,
-                                        as_list = T, filepath = "../results/gaussian_tmp.RData")
-save.image("../results/gaussian.RData")
-print(Sys.time())
-
-#################
-
-# combn_null <- cbind(combn(paramMat[1,1],2),
-#                     (combn(paramMat[1,2],2)+paramMat[1,1]),
-#                     (combn(paramMat[1,3],2)+sum(paramMat[1,1:2])))
-# num_partition <- sum(paramMat[1,1:3])
-# idx_null <- combn_null[1,]+num_partition*combn_null[2,]
-# combn_mat <- combn(num_partition,2)
-# idx_all <- combn_mat[1,]+num_partition*combn_mat[2,]
-# idx <- which(idx_all %in% idx_null)
-# 
-# z <- res[[1]][[1]]$res
-# length(which(idx %in% z))/length(idx_null)
-# length(which(!z %in% idx))/(length(idx_all) - length(idx_null))
-# 
+res <- simulation::simulation_generator(rule = rule, criterion = criterion,
+                                        paramMat = paramMat, trials = 20,
+                                        cores = 15, as_list = T,
+                                        filepath = "../results/nonparanormal_tmp.RData",
+                                        verbose = T)
+save.image("../results/nonparanormal.RData")
