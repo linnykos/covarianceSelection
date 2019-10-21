@@ -1,14 +1,15 @@
 rm(list=ls())
 library(simulation)
 library(covarianceSelection)
+source("../simulation/graph_simulation_helper.R")
 
-paramMat <- as.matrix(expand.grid(50, 100, c(1:4)))
-colnames(paramMat) <- c("n", "spacing", "method")
+paramMat <- as.matrix(expand.grid(50, 100, c(1:4), c(1,2)))
+colnames(paramMat) <- c("n", "spacing", "quasi_method", "remove_method")
 
 ################
 
 rule <- function(vec){
-  invisible()
+  NA
 }
 
 criterion <- function(dat, vec, y){
@@ -20,21 +21,25 @@ criterion <- function(dat, vec, y){
   
   i <- 1
   res <- rep(NA, vec["spacing"])
+  set.seed(10*y)
   while(i <= vec["spacing"]){
     print(i)
-    if(vec["method"] == 1){
+    if(vec["quasi_method"] == 1){
       res[i] <- length(covarianceSelection::tsourakakis_2013(g))
-    } else if(vec["method"] == 2){
+    } else if(vec["quasi_method"] == 2){
       res[i] <- length(covarianceSelection::chen_2010(g))
-    } else if(vec["method"] == 3){
+    } else if(vec["quasi_method"] == 3){
       res[i] <- length(covarianceSelection::anderson_2009(g))
     } else {
       res[i] <- length(covarianceSelection::tsourakakis_2014_approximate(g))
     }
     
     # remove indices for the next iteration
-    idx <- sample(1:igraph::ecount(g), remove_num)
-    g <- igraph::delete_edges(g, idx)
+    if(vec["remove_method"] == 1){
+      g <- .remove_edges_uniform(g, remove_num)
+    } else {
+      g <- .remove_edges_proportional(g, remove_num)
+    }
     
     i <- i+1
   }
