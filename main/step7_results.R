@@ -1,10 +1,10 @@
 if(verbose) print(paste0(Sys.time(), "Start of step 7: Compiling the results"))
 validated_genes <- covarianceSelection::validated_genes$Gene
 
-num_pfc35 <- length(intersect(genes_pfc35, validated_genes))  # 28/175 genes?
+num_pfc35 <- length(intersect(genes_pfc35, validated_genes))  # 28/178 genes?
 num_nodawn <- length(intersect(genes_nodawn, validated_genes)) # 11/13 genes?
-num_all <- length(intersect(genes_all, validated_genes)) # 28/102 genes?
-num_our <- length(intersect(genes_our, validated_genes)) # 30/179 genes?
+num_all <- length(intersect(genes_all, validated_genes)) # 29/181 genes?
+num_our <- length(intersect(genes_our, validated_genes)) # 29/178 genes?
 
 c(num_pfc35, num_nodawn, num_all, num_our)
 c(length(genes_pfc35), length(genes_nodawn), length(genes_all), length(genes_our))
