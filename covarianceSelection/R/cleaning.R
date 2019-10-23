@@ -23,9 +23,10 @@ symbol_synonyms <- function(vec, verbose = T){
   aliasSymbol <- DBI::dbGetQuery(dbCon, sqlQuery)
   
   sapply(1:length(vec), function(i){
-    if(verbose & i %% floor(length(vec)/10) == 0) cat('*')
+    if(verbose & i %% max(floor(length(vec)/10),1) == 0) cat('*')
     
     res <- aliasSymbol[which(aliasSymbol[,2] %in% vec[i]), 5]
+    if(length(res) == 0) return(NA)
     
     #if there are more than one, take the most common one
     if(length(res) > 1){

@@ -31,32 +31,26 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
   }))))
   iter <- 1
   if(length(node_set) == n) return(sort(as.numeric(node_set)))
-  # print(node_set)
   
   while(iter <= iter_max){
     while(TRUE){
-      # print(node_set)
       den_org <- .tsourakakis_obj(g, threshold, node_set)
       node_candidate <- setdiff(as.character(igraph::V(g)$name), node_set)
-      # print(node_candidate)
-      # print(class(node_candidate))
       next_set <- .find_candidate(g, threshold, node_set, node_candidate, den_org, remove = F)
       if(any(is.na(next_set))) break()
       node_set <- next_set
     }
     
     den_org <- .tsourakakis_obj(g, threshold, node_set)
-    next_set <- .find_candidate(g, threshold, node_set, node_set[!which(node_set %in% core_set)], den_org, remove = T)
+    next_set <- .find_candidate(g, threshold, node_set, node_set[which(!node_set %in% core_set)], den_org, remove = T)
     if(any(is.na(next_set))) break()
     node_set <- next_set
     iter <- iter+1
-    # print(node_set)
   }
   
   sort(as.numeric(node_set))
 }
 
-# if node_candidate = NA, we are subtracting, not adding
 .find_candidate <- function(g, threshold, node_set, node_candidate, den_org, remove = F){
   stopifnot(length(node_set) > 1, is.character(node_set))
   

@@ -55,11 +55,12 @@ test_that(".compute_all_numerator_bootstrap works with remaining_idx", {
   diag_idx <- which(lower.tri(diag(ncol(dat_list[[1]])), diag = T))
   
   cov_list <- lapply(dat_list, function(x){(n-1)/n*stats::cov(x)})
+  cov_list_trunc <- lapply(cov_list, function(x){x[diag_idx]})
   idx <- which(lower.tri(diag(d), diag = T))
   remaining_idx <- c(1,4,5)
 
-  res <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, diag_idx, remaining_idx)
-  res2 <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list, diag_idx,  1:k)
+  res <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list_trunc, diag_idx, remaining_idx)
+  res2 <- .compute_all_numerator_bootstrap(dat_list, noise_list, cov_list_trunc, diag_idx,  1:k)
 
   for(i in 1:3){
     expect_true(sum(abs(res2[[remaining_idx[i]]] - res[[i]])) <= 1e-6)

@@ -1,3 +1,5 @@
+load("/raid6/Kevin/covarianceSelection/results/step7_results_0.99995.RData")
+
 selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
 dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 3065
 dat_pfc35 <- scale(dat_pfc35, scale = F)
@@ -43,10 +45,10 @@ idx_our <- covarianceSelection::chen_2010(g_selected, core_set = core_set)
 dat_our <- do.call(rbind, dat_list[idx_our])
 dat_our <- scale(dat_our, scale = F)
 
-res <- covarianceSelection::graphicalModel_range(dat_our, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35,  
-                                                 lambda_length = 30, verbose = T) 
+res2 <- covarianceSelection::graphicalModel_range(dat_our, 1:length(screening_res$primary), lambda_min = 0.3, lambda_max = 0.6,  
+                                                 lambda_length = 15, verbose = T) 
 
-vec3 <- sapply(20:length(res), function(x){
+vec3 <- sapply(1:length(res2), function(x){
   print(x)
   
   # run the HMRF
@@ -55,9 +57,14 @@ vec3 <- sapply(20:length(res), function(x){
   seedindex[which(tada$dn.LoF >= 3)] <- 1
   
   set.seed(10)
-  hmrf_our <- covarianceSelection::hmrf(tada$pval.TADA, as.matrix(res[[x]]$adj_mat), seedindex, pthres = pthres)
+  hmrf_our <- covarianceSelection::hmrf(tada$pval.TADA, as.matrix(res2[[x]]$adj_mat), seedindex, pthres = pthres)
   report_our <- covarianceSelection::report_results(tada$Gene, 1-hmrf_our$post, tada$pval.TADA, hmrf_our$Iupdate)
   genes_our <- sort(as.character(report_our$Gene[which(report_our$FDR <= fdr_cutoff)]))
   
+  print(hmrf_our$c)
+  
   length(intersect(genes_our, validated_genes))
 })
+
+scale_vec_our <- sapply(res2, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
+edges_vec_our <- sapply(res2, function(x){sum(as.matrix(x$adj_mat))/2})

@@ -385,8 +385,8 @@ test_that(".find_candidate can remove", {
   
   den_target <- .tsourakakis_obj(g, 0.95, as.character(16:20))
   
-  res <- .find_candidate(g, 0.95, node_set = as.character(c(1,16:20)), node_candidate = NA,
-                         den_org = 0)
+  res <- .find_candidate(g, 0.95, node_set = as.character(c(1,16:20)), node_candidate = as.character(c(1,16:20)),
+                         den_org = 0, remove = T)
   
   expect_true(length(res) == 5)
   expect_true(length(intersect(res, as.character(c(1,16:20)))) == 5)
@@ -404,8 +404,8 @@ test_that("tsourakakis_2013 works", {
   igraph::V(g)$name <- 1:n
   res <- tsourakakis_2013(g)
   
-  expect_true(is.character(res))
-  expect_true(length(res) == 1)
+  expect_true(is.numeric(res))
+  expect_true(length(res) > n/3)
 })
 
 test_that("tsourakakis_2013 works a random graph", {

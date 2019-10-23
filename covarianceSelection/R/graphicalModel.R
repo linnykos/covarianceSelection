@@ -19,8 +19,9 @@ graphicalModel <- function(dat, primary_idx, lambda = "lambda.1se", verbose = F,
   coef_mat <- sapply(coef_list, function(x){ x$vec })
   lambda_vec <- sapply(coef_list, function(x){ x$lambda })
   if(abs(diff(range(lambda_vec))) <= tol) lambda_vec <- min(lambda_vec)
+  stopifnot(nrow(coef_mat) == ncol(dat), ncol(coef_mat) == length(primary_idx))
   
-  adj_mat <- coef_mat
+  adj_mat <- cbind(coef_mat, matrix(0, nrow = nrow(coef_mat), ncol = nrow(coef_mat) - ncol(coef_mat)))
   adj_mat <- .symmetrize(adj_mat)
   adj_mat[which(abs(adj_mat) >= tol)] <- 1
   adj_mat[which(abs(adj_mat) <= tol)] <- 0
@@ -80,7 +81,8 @@ graphicalModel_range <- function(dat,  primary_idx, lambda_min, lambda_max, lamb
   }
   
   i <- 0 #debugging purposes only
-  foreach::"%dopar%"(foreach::foreach(i = 1:d), func(i))
+  # foreach::"%dopar%"(foreach::foreach(i = 1:d), func(i))
+  foreach::"%dopar%"(foreach::foreach(i = primary_idx), func(i))
 }
 
 .l2norm <- function(vec){

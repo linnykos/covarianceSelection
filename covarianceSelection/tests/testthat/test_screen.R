@@ -11,7 +11,7 @@ test_that("screen works", {
   res <- screen(dat, pv, num_genes = 15)
 
   expect_true(is.list(res))
-  expect_true(length(res) == 2)
+  expect_true(length(res) == 3)
   expect_true(length(intersect(res$primary, res$secondary)) == 0)
 })
 
