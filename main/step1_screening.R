@@ -26,7 +26,6 @@ for(i in 1:length(dat_list)){
   dat_list[[i]] <- dat_list[[i]][,c(screening_res$primary, screening_res$secondary)]
 }
 tada <- tada[c(screening_res$primary, screening_res$secondary),]
-
                 
 if(verbose) print(paste0("Dimension of dat_list is: ", unique(sapply(dat_list, ncol)), collapse = ", "))
 

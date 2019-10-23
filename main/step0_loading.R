@@ -15,13 +15,13 @@ genexp <- genexp[,idx] # 1340 x 14370
 
 #translate into synonyms
 vec <- covarianceSelection::symbol_synonyms(colnames(genexp), verbose = T)
-unknown_genes_idx <- which(sapply(vec, length) == 0)
-vec <- vec[-unknown_genes_idx]; vec <- unlist(vec)
+unknown_genes_idx <- which(is.na(vec))
+vec <- vec[-unknown_genes_idx]
 genexp <- genexp[-unknown_genes_idx] # 1340 x 14297
 colnames(genexp) <- vec
 
 #average non-unique genes
-genexp <- covarianceSelection:::average_same_columns(genexp) # 1340 x 14249 #EDIT THIS
+genexp <- covarianceSelection:::average_same_columns(genexp) # 1340 x 14246
 
 #remove samples from subregions that we don't have a region for
 region_subregion <- covarianceSelection::region_subregion
