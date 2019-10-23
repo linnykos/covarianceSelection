@@ -3,7 +3,7 @@ library(simulation)
 library(covarianceSelection)
 
 set.seed(10)
-ncores <- 15
+ncores <- 20
 doMC::registerDoMC(cores = ncores)
 verbose <- F
 
@@ -112,7 +112,7 @@ criterion <- function(dat, vec, y){
 
 res <- simulation::simulation_generator(rule = rule, criterion = criterion,
                                         paramMat = paramMat, trials = trials,
-                                        cores = 20, as_list = T,
+                                        cores = 1, as_list = T,
                                         filepath = "../results/nonparanormal_tmp.RData",
                                         verbose = T)
 save.image("../results/nonparanormal.RData")

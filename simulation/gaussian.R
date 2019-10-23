@@ -4,7 +4,7 @@ library(covarianceSelection)
 source("../simulation/simulation_helper.R")
 
 set.seed(10)
-ncores <- 15
+ncores <- 20
 doMC::registerDoMC(cores = ncores)
 verbose <- F
 
@@ -97,7 +97,7 @@ criterion <- function(dat, vec, y, ...){
 print(Sys.time())
 res <- simulation::simulation_generator(rule = rule, criterion = criterion,
                                         paramMat = paramMat, trials = trials,
-                                        cores = 20, as_list = T,
+                                        cores = 1, as_list = T,
                                         filepath = "../results/gaussian_tmp.RData",
                                         verbose = T)
 save.image("../results/gaussian.RData")
