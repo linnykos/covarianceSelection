@@ -59,7 +59,7 @@ hmrf <- function(pval, adj, seedindex, pthres = 0.05, iter = 100,
 
   z <- stats::qnorm(1-pval)
   i_vec <- as.numeric(pval<pthres)
-  b <- 0; c <- 0
+  b <- Inf; c <- Inf
 
   non_seedidx <- (seedindex==0)
   mu1 <- mean(z[i_vec==1 & non_seedidx])
@@ -106,15 +106,17 @@ hmrf <- function(pval, adj, seedindex, pthres = 0.05, iter = 100,
   #un-permute the elements
   i_vec <- i_vec[order(idx)]; posterior <- posterior[order(idx)]
   
-  if (!check_b(i_vec, b)) {
-    cat('\n\nWARNING: DAWN identified a large number of risk genes. 
+  if(verbose){
+    if (!check_b(i_vec, b)) {
+      cat('\n\nWARNING: DAWN identified a large number of risk genes. 
           Assumptions of the model may be false. 
           The set of risk genes likely contains many false positives.\n')
-  }
-  if (!check_c(adj, i_vec, b, c)) {
-    cat('\n\nWARNING: Weak connectivity among risk genes in the input graph. 
+    }
+    if (!check_c(adj, i_vec, b, c)) {
+      cat('\n\nWARNING: Weak connectivity among risk genes in the input graph. 
           Assumptions of the model appear to be false. 
           The set of risk genes likely contains many false positives.\n')
+    }
   }
 
   list(Iupdate = i_vec, post = posterior, b = b, c = c, mu1 = mu1, sigmas = sigmas)

@@ -1,48 +1,66 @@
-rm(list=ls())
-load("../results/step3_pfc35_analysis.RData")
-sapply(res, function(x){compute_scale_free(as.matrix(x$adj_mat))})
-
-adj_pfc35 <- as.matrix(res[[15]]$adj_mat)
-
-# run the HMRF
 set.seed(10)
-seedindex <- rep(0, nrow(adj_pfc35))
-seedindex[which(tada$dn.LoF >= 3)] <- 1
+d <- 12
+pval <- stats::runif(d)
+adj <- as.matrix(huge::huge.generator(n = 50, d = d, graph = "scale-free", verbose = F)$theta)
+seedindex <- rep(0, d)
+seedindex[order(pval, decreasing = F)[1:2]] <- 1
 
-if(verbose) print(paste0(Sys.time(), ": HMRF"))
-hmrf_pfc35 <- covarianceSelection::hmrf(tada$pval.TADA, adj_pfc35, seedindex, pthres = pthres)
-report_pfc35 <- covarianceSelection::report_results(tada$Gene, 1-hmrf_pfc35$post, tada$pval.TADA, hmrf_pfc35$Iupdate)
-cutoff <- sort(report_pfc35$FDR, decreasing = FALSE)[num_target]
-genes_pfc35 <- sort(as.character(report_pfc35$Gene[which(report_pfc35$FDR <= cutoff)]))
+pthres = 0.5
+iter = 2
+verbose = FALSE
+tol = 1e-3
 
-hmrf_pfc35$c # seems to be around -2??
-table(report_pfc35$indicator)
-quantile(report_pfc35$FDR)
+##
 
-validated_genes <- read.csv("../../raw_data/102_genes_20190123.txt", header = F)
-validated_genes <- sort(as.vector(validated_genes[,1]))
-validated_genes <- covarianceSelection::symbol_synonyms(validated_genes, verbose = T)
+stopifnot(length(pval) == length(seedindex), all(dim(adj) == length(pval)))
 
-length(intersect(genes_pfc35, validated_genes))
+#permute all the entries to avoid emphasis on current order
+d <- length(pval)
+idx <- sample(1:d)
+pval <- pval[idx]; adj <- adj[idx,idx]; seedindex <- seedindex[idx]
 
-###################
-load("../results/step4_alldata_analysis.RData")
-sapply(res, function(x){compute_scale_free(as.matrix(x$adj_mat))})
+z <- stats::qnorm(1-pval)
+i_vec <- as.numeric(pval<pthres)
+b <- Inf; c <- Inf
 
-adj_all <- as.matrix(res[[14]]$adj_mat)
+non_seedidx <- (seedindex==0)
+mu1 <- mean(z[i_vec==1 & non_seedidx])
+sigmas1 <- (stats::sd(z[i_vec == 0]))^2
+sigmas2 <- (stats::sd(z[i_vec == 1 & non_seedidx]))^2
+posterior <- rep(0,d)
 
-set.seed(10)
-seedindex <- rep(0, ncol(adj_all))
-seedindex[which(tada$dn.LoF >= 3)] <- 1
-
-if(verbose) print(paste0(Sys.time(), ": HMRF"))
-hmrf_all <- covarianceSelection::hmrf(tada$pval.TADA, adj_all, seedindex, pthres = pthres) 
-report_all <- covarianceSelection::report_results(tada$Gene, 1-hmrf_all$post, tada$pval.TADA, hmrf_all$Iupdate)
-cutoff <- sort(report_all$FDR, decreasing = FALSE)[num_target]
-genes_all <- sort(as.character(report_all$Gene[which(report_all$FDR <= cutoff)]))
-
-hmrf_all$c # seems to be around 2??
-table(report_all$indicator)
-quantile(report_all$FDR)
-
-length(intersect(genes_all, validated_genes)) 
+for (iteri in 1:iter){
+  
+  if(verbose) print(paste("Start iteration: ", iteri))
+  res <- .optimize_bc(.partial_likelihood, adj, i_vec, 20)
+  b_new <- res$b; c_new <- res$c
+  
+  if (abs(c-c_new)<tol & abs(b-b_new)<tol)  break()
+  b <- b_new; c <- c_new
+  
+  for (i in 1:d){
+    i_vec_tmp <- i_vec; i_vec_tmp[i] <- 1-i_vec[i]
+    
+    new1 <- b*i_vec[i] + c*i_vec[i]*adj[i,]%*%i_vec
+    new2 <- b*(1-i_vec[i]) + c*(1-i_vec[i])*adj[i,]%*%i_vec_tmp
+    p1 <- stats::dnorm(z[i], mu1*i_vec[i], sqrt(sigmas2 * i_vec[i] + sigmas1 * (1 - i_vec[i])))/(1 + exp(new2-new1))
+    p2 <- stats::dnorm(z[i], mu1*(1-i_vec[i]), sqrt(sigmas2 * (1 - i_vec[i]) + sigmas1 * i_vec[i]))/(1 + exp(new1-new2))
+    
+    if (i_vec[i] == 1){
+      posterior[i] <- p1/(p1+p2)
+    } else {
+      posterior[i] <- p2/(p1+p2)
+    }
+    
+    if (p2 > p1){ i_vec[i] <- 1-i_vec[i] }
+    if (seedindex[i] != 0){ i_vec[i] <- 1 }
+  }
+  
+  mu1 <- sum(posterior[non_seedidx]*z[non_seedidx])/sum(posterior[non_seedidx])
+  sigmas2 <- sum(posterior[non_seedidx]*(z[non_seedidx]-mu1)^2)/sum(posterior[non_seedidx])
+  sigmas1 <- sum((1-posterior[non_seedidx])*(z[non_seedidx])^2)/sum(1-posterior[non_seedidx])
+  sigmas <- (sigmas1*sum(posterior[non_seedidx]) + sigmas2*sum(1-posterior[non_seedidx])) / length(posterior[non_seedidx])
+  sigmas1 <- sigmas; sigmas2 <- sigmas
+  
+  if(verbose) print(paste0("Iteration: ",iteri," has ", sum(i_vec)," genes set with Iupdate = 1."))
+}

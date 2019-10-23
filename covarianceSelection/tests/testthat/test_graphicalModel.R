@@ -16,7 +16,7 @@ test_that("graphicalModel works", {
   expect_true(sum(abs(adj_mat - t(adj_mat))) < 1e-5)
 })
 
-test_that("graphicalModel resspects primary genes", {
+test_that("graphicalModel respects primary genes", {
   set.seed(10)
   dat <- matrix(rnorm(50^2), 50, 50)
   primary_idx <- 1:10
