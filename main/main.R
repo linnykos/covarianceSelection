@@ -11,8 +11,9 @@ library(org.Hs.eg.db)
 
 verbose <- T
 save_filepath <- "/raid6/Kevin/covarianceSelection/results"
-tmp <- 1-1e-4/2
-filepath_suffix <- paste0("_", tmp)
+#tmp <- 1-1e-4/2
+#filepath_suffix <- paste0("_", tmp)
+filepath_suffix <- ""
 
 source("../main/step0_loading.R")
 source("../main/step1_screening.R")
