@@ -9,16 +9,19 @@ dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 3065
 dat_pfc35 <- scale(dat_pfc35, scale = F)
 
 # estimate graphical model on PFC35 using cross-validated lasso for neighborhood selection
-res <- covarianceSelection::graphicalModel_range(dat_pfc35, 1:length(screening_res$primary), 
-                                                 lambda_min = 0.01, lambda_max = 0.35, 
-                                                 lambda_length = 30, verbose = T) 
-save.image(file = paste0(save_filepath, "/step3_pfc35_analysis", filepath_suffix, ".RData"))
+# res <- covarianceSelection::graphicalModel_range(dat_pfc35, 1:length(screening_res$primary), 
+#                                                  lambda_min = 0.01, lambda_max = 0.35, 
+#                                                  lambda_length = 30, verbose = T) 
+# save.image(file = paste0(save_filepath, "/step3_pfc35_analysis", filepath_suffix, ".RData"))
+# 
+# scale_vec_pfc35 <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
+# edges_vec_pfc35 <- sapply(res, function(x){sum(as.matrix(x$adj_mat))/2})
+# # idx <- which.max(scale_vec_pfc35)
+# idx <- 27
+# adj_pfc35 <- as.matrix(res[[idx]]$adj_mat)
 
-scale_vec_pfc35 <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
-edges_vec_pfc35 <- sapply(res, function(x){sum(as.matrix(x$adj_mat))/2})
-idx <- which.max(scale_vec_pfc35)
-# idx <- 29
-adj_pfc35 <- as.matrix(res[[idx]]$adj_mat)
+res <- covarianceSelection::graphicalModel(dat_pfc35, primary_idx = 1:length(screening_res$primary), lambda = 0.075)
+adj_pfc35 <- as.matrix(res$adj_mat)
 stopifnot(all(dim(adj_pfc35) == nrow(tada)))
 
 # run the HMRF

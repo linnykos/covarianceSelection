@@ -58,7 +58,7 @@ graphicalModel_range <- function(dat,  primary_idx, lambda_min, lambda_max, lamb
   stopifnot(all(primary_idx %in% 1:d))
 
   func <- function(i){
-    if(verbose & i %% floor(d/10) == 0) cat('*')
+    if(verbose & i %% floor(length(primary_idx)/10) == 0) cat('*')
   
     vec <- rep(0, d)
     y_vec <- dat[,i]
@@ -81,7 +81,6 @@ graphicalModel_range <- function(dat,  primary_idx, lambda_min, lambda_max, lamb
   }
   
   i <- 0 #debugging purposes only
-  # foreach::"%dopar%"(foreach::foreach(i = 1:d), func(i))
   foreach::"%dopar%"(foreach::foreach(i = primary_idx), func(i))
 }
 

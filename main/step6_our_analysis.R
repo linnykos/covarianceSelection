@@ -8,7 +8,7 @@ g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[3]]
 # construct the core set
 selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
 g_sub <- igraph::induced_subgraph(g_selected, selected_idx)
-core_set <- selected_idx[covarianceSelection::tsourakakis_2013(g_sub)]
+core_set <- selected_idx[covarianceSelection::chen_2010(g_sub)]
 
 idx_our <- covarianceSelection::chen_2010(g_selected, core_set = core_set)
 ## covarianceSelection::binning(names(dat_list)[idx_our]); covarianceSelection::binning(names(dat_list))
@@ -16,16 +16,19 @@ idx_our <- covarianceSelection::chen_2010(g_selected, core_set = core_set)
 dat_our <- do.call(rbind, dat_list[idx_our])
 dat_our <- scale(dat_our, scale = F)
 
-res <- covarianceSelection::graphicalModel_range(dat_our, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35,  
-                                                 lambda_length = 30, verbose = T) 
-save.image(file = paste0(save_filepath, "/step6_ourdata_analysis", filepath_suffix, ".RData"))
+# res <- covarianceSelection::graphicalModel_range(dat_our, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35,  
+#                                                  lambda_length = 30, verbose = T) 
+# save.image(file = paste0(save_filepath, "/step6_ourdata_analysis", filepath_suffix, ".RData"))
+# 
+# scale_vec_our <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
+# edges_vec_our <- sapply(res, function(x){sum(as.matrix(x$adj_mat))/2})
+# # idx <- which.max(scale_vec_our)
+# idx <- 26
+# adj_our <- as.matrix(res[[idx]]$adj_mat)
+# stopifnot(all(dim(adj_our) == nrow(tada)))
 
-scale_vec_our <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
-edges_vec_our <- sapply(res, function(x){sum(as.matrix(x$adj_mat))/2})
-# idx <- which.max(scale_vec_our)
-# idx <- 21
-adj_our <- as.matrix(res[[idx]]$adj_mat)
-stopifnot(all(dim(adj_our) == nrow(tada)))
+res <- covarianceSelection::graphicalModel(dat_our, primary_idx = 1:length(screening_res$primary), lambda = 0.075)
+adj_our <- as.matrix(res$adj_mat)
 
 # run the HMRF
 set.seed(10)
