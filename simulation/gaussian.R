@@ -8,7 +8,7 @@ ncores <- 20
 doMC::registerDoMC(cores = ncores)
 verbose <- F
 
-trials <- 25
+trials <- 5
 paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, c(0, 0.3, 0.6, 1), 21))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha_levels")
