@@ -10,8 +10,11 @@ g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[3]]
 tmp <- rep(1, igraph::vcount(g_selected)); tmp[idx_our] <- 2
 igraph::V(g_selected)$color <- color_palatte[tmp]
 
+png("../figures/3.png", height = 800, width = 800, units = "px", res = 300)
+par(mar = rep(0,4))
 set.seed(10)
 igraph::plot.igraph(g_selected, vertex.label = NA, vertex.size = 10)
+graphics.off()
 
 # zoom in on the big component
 tmp <-  igraph::components(g_selected)
@@ -41,16 +44,20 @@ tmp <-  igraph::components(g_selected)
 idx3 <- sort(setdiff(which(tmp$membership == 1), c(idx1,idx2)))
 idx4 <- sort(setdiff(1:n, c(idx1,idx2,idx3)))
 adj_tmp <- as.matrix(igraph::as_adjacency_matrix(g_selected))
-adj_tmp <- adj_tmp[c(idx1, idx2, idx3, idx4), c(idx1, idx2, idx3, idx4)]
+adj_tmp <- adj_tmp[c(idx1, idx2, idx3), c(idx1, idx2, idx3)]
 
 .rotate = function(a) { t(a[nrow(a):1,]) } 
-image(.rotate(adj_tmp), asp = T, col = color_palatte, breaks = c(-.5,.5,1.5))
+png("../figures/4.png", height = 800, width = 800, units = "px", res = 300)
+par(mar = rep(0.5,4))
+image(.rotate(adj_tmp), asp = T, col = color_palatte, breaks = c(-.5,.5,1.5), xaxt = "n", yaxt = "n",
+      xlab = "", ylab = "")
 
 # put in dashed lines
-x_width <- length(idx_our)/n
+x_width <- length(idx_our)/nrow(adj_tmp)
 y_height <- 1 - x_width
 lines(rep(x_width, 2), c(0,1), lwd = 2, lty = 2)
 lines(c(0,1), rep(y_height, 2), lwd = 2, lty = 2)
+graphics.off()
 
 ##########################
 
@@ -127,8 +134,23 @@ vec_pfc35 <- sapply(1:d, function(i){
   length(intersect(neigh_vec, idx_gene))
 })
 col_vec <- rep(1, d); col_vec[idx_gene] <- 2
-plot(tada$pval.TADA, jitter(vec_pfc35), col = color_palatte[col_vec], pch = 16, xlim = c(0,0.4))
-plot(tada$qvalue, jitter(vec_pfc35), col = color_palatte[col_vec], pch = 16)
+# plot(tada$pval.TADA, jitter(vec_pfc35), col = color_palatte[col_vec], pch = 16, xlim = c(0,0.4))
+png("../figures/5.png", height = 1200, width = 1200, units = "px", res = 300)
+par(mar = c(5,4,4,0.5))
+plot(tada$qvalue, jitter(vec_pfc35), col = color_palatte[col_vec], pch = 16,
+     xlab = "Original q-value", ylab = "(Jittered) Number of risk neighbors", main = "PFC-35 analysis",
+     xlim = c(0,1), ylim = c(0,9))
+
+# perform a logistic
+tmp_dat <- cbind(tada$qvalue, vec_pfc35, colnames(dat_list[[1]]) %in% genes_our_zz)
+tmp_dat <- as.data.frame(tmp_dat)
+colnames(tmp_dat) <- c("qvalue", "neigh", "risk")
+tmp_dat[,3] <- as.factor(tmp_dat[,3])
+tmp_res <- glm(risk ~ qvalue + neigh, data = tmp_dat, family = "binomial")
+coef_vec <- coef(tmp_res)
+# determine when intercept + qvalue + neigh = 0
+abline(a = -coef_vec[1]/coef_vec[3], b = -coef_vec[2]/coef_vec[3], lwd = 2, lty = 2)
+graphics.off()
 
 ### 
 
@@ -176,8 +198,23 @@ vec_our <- sapply(1:d, function(i){
   length(intersect(neigh_vec, idx_gene))
 })
 col_vec <- rep(1, d); col_vec[idx_gene] <- 2
-plot(tada$pval.TADA, jitter(vec_our), col = color_palatte[col_vec], pch = 16, xlim = c(0,0.4))
-plot(tada$qvalue, jitter(vec_our), col = color_palatte[col_vec], pch = 16)
+# plot(tada$pval.TADA, jitter(vec_our), col = color_palatte[col_vec], pch = 16, xlim = c(0,0.4))
+png("../figures/6.png", height = 1200, width = 1200, units = "px", res = 300)
+par(mar = c(5,4,4,0.5))
+plot(tada$qvalue, jitter(vec_our), col = color_palatte[col_vec], pch = 16,
+     xlab = "Original q-value", ylab = "(Jittered) Number of risk neighbors", main = "Our analysis",
+     xlim = c(0,1), ylim = c(0,9))
+
+# perform a logistic
+tmp_dat <- cbind(tada$qvalue, vec_our, colnames(dat_list[[1]]) %in% genes_our_zz)
+tmp_dat <- as.data.frame(tmp_dat)
+colnames(tmp_dat) <- c("qvalue", "neigh", "risk")
+tmp_dat[,3] <- as.factor(tmp_dat[,3])
+tmp_res <- glm(risk ~ qvalue + neigh, data = tmp_dat, family = "binomial")
+coef_vec <- coef(tmp_res)
+# determine when intercept + qvalue + neigh = 0
+abline(a = -coef_vec[1]/coef_vec[3], b = -coef_vec[2]/coef_vec[3], lwd = 2, lty = 2)
+graphics.off()
 
 ###################
 
@@ -208,11 +245,26 @@ colSums(adj_all_zz)[idx]
 d <- ncol(adj_all_zz)
 diag(adj_all_zz) <- 0
 idx_gene <- which(colnames(dat_list[[1]]) %in% genes_our_zz)
-vec_our <- sapply(1:d, function(i){
+vec_all <- sapply(1:d, function(i){
   if(i %% floor(ncol(adj_all_zz)/10) == 0) cat('*')
   neigh_vec <- which(adj_all_zz[,i] == 1)
   length(intersect(neigh_vec, idx_gene))
 })
 col_vec <- rep(1, d); col_vec[idx_gene] <- 2
-plot(tada$pval.TADA, jitter(vec_our), col = color_palatte[col_vec], pch = 16, xlim = c(0,0.4))
-plot(tada$qvalue, jitter(vec_our), col = color_palatte[col_vec], pch = 16)
+# plot(tada$pval.TADA, jitter(vec_all), col = color_palatte[col_vec], pch = 16, xlim = c(0,0.4))
+png("../figures/7.png", height = 1200, width = 1200, units = "px", res = 300)
+par(mar = c(5,4,4,0.5))
+plot(tada$qvalue, jitter(vec_all), col = color_palatte[col_vec], pch = 16,
+     xlab = "Original q-value", ylab = "(Jittered) Number of risk neighbors", main = "All analysis",
+     xlim = c(0,1), ylim = c(0,9))
+
+# perform a logistic
+tmp_dat <- cbind(tada$qvalue, vec_all, colnames(dat_list[[1]]) %in% genes_our_zz)
+tmp_dat <- as.data.frame(tmp_dat)
+colnames(tmp_dat) <- c("qvalue", "neigh", "risk")
+tmp_dat[,3] <- as.factor(tmp_dat[,3])
+tmp_res <- glm(risk ~ qvalue + neigh, data = tmp_dat, family = "binomial")
+coef_vec <- coef(tmp_res)
+# determine when intercept + qvalue + neigh = 0
+abline(a = -coef_vec[1]/coef_vec[3], b = -coef_vec[2]/coef_vec[3], lwd = 2, lty = 2)
+graphics.off()

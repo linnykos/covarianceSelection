@@ -112,7 +112,7 @@ criterion <- function(dat, vec, y){
 
 res <- simulation::simulation_generator(rule = rule, criterion = criterion,
                                         paramMat = paramMat, trials = trials,
-                                        cores = 1, as_list = T,
+                                        cores = NA, as_list = T,
                                         filepath = "../results/nonparanormal_tmp.RData",
                                         verbose = T)
 save.image("../results/nonparanormal.RData")
