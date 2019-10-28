@@ -8,12 +8,11 @@
 #'
 #' @return numeric (p-value)
 #' @export
-cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
+cai_test <- function(x, y, trials = 100, prob = 1){
   if(ncol(x) != ncol(y)) stop("x and y have different number of dimensions")
   if(!is.matrix(x) | !is.numeric(x)) stop("x is not a numeric matrix")
   if(!is.matrix(y) | !is.numeric(y)) stop("y is not a numeric matrix")
 
-  doMC::registerDoMC(cores = cores)
   diag_idx <- which(lower.tri(diag(ncol(x)), diag = T))
 
   n1 <- nrow(x); n2 <- nrow(y)
@@ -30,13 +29,8 @@ cai_test <- function(x, y, trials = 100, cores = 1, prob = 1){
     .compute_covStat(boot_num_x, boot_num_y, denom_x, denom_y, prob = 1)
   }
 
-  if(is.na(cores)){
-    t_boot <- numeric(trials)
-    for(i in 1:trials){ t_boot[i] <- func(i) }
-  } else {
-    i <- 0 #debugging purposes
-    t_boot <- unlist(foreach::"%dopar%"(foreach::foreach(i = 1:trials), func(i)))
-  }
+  i <- 0 #debugging purposes
+  t_boot <- unlist(foreach::"%dopar%"(foreach::foreach(i = 1:trials), func(i)))
 
   length(which(abs(t_boot) >= abs(t_org)))/trials
 }
