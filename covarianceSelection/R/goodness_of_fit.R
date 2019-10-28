@@ -13,10 +13,10 @@
 #'
 #' @return vector of p-values
 #' @export
-goodness_of_fit <- function(dat, trials = 500, prob = 1, verbose = F){
+goodness_of_fit <- function(dat, permutations = 500, trials = 500, prob = 1, verbose = F){
   n <- nrow(dat)
   
-  sapply(1:trials, function(x){
+  sapply(1:permutations, function(x){
     if(verbose && trials > 10 && x %% floor(trials/10) == 0) cat('*')
     split1 <- sample(1:n, round(n/2), replace = F)
     
