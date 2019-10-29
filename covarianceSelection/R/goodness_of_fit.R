@@ -13,15 +13,16 @@
 #'
 #' @return vector of p-values
 #' @export
-goodness_of_fit <- function(dat, permutations = 500, trials = 500, prob = 1, verbose = F){
-  n <- nrow(dat)
+goodness_of_fit <- function(dat_list, permutations = 250, trials = 250, prob = 1, verbose = F){
+  n <- length(dat_list)
   
   sapply(1:permutations, function(x){
     if(verbose && trials > 10 && x %% floor(trials/10) == 0) cat('*')
-    split1 <- sample(1:n, round(n/2), replace = F)
+    split1 <- sample(1:n, round(n/2))
     
-    dat1 <- dat[split1,]; dat2 <- dat[-split1,]
+    dat1 <- do.call(rbind, dat_list[split1])
     dat1 <- scale(dat1, center = T, scale = F)
+    dat2 <- do.call(rbind, dat_list[-split1])
     dat2 <- scale(dat2, center = T, scale = F)
     cai_test(dat1, dat2, trials = trials, prob = prob)
   })
