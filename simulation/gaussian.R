@@ -9,7 +9,7 @@ doMC::registerDoMC(cores = ncores)
 verbose <- F
 
 trials <- 5
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, c(0, 0.3, 0.6, 1), 21))
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 10, c(0, 0.3, 0.6, 1), 21))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha_levels")
 
@@ -58,6 +58,7 @@ rule <- function(vec){
 
 criterion <- function(dat, vec, y, ...){
   set.seed(y)
+  alpha_vec <- seq(0, 1, length.out = vec["alpha_levels"])
   
   if(verbose) print(paste0("Starting to run the test: ", Sys.time()))
   
@@ -89,6 +90,7 @@ criterion <- function(dat, vec, y, ...){
        bh_indices_list = bh_indices_list)
 }
 
+# idx <- 1; y <- 1; set.seed(y); criterion(rule(paramMat[idx,]), paramMat[idx,], y)
 ## idx <- 8; y <- 3; set.seed(y); dat1 <- rule(paramMat[idx,]); set.seed(y); dat2 <- rule(paramMat[idx,])
 ## idx <- 4; y <- 1; set.seed(y); res <- criterion(rule(paramMat[idx,]), paramMat[idx,], y)
 
@@ -97,7 +99,7 @@ criterion <- function(dat, vec, y, ...){
 print(Sys.time())
 res <- simulation::simulation_generator(rule = rule, criterion = criterion,
                                         paramMat = paramMat, trials = trials,
-                                        cores = 1, as_list = T,
+                                        cores = NA, as_list = T,
                                         filepath = "../results/gaussian_tmp.RData",
                                         verbose = T)
 save.image("../results/gaussian.RData")
