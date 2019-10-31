@@ -18,7 +18,8 @@ Imports:
     mgcv,
     org.Hs.eg.db,
     DBI,
-    dequer
+    dequer,
+    hash
 Suggests:
     testthat
 RoxygenNote: 6.1.1
