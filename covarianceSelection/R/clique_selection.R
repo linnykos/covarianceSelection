@@ -29,14 +29,14 @@
 clique_selection <- function(g, threshold = 0.95, mode = "all",
                              target_idx = NA, prune = T,
                              verbose = F, time_limit = 3600,
-                             max_length = 500000){
+                             max_length = 50000){
   stopifnot(mode %in% c("all", "or"), length(mode) == 1, class(g) == "igraph")
   
   d <- igraph::vcount(g)
   adj <- as.matrix(igraph::as_adjacency_matrix(g))
   
   clique_list <- lapply(igraph::maximal.cliques(g), function(x){sort(as.numeric(x))})
-  if(any(!is.na(target_idx))) clique_list <- .prune_clique(clique_list, target_idx)
+  if(any(!is.na(target_idx))) clique_list <- .prune_clique(adj, clique_list, target_idx, threshold)
   if(length(clique_list) == 1) return(list(1:ncol(adj)))
   largest_clique <- list(sort(clique_list[[which.max(sapply(clique_list, length))]]))
   
@@ -56,7 +56,7 @@ clique_selection <- function(g, threshold = 0.95, mode = "all",
     stat_vec["Num.max"] <- length(largest_clique[[1]])
     
     stopifnot(length(hash_unique) == length(hash_children))
-    if(verbose & proc.time()["elapsed"] > prev_time + 60) {
+    if(verbose & proc.time()["elapsed"] > prev_time + 5) {
       print(stat_vec)
       prev_time <- proc.time()["elapsed"]
     }
@@ -113,10 +113,9 @@ clique_selection <- function(g, threshold = 0.95, mode = "all",
     }
   }
   
-  if(any(!is.na(target_idx))) largest_clique <- .post_fillin(largest_clique, threshold,
-                                                             target_idx, adj)
+  if(verbose) print("Exiting function")
   
-  if(prune) largest_clique <- .prune_nodes(largest_clique, adj)
+  if(prune) largest_clique <- .prune_nodes(largest_clique, adj, target_idx)
   
   largest_clique
 }
@@ -432,71 +431,24 @@ select_clique <- function(lis, idx, adj){
 
 #' Prune the list of cliques
 #'
-#' This function does find the list of indices in \code{clique_list}
-#' (a list of vectors for indices) based on the intersection of two events:
-#' 1) vectors that are above the \code{prob1} quantile in the number of indices
-#' that overlap with \code{target_idx}, and 2) vectors that are above the
-#' \code{prob2} quantile in its length.
-#'
 #' @param clique_list list of vectors
 #' @param target_idx vector
 #' @param prob1 numeric
 #' @param prob2 numeric
 #'
 #' @return list of vectors
-.prune_clique <- function(clique_list, target_idx, prob1 = 0.975, prob2 = 0.995){
-  overlap_vec <- sapply(clique_list, function(x){length(which(target_idx %in% x))})
-  length_vec <- sapply(clique_list, length)
+.prune_clique <- function(adj, clique_list, target_idx, threshold = 0.9){
+  vec <- sapply(clique_list, function(x){
+    idx <- unique(c(x, target_idx))
+    .pass_threshold(adj[idx,idx], threshold)
+  })
   
-  target_overlap <- stats::quantile(overlap_vec, probs = prob1)
-  target_length <- stats::quantile(length_vec, probs = prob2)
+  if(!any(vec)) stop("Pruning maximal cliques resulted in no sets")
+  clique_list <- clique_list[which(vec)]
   
-  idx <- intersect(which(overlap_vec >= target_overlap),
-                   which(length_vec >= target_length))
-  if(length(idx) > 0){
-    clique_list[idx]
-  } else {
-    clique_list[which(length_vec >= target_length)]
-  }
-}
-
-#' Post fill-in cliques based on certain indices
-#'
-#' For a list of vectors of indices (\code{clique_list}), determine
-#' if any of elements in \code{target_idx} (a vector of indices) can be
-#' added such that the augmented vector still passes the threshold
-#' in \code{adj}, the adjacency matrix.
-#'
-#' Also, if \code{prune} is \code{TRUE}, remove nodes that are not connected
-#' to more than half the nodes.
-#'
-#' @param clique_list list of vectors
-#' @param threshold numeric
-#' @param target_idx vector
-#' @param adj adjacency matrix, of elements that are 0 or 1.
-#'
-#' @return list of vectors
-.post_fillin <- function(clique_list, threshold, target_idx, adj){
-  len <- length(clique_list)
-  
-  for(i in 1:len){
-    idx <- target_idx[which(!target_idx %in% clique_list[[i]])]
-    if(length(idx) == 0) next()
-    powerset <- .powerset(idx)
-    powerset <- powerset[sample(length(powerset))]
-    
-    len_vec <- sapply(powerset, length)
-    bool_vec <- sapply(1:length(powerset), function(x){
-      idx2 <- c(clique_list[[i]], powerset[[x]])
-      .pass_threshold(adj[idx2, idx2, drop = F], threshold)
-    })
-    
-    add_idx <- powerset[[intersect(which(len_vec == max(len_vec[which(bool_vec)])),
-                                   which(bool_vec))[1]]]
-    clique_list[[i]] <- sort(c(clique_list[[i]], add_idx))
-  }
-  
-  clique_list
+  lapply(clique_list, function(x){
+    sort(unique(c(x, target_idx)))
+  })
 }
 
 #from rje package, original function "powerSet"
@@ -517,12 +469,19 @@ select_clique <- function(lis, idx, adj){
 #' @param threshold number between 0 and 1
 #'
 #' @return list of vectors
-.prune_nodes <- function(clique_list, adj, threshold = 0.5){
+.prune_nodes <- function(clique_list, adj, target_idx, threshold = 0.5){
   for(i in 1:length(clique_list)){
     if(length(clique_list[[i]]) == 0) next()
     adj_small <- adj[clique_list[[i]], clique_list[[i]], drop = F]
     vec <- rowSums(adj_small)
-    clique_list[[i]] <- clique_list[[i]][which(vec >= threshold*nrow(adj_small))]
+    
+    if(!all(is.na(target_idx))){
+      passed_idx <- sort(unique(c(which(vec >= threshold*nrow(adj_small)), which(clique_list[[i]] %in% target_idx))))
+    } else {
+      passed_idx <- which(vec >= threshold*nrow(adj_small))
+    }
+    
+    clique_list[[i]] <- clique_list[[i]][passed_idx]
   }
   
   clique_list

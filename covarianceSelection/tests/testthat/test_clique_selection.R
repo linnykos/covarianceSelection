@@ -415,8 +415,6 @@ test_that("select_clique works", {
   expect_true(!is.list(idx))
 })
 
-
-
 #################################
 
 ## .prune_clique is correct
@@ -455,55 +453,4 @@ test_that(".prune_clique returns a strict subset", {
   bool <- res_string %in% clique_string
   
   expect_true(all(bool))
-})
-
-
-########################################
-
-## .post_fillin is correct
-
-test_that(".post_fillin works", {
-  set.seed(10)
-  n <- 20
-  combn_mat <- combn(n,2)
-  edges <- combn_mat[,sample(1:ncol(combn_mat), floor(0.7*ncol(combn_mat)))]
-  
-  g <- igraph::graph.empty(n = n, directed = F)
-  g <- igraph::add_edges(g, edges = edges)
-  adj <- as.matrix(igraph::as_adjacency_matrix(g))
-  
-  clique_list <- lapply(igraph::maximal.cliques(g), function(x){sort(as.numeric(x))})
-  
-  res <- .post_fillin(clique_list, threshold = 0.8, target_idx = 1:5, adj = adj)
-  
-  expect_true(is.list(res))
-  expect_true(length(res) == length(clique_list))
-  
-  bool <- sapply(1:length(res), function(x){
-    all(clique_list[[x]] %in% res[[x]])
-  })
-  expect_true(all(bool))
-})
-
-
-test_that(".post_fillin gives a set that passes threshold", {
-  set.seed(10)
-  n <- 20
-  combn_mat <- combn(n,2)
-  edges <- combn_mat[,sample(1:ncol(combn_mat), floor(0.7*ncol(combn_mat)))]
-  
-  g <- igraph::graph.empty(n = n, directed = F)
-  g <- igraph::add_edges(g, edges = edges)
-  adj <- as.matrix(igraph::as_adjacency_matrix(g))
-  
-  clique_list <- lapply(igraph::maximal.cliques(g), function(x){sort(as.numeric(x))})
-  
-  threshold <- 0.8
-  res <- .post_fillin(clique_list, threshold = threshold, target_idx = 1:5, adj = adj)
-  
-  bool_vec <- sapply(1:length(res), function(x){
-    .pass_threshold(adj[res[[x]], res[[x]]], threshold = threshold)
-  })
-  
-  expect_true(all(bool_vec))
 })

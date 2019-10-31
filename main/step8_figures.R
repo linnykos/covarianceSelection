@@ -37,14 +37,16 @@ igraph::plot.igraph(tmp_g, vertex.label = NA, vertex.size = 10)
 
 # first construct 3 sets of nodes: first is our selected idx, the second is all the other nodes in the
 ## the giant component, and the third is all the remaining nodes
-n <- igraph::vcount(g_selected)
-idx1 <- intersect(idx_our, grep("PFC\\.[3-5]", names(dat_list)))
-idx2 <- sort(idx_our)
-tmp <-  igraph::components(g_selected)
-idx3 <- sort(setdiff(which(tmp$membership == 1), c(idx1,idx2)))
-idx4 <- sort(setdiff(1:n, c(idx1,idx2,idx3)))
+# n <- igraph::vcount(g_selected)
+# idx1 <- intersect(idx_our, grep("PFC\\.[3-5]", names(dat_list)))
+# idx2 <- sort(idx_our)
+# tmp <-  igraph::components(g_selected)
+# idx3 <- sort(setdiff(which(tmp$membership == 1), c(idx1,idx2)))
+# idx4 <- sort(setdiff(1:n, c(idx1,idx2,idx3)))
+idx1 <- sample(idx_our)
+idx2 <- sample(setdiff(which(tmp$membership == 1), c(idx1,idx2)))
 adj_tmp <- as.matrix(igraph::as_adjacency_matrix(g_selected))
-adj_tmp <- adj_tmp[c(idx1, idx2, idx3), c(idx1, idx2, idx3)]
+adj_tmp <- adj_tmp[c(idx1, idx2), c(idx1, idx2)]
 
 .rotate = function(a) { t(a[nrow(a):1,]) } 
 png("../figures/4.png", height = 800, width = 800, units = "px", res = 300)
