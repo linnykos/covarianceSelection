@@ -10,7 +10,7 @@ dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) # 107 x 3065
 dat_pfc35 <- scale(dat_pfc35, scale = F)
 
 res_pfc35 <- covarianceSelection::graphicalModel_range(dat_pfc35, 1:length(screening_res$primary), 
-                                                 lambda_min = 0.05, lambda_max = 0.1, lambda_length = 15, verbose = T)
+                                                 lambda_min = 0.05, lambda_max = 0.1, lambda_length = 15, verbose = F)
 
 validated_genes <- covarianceSelection::validated_genes$Gene
 
@@ -56,7 +56,7 @@ dat_our <- do.call(rbind, dat_list[idx_our])
 dat_our <- scale(dat_our, scale = F)
 
 res_our <- covarianceSelection::graphicalModel_range(dat_our, 1:length(screening_res$primary), 
-                                                       lambda_min = 0.05, lambda_max = 0.1, lambda_length = 15, verbose = T)
+                                                       lambda_min = 0.05, lambda_max = 0.1, lambda_length = 15, verbose = F)
 
 
 for(i in 1:length(res_our)){
@@ -86,7 +86,7 @@ dat_all <- do.call(rbind, dat_list) # 107 x 3438
 dat_all <- scale(dat_all, scale = F)
 
 res_all<- covarianceSelection::graphicalModel_range(dat_all, 1:length(screening_res$primary), 
-                                                       lambda_min = 0.05, lambda_max = 0.1, lambda_length = 15, verbose = T)
+                                                       lambda_min = 0.05, lambda_max = 0.1, lambda_length = 15, verbose = F)
 
 for(i in 1:length(res_all)){
   adj_all <- as.matrix(res_all[[i]]$adj_mat)
