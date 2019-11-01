@@ -8,9 +8,10 @@ g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[3]]
 # construct the core set
 selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
 g_sub <- igraph::induced_subgraph(g_selected, selected_idx)
-core_set <- selected_idx[covarianceSelection::chen_2010(g_sub)]
+core_set <- selected_idx[covarianceSelection::clique_selection(g_sub, threshold = 0.90)[[1]]]
+idx_our <- clique_selection(g_selected, threshold = 0.9, target_idx = core_set, verbose = T, max_length = 5000)
+idx_our <- idx_our[[1]]
 
-idx_our <- covarianceSelection::chen_2010(g_selected, core_set = core_set)
 ## covarianceSelection::binning(names(dat_list)[idx_our]); covarianceSelection::binning(names(dat_list))
 ## igraph::ecount(igraph::induced_subgraph(g_selected, idx_our))/(length(idx_our)*(length(idx_our)-1)/2)
 dat_our <- do.call(rbind, dat_list[idx_our])
