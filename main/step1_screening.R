@@ -15,9 +15,7 @@ screening_res <- covarianceSelection::screen(dat_pfc35, pv = tada$pval.TADA, p_t
 # 265 primary, 3235 secondary, total of 3500
 
 # reorder which genes are primary and which are secondary
-validated_genes <- covarianceSelection::validated_genes$Gene
-
-all_idx <- sort(unique(c(screening_res$primary, screening_res$secondary, which(tada$Gene %in% validated_genes))))
+all_idx <- sort(unique(c(screening_res$primary, screening_res$secondary)))
 screening_res$primary <- all_idx[which(tada$pval.TADA[all_idx] < p_primary)]
 screening_res$secondary <- setdiff(all_idx, screening_res$primary)
 

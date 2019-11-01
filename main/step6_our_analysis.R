@@ -1,3 +1,5 @@
+gamma_threshold <- 0.95
+
 if(verbose) print(paste0(Sys.time(), "Start of step 6: Our data analysis"))
 
 n <- length(dat_list)
@@ -8,8 +10,8 @@ g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[3]]
 # construct the core set
 selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
 g_sub <- igraph::induced_subgraph(g_selected, selected_idx)
-core_set <- selected_idx[covarianceSelection::clique_selection(g_sub, threshold = 0.90)[[1]]]
-idx_our <- covarianceSelection::clique_selection(g_selected, threshold = 0.9, target_idx = core_set, verbose = T, max_length = 5000)
+core_set <- selected_idx[covarianceSelection::clique_selection(g_sub, threshold = gamma_threshold)[[1]]]
+idx_our <- covarianceSelection::clique_selection(g_selected, threshold = gamma_threshold, target_idx = core_set)
 idx_our <- idx_our[[1]]
 
 ## covarianceSelection::binning(names(dat_list)[idx_our]); covarianceSelection::binning(names(dat_list))
@@ -28,7 +30,7 @@ dat_our <- scale(dat_our, scale = F)
 # adj_our <- as.matrix(res[[idx]]$adj_mat)
 # stopifnot(all(dim(adj_our) == nrow(tada)))
 
-res <- covarianceSelection::graphicalModel(dat_our, primary_idx = 1:length(screening_res$primary), lambda = 0.075)
+res <- covarianceSelection::graphicalModel(dat_our, primary_idx = 1:length(screening_res$primary), lambda =  seq(0.05, 0.1, length.out = 15)[5])
 adj_our <- as.matrix(res$adj_mat)
 
 # run the HMRF
