@@ -43,7 +43,7 @@ graphicalModel <- function(dat, primary_idx, lambda = "lambda.1se", verbose = F,
 #' @return a list, each being an output for \code{graphicalModel} for a different value of \code{lambda}
 #' @export
 graphicalModel_range <- function(dat,  primary_idx, lambda_min, lambda_max, lambda_length = 15, verbose = F, tol = 1e-6){
-  lambda_seq <- exp(seq(log(lambda_min), log(lambda_max), length.out = lambda_length))
+  lambda_seq <- seq(lambda_min, lambda_max, length.out = lambda_length)
   
   lapply(lambda_seq, function(x){
     if(verbose) print(x)
