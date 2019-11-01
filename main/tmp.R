@@ -11,6 +11,10 @@ g_sub <- igraph::induced_subgraph(g_selected, selected_idx)
 core_set <- selected_idx[covarianceSelection::clique_selection(g_sub, threshold = 0.90)[[1]]]
 zz <- clique_selection(g_selected, threshold = 0.9, target_idx = core_set, verbose = T, max_length = 10000)
 
+adj <- as.matrix(igraph::as_adjacency_matrix(g_selected))
+rowSums(adj[zz[[1]], zz[[1]]])
+
+#######################3
 covarianceSelection::binning(names(dat_list)[zz[[1]]])
 
 idx_our <- zz[[1]]
