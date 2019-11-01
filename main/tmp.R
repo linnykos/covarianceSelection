@@ -108,3 +108,5 @@ for(i in 1:length(res_all)){
   print(paste0("Level: ", i, " // Edges: ", num_edges, " // Scale-free: ", round(scale_free,2), 
                " // Total: ", length(genes_all), " // Num: ", num_all))
 }
+
+save.image("/raid6/Kevin/covarianceSelection/results/tmp.RData")
