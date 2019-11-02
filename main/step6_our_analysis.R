@@ -5,7 +5,7 @@ if(verbose) print(paste0(Sys.time(), "Start of step 6: Our data analysis"))
 n <- length(dat_list)
 g_selected <- igraph::graph.empty(n = n, directed = F)
 combn_mat <- utils::combn(length(dat_list), 2)
-g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res[[3]]$null_idx])
+g_selected <- igraph::add_edges(g_selected, edges = combn_mat[,stepdown_res$null_idx])
 
 # construct the core set
 selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
