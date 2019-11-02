@@ -16,7 +16,7 @@ if(verbose) print(paste0(Sys.time(), "Start of step 5: Subject selection"))
 # })
 
 set.seed(10)
-stepdown_res <- covarianceSelection::stepdown(dat_list, trials = trials, alpah = stepdown_alpha, return_pvalue = T,
+stepdown_res <- covarianceSelection::stepdown(dat_list, trials = trials, alpha = stepdown_alpha, return_pvalue = T,
                                               prob = prob_val, verbose = T)
 
 save.image(file = paste0(save_filepath, "/step5_subjectselection", filepath_suffix, ".RData"))
