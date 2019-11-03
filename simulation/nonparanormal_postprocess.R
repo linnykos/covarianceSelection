@@ -70,7 +70,7 @@ for(k in 1:4){
   roc_our <- roc_region(hyp_tpr_list2[[k]], hyp_fpr_list2[[k]])
   lines(c(0, seq(0, 1, length.out = 21), 1), c(0, roc_our$median_tpr, 1), col = col_vec[k], lwd = lwd_vec[k])
 }
-legend("bottomright", c("0% difference", "30% difference", "60% difference", "100% difference"),
+legend("bottomright", c("0% level", "30% level", "60% level", "100% level"),
        bty="n", fill=col_vec)
 
 plot(NA, xlim = c(0,1), ylim = c(0,1), asp = T, xlab = "False positive rate", ylab = "True positive rate",
@@ -79,6 +79,6 @@ for(k in 1:4){
   roc_our <- roc_region(hyp_tpr_list[[k]], hyp_fpr_list[[k]])
   lines(c(0, seq(0, 1, length.out = 21), 1), c(0, roc_our$median_tpr, 1), col = col_vec[k], lwd = lwd_vec[k])
 }
-legend("bottomright", c("0% difference", "30% difference", "60% difference", "100% difference"),
+legend("bottomright", c("0% level", "30% level", "60% level", "100% level"),
        bty="n", fill=col_vec)
 graphics.off()
