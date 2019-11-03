@@ -13,6 +13,8 @@
 #' @export
 tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcount(g)/2),
                              core_set = NA){
+  if(igraph::ecount(g) == 0) return(numeric(0))
+  
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
   n <- igraph::vcount(g)
@@ -108,6 +110,8 @@ tsourakakis_2013 <- function(g, threshold = 0.95, iter_max = round(igraph::vcoun
 #' @return numeric index subset of \code{1:igraph::vcount(g)}
 #' @export
 chen_2010 <- function(g, threshold = 0.95, core_set = NA){
+  if(igraph::ecount(g) == 0) return(numeric(0))
+  
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
   n <- igraph::vcount(g)
@@ -243,6 +247,8 @@ chen_2010 <- function(g, threshold = 0.95, core_set = NA){
 #' @return numeric index subset of \code{1:igraph::vcount(g)}
 #' @export
 anderson_2009 <- function(g, core_set = NA){
+  if(igraph::ecount(g) == 0) return(numeric(0))
+  
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
   n <- igraph::vcount(g)
@@ -295,6 +301,8 @@ anderson_2009 <- function(g, core_set = NA){
 #' @return numeric index subset of \code{1:igraph::vcount(g)}
 #' @export
 tsourakakis_2014_exact <- function(g){
+  if(igraph::ecount(g) == 0) return(numeric(0))
+  
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
   
@@ -366,6 +374,8 @@ tsourakakis_2014_exact <- function(g){
 #' @return numeric index subset of \code{1:igraph::vcount(g)}
 #' @export
 tsourakakis_2014_approximate <- function(g, core_set = NA){
+  if(igraph::ecount(g) == 0) return(numeric(0))
+  
   g <- igraph::as.undirected(g)
   g <- igraph::simplify(g)
   n <- igraph::vcount(g)

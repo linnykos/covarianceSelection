@@ -53,7 +53,7 @@ spectral_selection <- function(g, K_vec = 2:5, threshold = 0.95){
     })
     
     idx <- which(den_vec >= threshold)
-    if(length(idx) == 0) return(elements = NA, den = 0)
+    if(length(idx) == 0) return(numeric(0))
     cluster_idx <- (c(1:K)[idx])[which.max(size_vec[idx])]
     
     which(clustering == cluster_idx)
