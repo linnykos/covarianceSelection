@@ -29,6 +29,8 @@ func <- function(z){
   tmp
 }
 
+## func(res[[1]][[1]]$indices_list[[5]])
+
 
 partition_mat <- lapply(res, function(x){
   cat("\n")
@@ -39,3 +41,41 @@ partition_mat <- lapply(res, function(x){
 })
 
 save.image("../results/nonparanormal_3.RData")
+
+##################################
+
+rm(list=ls())
+load("../results/nonparanormal_3.RData")
+
+idx <- c(1:paramMat[1,1])
+idx_all <- c(1:sum(paramMat[1,1:3]))
+
+hyp_tpr_list <- lapply(partition_mat, function(x){ #loop over simulation settings
+  sapply(x, function(y){ #loop over trials
+    c(1, sapply(1:21, function(i){ #loop over alphas
+      length(which(idx %in% y[[i]]))/length(idx)
+    }), 0)
+  })
+})
+
+hyp_fpr_list <- lapply(partition_mat, function(x){
+  sapply(x, function(y){
+    c(1, sapply(1:21, function(i){
+      length(which(!y[[i]] %in% idx))/(length(idx_all) - length(idx))
+    }), 0)
+  })
+})
+
+# assign colors
+colfunc <- colorRampPalette(c(rgb(205,40,54, max = 255), rgb(149,219,144, max = 255)))
+col_vec <- colfunc(4)
+lwd_vec <- c(5.5, 5, 4.5, 4)
+
+plot(NA, xlim = c(0,1), ylim = c(0,1), asp = T, xlab = "False positive rate", ylab = "True positive rate",
+     main = "Individual hypotheses using\nnaive family−wise correction")
+for(k in 1:4){
+  roc_our <- roc_region(hyp_tpr_list[[k]], hyp_fpr_list[[k]])
+  lines(c(0, seq(0, 1, length.out = 21), 1), c(0, roc_our$median_tpr, 1), col = col_vec[k], lwd = lwd_vec[k])
+}
+legend("bottomright", c("0% level", "30% level", "60% level", "100% level"),
+       bty="n", fill=col_vec)
