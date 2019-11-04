@@ -12,6 +12,17 @@ idx_our <- idx_our[[1]]
 
 
 set.seed(10)
-goodness_pfc35 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = prob_val)
+goodness_our1 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = 1e-4)
 
-save.image(file = paste0(save_filepath, "/step8_our_goodness", filepath_suffix, ".RData"))
+save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
+
+goodness_our2 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = 1e-3)
+
+save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
+
+goodness_our3 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = 1e-2)
+
+save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
+
+# hist(goodness_our, col = "gray", breaks = 20)
+# plot(sort(goodness_our), seq(0,1,length.out = length(goodness_our)), asp = T); lines(c(0,1), c(0,1), lwd = 2, lty = 2, col = "red")
