@@ -10,10 +10,8 @@ core_set <- selected_idx[covarianceSelection::clique_selection(g_sub, threshold 
 idx_our <- covarianceSelection::clique_selection(g_selected, threshold = gamma_threshold, target_idx = core_set)
 idx_our <- idx_our[[1]]
 
-dat_our <- do.call(rbind, dat_list[idx_our])
-dat_our <- scale(dat_our, scale = F)
 
 set.seed(10)
-goodness_pfc35 <- covarianceSelection::goodness_of_fit(dat_our, permutations = 250, trials = 250, prob = prob_val)
+goodness_pfc35 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = prob_val)
 
 save.image(file = paste0(save_filepath, "/step8_our_goodness", filepath_suffix, ".RData"))
