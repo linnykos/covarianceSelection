@@ -12,15 +12,15 @@ idx_our <- idx_our[[1]]
 
 
 set.seed(10)
-goodness_our1 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = 1-1e-4)
+goodness_our1 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = 1-1e-5/2)
 
 save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
 
-goodness_our2 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = 1-1e-3)
+goodness_our2 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = 1-1e-5)
 
 save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
 
-goodness_our3 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = 1-1e-2)
+goodness_our3 <- covarianceSelection::goodness_of_fit(dat_list[idx_our], permutations = 250, trials = 250, prob = 1-1e-4)
 
 save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
 
