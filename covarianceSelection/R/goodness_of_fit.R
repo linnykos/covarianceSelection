@@ -22,7 +22,7 @@ goodness_of_fit <- function(dat, permutations = 250, trials = 250, prob = 1, ver
     
     dat1 <- dat[split1,]
     dat1 <- scale(dat1, center = T, scale = F)
-    dat2 <- dat[split2,]
+    dat2 <- dat[-split1,]
     dat2 <- scale(dat2, center = T, scale = F)
     cai_test(dat1, dat2, trials = trials, prob = prob)
   })
