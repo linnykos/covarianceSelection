@@ -48,19 +48,19 @@ par(mfrow = c(1,2))
 plot(NA, xlim = range(num_mat[1,]), ylim = range(num_mat[2:5,]), xlab = "Number of accepted hypotheses",
      ylab = "Number of selected partitions") 
 #lines(num_mat[1,], num_mat[2,])
-points(num_mat[1,], num_mat[2,], pch = 16)
+points(num_mat[1,], num_mat[2,], pch = 16, cex = 1.5)
 
 #lines(num_mat[1,], num_mat[3,], col = rgb(205,40,54, max = 255))
-points(num_mat[1,], num_mat[3,], pch = 21, col = rgb(205,40,54, max = 255), bg = "white", lwd = 2)
+points(num_mat[1,], num_mat[3,], pch = 21, col = rgb(205,40,54, max = 255), bg = "white", lwd = 2, cex = 1.5)
 
-legend("topleft", c("Largest partial clique", "Spectral clustering"),
+legend("topleft", c("Largest quasi-clique", "Spectral clustering"),
        bty="n", fill= c("black", rgb(205,40,54, max = 255)))
 
 
 plot(NA, xlim = range(num_mat[1,]), ylim = range(num_mat[2:5,]), xlab = "Number of accepted hypotheses",
      ylab = "Number of selected partitions") 
-points(num_mat[1,], num_mat[4,], pch = 16, col = rgb(106,164,248, max = 255))
-points(num_mat[1,], num_mat[5,], pch = 21, col = rgb(149,220,144, max = 255), bg = "white", lwd = 2)
+points(num_mat[1,], num_mat[4,], pch = 16, col = rgb(106,164,248, max = 255), cex = 1.5)
+points(num_mat[1,], num_mat[5,], pch = 21, col = rgb(149,220,144, max = 255), bg = "white", lwd = 2, cex = 1.5)
 
 legend("topleft", c("Tsourakakis et al. (2013)", "Chen and Saad (2010)"),
        bty="n", fill= c(rgb(106,164,248, max = 255), rgb(149,220,144, max = 255)))

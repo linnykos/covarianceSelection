@@ -1,12 +1,19 @@
 selected_idx <- grep("PFC\\.[3-5]", names(dat_list))
+dat_pfc35 <- do.call(rbind, dat_list[selected_idx]) 
+dat_pfc35 <- scale(dat_pfc35, scale = F)
 
 set.seed(10)
-goodness_pfc35 <- covarianceSelection::goodness_of_fit(dat_list[selected_idx], permutations = 250, trials = 250, prob = prob_val)
+goodness_pfc35 <- covarianceSelection::goodness_of_fit(dat_pfc35, permutations = 250, trials = 100, prob = 1)
 
 save.image(file = paste0(save_filepath, "/step8_pfc35_goodness", filepath_suffix, ".RData"))
+print(paste0("Finished pfc35"))
+
+dat_all <- do.call(rbind, dat_list) 
+dat_all <- scale(dat_all, scale = F)
 
 set.seed(10)
-goodness_all <- covarianceSelection::goodness_of_fit(dat_list, permutations = 250, trials = 250, prob = prob_val)
+goodness_all <- covarianceSelection::goodness_of_fit(dat_all, permutations = 250, trials = 100, prob = 1)
+print(paste0("Finished all"))
 
 save.image(file = paste0(save_filepath, "/step8_pfc35_goodness", filepath_suffix, ".RData"))
 

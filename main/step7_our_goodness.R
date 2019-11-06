@@ -27,4 +27,4 @@ for(i in 1:length(prob_vec)){
 save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
 
 # hist(goodness_our, col = "gray", breaks = 20)
-# plot(sort(goodness_our), seq(0,1,length.out = length(goodness_our)), asp = T); lines(c(0,1), c(0,1), lwd = 2, lty = 2, col = "red")
+# plot(sort(goodness_list[[1]]), seq(0,1,length.out = length(goodness_list[[1]])), asp = T); lines(c(0,1),c(0,1), col = "red", lty = 2)
