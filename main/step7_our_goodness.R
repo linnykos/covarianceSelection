@@ -13,26 +13,18 @@ idx_our <- idx_our[[1]]
 dat_our <- do.call(rbind, dat_list[idx_our])
 dat_our <- scale(dat_our, scale = F)
 
-set.seed(10)
-goodness_our1 <- covarianceSelection::goodness_of_fit(dat_our, permutations = 250, trials = 250, prob = 1-1e-5/2)
+prob_vec <- c(1, 1-1e-5, 1-1e-5/2, 1-1e-4)
+goodness_list <- vector("list", length = length(prob_vec))
+
+for(i in 1:length(prob_vec)){
+  set.seed(10)
+  goodness_list[[i]] <- covarianceSelection::goodness_of_fit(dat_our, permutations = 250, trials = 100, prob = prob_vec[i],
+                                                             verbose = T)
+  print(paste0("Goodness ", i, " done"))
+  save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
+}
 
 save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
-print("1 done")
-
-goodness_our2 <- covarianceSelection::goodness_of_fit(dat_our, permutations = 250, trials = 250, prob = 1-1e-5)
-
-save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
-print("2 done")
-
-goodness_our3 <- covarianceSelection::goodness_of_fit(dat_our, permutations = 250, trials = 250, prob = 1-1e-4)
-
-save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
-print("3 done")
-
-goodness_our3 <- covarianceSelection::goodness_of_fit(dat_our, permutations = 250, trials = 250, prob = 1)
-
-save.image(file = paste0(save_filepath, "/step7_our_goodness", filepath_suffix, ".RData"))
-
 
 # hist(goodness_our, col = "gray", breaks = 20)
 # plot(sort(goodness_our), seq(0,1,length.out = length(goodness_our)), asp = T); lines(c(0,1), c(0,1), lwd = 2, lty = 2, col = "red")
