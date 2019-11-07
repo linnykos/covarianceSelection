@@ -17,7 +17,7 @@ idx_our <- idx_our[[1]]
 # dat_our <- do.call(rbind, dat_list[idx_our])
 # dat_our <- scale(dat_our, scale = F)
 # 
-prob_vec <- c(1, 1-1e-5, 1-1e-4)
+prob_vec <- seq(1-1e-5, 1-1e-4, length.out = 5)
 goodness_list <- vector("list", length = length(prob_vec))
 
 for(i in 1:length(prob_vec)){
