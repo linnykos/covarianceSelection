@@ -12,6 +12,8 @@ c(hmrf_pfc35$b, hmrf_all$b, hmrf_our$b)
 c(hmrf_pfc35$c, hmrf_all$c, hmrf_our$c)
 c(sum(as.matrix(adj_pfc35))/2, sum(as.matrix(adj_all))/2, sum(as.matrix(adj_our))/2)
 
+cbind(names(dat_list[idx_our]), sapply(dat_list[idx_our], nrow))
+
 # cbind(exp(seq(log(0.01), log(0.35), length.out = 30)), edges_vec_pfc35, scale_vec_pfc35)[20:30,]
 # cbind(exp(seq(log(0.01), log(0.35), length.out = 30)), edges_vec_all, scale_vec_all)[20:30,]
 # cbind(exp(seq(log(0.01), log(0.35), length.out = 30)), edges_vec_our, scale_vec_our)[20:30,]
