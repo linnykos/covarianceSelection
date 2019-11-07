@@ -13,7 +13,7 @@ prob_val <- seq(1-1e-5, 1-1e-4, length.out = 5)[2]
 # dat_all <- scale(dat_all, scale = F)
 
 set.seed(10)
-goodness_all <- covarianceSelection::goodness_of_fit(dat_list, permutations = 250, trials = 100, prob = 1, 
+goodness_all <- covarianceSelection::goodness_of_fit(dat_list, permutations = 250, trials = 100, prob = 1-1e-5, 
                                                      verbose = T)
 print(paste0("Finished all"))
 

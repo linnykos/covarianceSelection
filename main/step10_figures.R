@@ -29,8 +29,11 @@ diag(adj_tmp) <- 1
 .rotate = function(a) { t(a[nrow(a):1,]) } 
 
 png("../figures/figure_9.png", height = 1000, width = 2000, units = "px", res = 300)
-par(mar = c(3,3,3,0.5), mfrow = c(1,2))
+par(mar = c(0,0,3,0), mfrow = c(1,2))
+set.seed(10)
+igraph::plot.igraph(g_selected, vertex.label = NA, main = "Full graph")
 
+par(mar = c(3,3,3,0.5))
 # next plot the adjacency matrix
 image(.rotate(adj_tmp), asp = T, col = color_palatte, breaks = c(-.5,.5,1.5), xaxt = "n", yaxt = "n",
       xlab = "", ylab = "", main = "Adjacency matrix (subgraph)", axes = F)
@@ -43,9 +46,7 @@ y_height <- 1 - x_width
 lines(rep(x_width, 2), c(1,1-x_width), lwd = 2, lty = 2)
 lines(c(0,x_width), rep(y_height, 2), lwd = 2, lty = 2)
 
-par(mar = c(0,0,3,0))
-set.seed(10)
-igraph::plot.igraph(g_selected, vertex.label = NA, main = "Full graph")
+
 graphics.off()
 
 
