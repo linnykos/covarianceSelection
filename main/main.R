@@ -22,5 +22,5 @@ filepath_suffix <- ""
 # source("../main/step6_our_analysis.R")
 # source("../main/step7_our_goodness.R")
 
-load("/raid6/Kevin/covarianceSelection/results/step7_our_goodness.RData")
+load("/raid6/Kevin/covarianceSelection/results/step8_other_goodness.RData")
 source("../main/step8_other_goodness.R")
