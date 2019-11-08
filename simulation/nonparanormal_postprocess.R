@@ -74,7 +74,7 @@ legend("bottomright", rev(c("0% level", "30% level", "60% level", "100% level"))
        bty="n", fill=rev(col_vec))
 
 plot(NA, xlim = c(0,1), ylim = c(0,1), asp = T, xlab = "False positive rate", ylab = "True positive rate",
-     main = "Individual hypotheses using\nnormalized statistic")
+     main = "Individual hypotheses using\nour Stepdown method")
 for(k in 1:4){
   roc_our <- roc_region(hyp_tpr_list[[k]], hyp_fpr_list[[k]])
   lines(c(0, seq(0, 1, length.out = 21), 1), c(0, roc_our$median_tpr, 1), col = col_vec[k], lwd = lwd_vec[k])

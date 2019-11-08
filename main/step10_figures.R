@@ -49,7 +49,7 @@ graphics.off()
 
 ############################################
 
-png("../figures/figure_10b.png", height = 1400, width = 1400, units = "px", res = 300)
+png("../figures/figure_10b.png", height = 1300, width = 1150, units = "px", res = 300)
 par(mar = c(4,4,4,1))
 goodness_our <- goodness_list[[2]]
 plot(sort(goodness_our), seq(0,1,length.out = length(goodness_our)), asp = T, xlab = "Theoretical quantiles",
