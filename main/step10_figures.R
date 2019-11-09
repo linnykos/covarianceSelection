@@ -59,3 +59,19 @@ lines(c(0,1),c(0,1), col = "red", lty = 2)
 points(sort(goodness_our), seq(0,1,length.out = length(goodness_our)), pch = 16)
 graphics.off()
 
+##############################################
+
+png("../figures/figure_2.png", height = 1300, width = 2300, units = "px", res = 300)
+par(mar = c(4,4,4,1), mfrow = c(1,2))
+plot(sort(goodness_pfc35), seq(0,1,length.out = length(goodness_pfc35)), asp = T, xlab = "Theoretical quantiles",
+     pch = 16,
+     ylab = "Observed quantiles", main = "QQ-plot based on partitions\nfrom only Window 1B")
+lines(c(0,1),c(0,1), col = "red", lty = 2)
+points(sort(goodness_pfc35), seq(0,1,length.out = length(goodness_pfc35)), pch = 16)
+
+plot(sort(goodness_all), seq(0,1,length.out = length(goodness_all)), asp = T, xlab = "Theoretical quantiles",
+     pch = 16,
+     ylab = "Observed quantiles", main = "QQ-plot based on all partitions")
+lines(c(0,1),c(0,1), col = "red", lty = 2)
+points(sort(goodness_all), seq(0,1,length.out = length(goodness_all)), pch = 16)
+graphics.off()
