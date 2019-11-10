@@ -3,9 +3,11 @@ load("../results/nonparanormal_beta.RData")
 
 median_mat <- matrix(NA, ncol = nrow(paramMat), nrow = 3)
 for(i in 1:length(res)){
-  our_vec <- sapply(res[[i]], function(x){x$error_our})
-  base_vec <- sapply(res[[i]], function(x){x$error_base})
-  all_vec <- sapply(res[[i]], function(x){x$error_all})
+  tmp <- res[[i]][which(sapply(res[[i]], length) != 1)]
+  
+  our_vec <- sapply(tmp, function(x){x$error_our})
+  base_vec <- sapply(tmp, function(x){x$error_base})
+  all_vec <- sapply(tmp, function(x){x$error_all})
   
   median_mat[,i] <- c(median(our_vec), median(base_vec), median(all_vec))
 }
