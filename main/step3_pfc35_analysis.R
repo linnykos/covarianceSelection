@@ -20,7 +20,7 @@ dat_pfc35 <- scale(dat_pfc35, scale = F)
 # idx <- 27
 # adj_pfc35 <- as.matrix(res[[idx]]$adj_mat)
 
-res <- covarianceSelection::graphicalModel(dat_pfc35, primary_idx = 1:length(screening_res$primary), lambda = seq(0.05, 0.1, length.out = 15)[3])
+res <- covarianceSelection::graphicalModel(dat_pfc35, primary_idx = 1:length(screening_res$primary), lambda = seq(0.05, 0.1, length.out = 15)[1])
 adj_pfc35 <- as.matrix(res$adj_mat)
 stopifnot(all(dim(adj_pfc35) == nrow(tada)))
 

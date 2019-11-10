@@ -30,7 +30,7 @@ dat_our <- scale(dat_our, scale = F)
 # adj_our <- as.matrix(res[[idx]]$adj_mat)
 # stopifnot(all(dim(adj_our) == nrow(tada)))
 
-res <- covarianceSelection::graphicalModel(dat_our, primary_idx = 1:length(screening_res$primary), lambda =  seq(0.05, 0.1, length.out = 15)[5])
+res <- covarianceSelection::graphicalModel(dat_our, primary_idx = 1:length(screening_res$primary), lambda = seq(0.05, 0.1, length.out = 15)[5])
 adj_our <- as.matrix(res$adj_mat)
 
 # run the HMRF
