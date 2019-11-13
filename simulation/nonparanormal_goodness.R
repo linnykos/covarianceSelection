@@ -5,10 +5,11 @@ library(covarianceSelection)
 set.seed(10)
 ncores <- 20
 doMC::registerDoMC(cores = ncores)
-verbose <- F
+verbose <- T
+permutations <- 250
 
 trials <- 1
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, c(0, 0.3, 0.6, 1), 0.1, 0.95))
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, c(0, 0.3, 0.6, 1), 0.7, 0.95))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha", "gamma")
 
@@ -22,6 +23,7 @@ set.seed(10)
 idx <- sample(1:ncol(genexp), paramMat[1,"d"])
 
 den_list <- lapply(idx, function(i){stats::density(genexp[,i])})
+rm(list = "genexp")
 
 #############
 
@@ -45,14 +47,9 @@ generate_data <- function(covar_list, num_partition, n, den_list){
   dat_list <- vector("list", k)
   d <- nrow(covar_list[[1]])
   
-  dat_list <- lapply(1:k, function(i){ mvnfast::rmvn(n, rep(0, d), covar_list[[type_vec[i]]]) })
-  
-  # nonparanormal transform
-  # dat_list <- lapply(1:length(dat_list), function(x){
-  #   covarianceSelection::nonparanormal_transformation(dat_list[[x]], den_list, 
-  #                                                     mean_vec = rep(0, d),
-  #                                                     sd_vec = sqrt(diag(covar_list[[type_vec[x]]])))
-  # })
+  dat_list <- lapply(1:k, function(i){
+    mvnfast::rmvn(n, rep(0, d), covar_list[[type_vec[i]]])
+  })
   
   dat_list
 }
@@ -80,23 +77,26 @@ criterion <- function(dat, vec, y){
   g <- igraph::add_edges(g, edges = combn_mat[,obj$null_idx])
   idx_our <-  covarianceSelection::clique_selection(g, threshold = vec["gamma"], time_limit = 60)[[1]]
   
-  goodness_our <- goodness_of_fit(dat[idx_our], permutations = 100, trials = 100, 
-                                                       prob = 1, verbose = F)
-  goodness_base <- covarianceSelection::goodness_of_fit(dat[c(1:3,16,21)], permutations = 250, trials = 100, 
-                                                       prob = 1, verbose = F)
-  goodness_all <- covarianceSelection::goodness_of_fit(dat, permutations = 250, trials = 100, 
-                                                        prob = 1, verbose = F)
+  goodness_our <- goodness_of_fit(dat[idx_our], permutations = permutations, trials = 100, 
+                                                       prob = 1, verbose = verbose)
+  goodness_base <- covarianceSelection::goodness_of_fit(dat[c(1:3,16,21)], permutations = permutations, trials = 100, 
+                                                       prob = 1, verbose = verbose)
+  goodness_all <- covarianceSelection::goodness_of_fit(dat, permutations = permutations, trials = 100, 
+                                                        prob = 1, verbose = verbose)
   
   if(vec["percentage"] == 0){
-    goodness_oracle <- covarianceSelection::goodness_of_fit(dat[1:vec[1]], permutations = 250, trials = 100, 
-                                                            prob = 1, verbose = F)
+    goodness_oracle <- covarianceSelection::goodness_of_fit(dat[1:vec[1]], permutations = permutations, trials = 100, 
+                                                            prob = 1, verbose = verbose)
   } else {
     goodness_oracle <- NA
   }
   
   list(goodness_our = goodness_our, goodness_base = goodness_base,
-       goodness_all = goodness_all, goodness_oracle = goodnes_oracle)
+       goodness_all = goodness_all, goodness_oracle = goodness_oracle,
+       idx_our = idx_our, g = g)
 }
+
+# y <- 1; vec <- paramMat[4,]; set.seed(y); dat <- rule(vec)
   
 ###########################
 
