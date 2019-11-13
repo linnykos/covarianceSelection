@@ -48,11 +48,11 @@ generate_data <- function(covar_list, num_partition, n, den_list){
   dat_list <- lapply(1:k, function(i){ mvnfast::rmvn(n, rep(0, d), covar_list[[type_vec[i]]]) })
   
   # nonparanormal transform
-  dat_list <- lapply(1:length(dat_list), function(x){
-    covarianceSelection::nonparanormal_transformation(dat_list[[x]], den_list, 
-                                                      mean_vec = rep(0, d),
-                                                      sd_vec = sqrt(diag(covar_list[[type_vec[x]]])))
-  })
+  # dat_list <- lapply(1:length(dat_list), function(x){
+  #   covarianceSelection::nonparanormal_transformation(dat_list[[x]], den_list, 
+  #                                                     mean_vec = rep(0, d),
+  #                                                     sd_vec = sqrt(diag(covar_list[[type_vec[x]]])))
+  # })
   
   dat_list
 }
@@ -80,16 +80,16 @@ criterion <- function(dat, vec, y){
   g <- igraph::add_edges(g, edges = combn_mat[,obj$null_idx])
   idx_our <-  covarianceSelection::clique_selection(g, threshold = vec["gamma"], time_limit = 60)[[1]]
   
-  goodness_our <- covarianceSelection::goodness_of_fit(dat[idx_our], permutations = 100, trials = 100, 
-                                                       prob = 1, cores = ncores, verbose = T)
+  goodness_our <- goodness_of_fit(dat[idx_our], permutations = 100, trials = 100, 
+                                                       prob = 1, verbose = F)
   goodness_base <- covarianceSelection::goodness_of_fit(dat[c(1:3,16,21)], permutations = 250, trials = 100, 
-                                                       prob = 1, cores = ncores, verbose = T)
+                                                       prob = 1, verbose = F)
   goodness_all <- covarianceSelection::goodness_of_fit(dat, permutations = 250, trials = 100, 
-                                                        prob = 1, cores = ncores, verbose = T)
+                                                        prob = 1, verbose = F)
   
   if(vec["percentage"] == 0){
     goodness_oracle <- covarianceSelection::goodness_of_fit(dat[1:vec[1]], permutations = 250, trials = 100, 
-                                                            prob = 1, verbose = T)
+                                                            prob = 1, verbose = F)
   } else {
     goodness_oracle <- NA
   }
