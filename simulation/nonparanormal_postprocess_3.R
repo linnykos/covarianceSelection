@@ -79,7 +79,7 @@ colfunc <- colorRampPalette(c(rgb(205,40,54, max = 255), rgb(149,219,144, max = 
 col_vec <- colfunc(4)
 lwd_vec <- c(5.5, 5, 4.5, 4)
 
-png("../figures/figure_7a.png", height = 1400, width = 1300, res = 300, units ="px")
+png("../figures/figure_8a.png", height = 1400, width = 1300, res = 300, units ="px")
 par(mar = c(5,4,4,1))
 
 plot(NA, xlim = c(0,1), ylim = c(0,1), asp = T, xlab = "False positive rate", ylab = "True positive rate",

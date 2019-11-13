@@ -19,7 +19,9 @@ Imports:
     org.Hs.eg.db,
     DBI,
     dequer,
-    hash
+    hash,
+    MASS,
+    huge
 Suggests:
     testthat
 RoxygenNote: 6.1.1

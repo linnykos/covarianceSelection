@@ -1,0 +1,18 @@
+Package: covarianceSelection
+Title: Covariance Selection
+Version: 1.0.0.0000
+Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Description: Contains the code needed for the paper "Covariance-based sample selection for heterogenous data: Applications to gene expression and autism risk gene detection".
+Depends: R (>= 3.3.0)
+License: MIT +file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: igraph, glmnet, Matrix, foreach, doMC, binaryLogic, mgcv,
+        org.Hs.eg.db, DBI, dequer, hash, MASS, huge
+Suggests: testthat
+RoxygenNote: 6.1.1
+NeedsCompilation: no
+Packaged: 2019-11-12 17:54:44 UTC; kevinlin
+Author: First Last [aut, cre]
+Maintainer: First Last <first.last@example.com>
+Built: R 3.6.0; ; 2019-11-12 17:54:50 UTC; unix

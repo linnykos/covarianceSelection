@@ -72,49 +72,49 @@ rule <- function(vec){
 }
 
 criterion <- function(dat, vec, y){
-set.seed(10*y)
-dat2 <- rule(vec)
-idx_base <- c(1:3, vec["num_group1"]+1, vec["num_group1"] + vec["num_group2"] + 1)
-
-if(verbose) print(paste0("Running covariance tests: ", Sys.time()))
-
-set.seed(y)
-obj <- covarianceSelection::stepdown(dat, alpha = vec["alpha"], trials = 100, cores = ncores, verbose = F)
-
-if(verbose) print(paste0("Starting paritions: ", Sys.time()))
-n <- sum(vec[1:3])
-g <- igraph::graph.empty(n = n, directed = F)
-combn_mat <- utils::combn(n, 2)
-g <- igraph::add_edges(g, edges = combn_mat[,obj$null_idx])
-
-# g_sub <- igraph::induced_subgraph(g, idx_base)
-# core_set <- idx_base[covarianceSelection::clique_selection(g_sub, threshold = vec["gamma"])[[1]]]
-# idx_our <- covarianceSelection::clique_selection(g, threshold = vec["gamma"], target_idx = core_set)
-# idx_our <- idx_our[[1]]
-idx_our <-  covarianceSelection::clique_selection(g, threshold = vec["gamma"])[[1]]
-
-if(verbose) print(paste0("Forming datasets: ", Sys.time()))
-dat_our <- do.call(rbind, dat[idx_our])
-dat_base <- do.call(rbind, dat[idx_base])
-dat_oracle <- do.call(rbind, dat[c(1:vec["num_group1"])])
-dat2_oracle <- do.call(rbind, dat2[c(1:vec["num_group1"])])
-dat_all <- do.call(rbind, dat)
-
-if(verbose) print(paste0("Forming covariances: ", Sys.time()))
-cov_our <- stats::cov(dat_our)
-cov_base <- stats::cov(dat_base)
-cov_oracle <- stats::cov(dat_oracle)
-cov2_oracle <- stats::cov(dat2_oracle)
-cov_all <- stats::cov(dat_all)
-
-if(verbose) print(paste0("Computing errors: ", Sys.time()))
-error_our <- abs(mgcv::slanczos(cov_our - cov2_oracle, k = 1)$values[1])
-error_base <- abs(mgcv::slanczos(cov_base - cov2_oracle, k = 1)$values[1])
-error_oracle <- abs(mgcv::slanczos(cov_oracle - cov2_oracle, k = 1)$values[1])
-error_all <- abs(mgcv::slanczos(cov_all - cov2_oracle, k = 1)$values[1])
-
-list(partition_idx = obj$null_idx, idx_our = idx_our, error_our = error_our,
-     error_base = error_base, error_oracle = error_oracle, error_all = error_all)
+  set.seed(10*y)
+  dat2 <- rule(vec)
+  idx_base <- c(1:3, vec["num_group1"]+1, vec["num_group1"] + vec["num_group2"] + 1)
+  
+  if(verbose) print(paste0("Running covariance tests: ", Sys.time()))
+  
+  set.seed(y)
+  obj <- covarianceSelection::stepdown(dat, alpha = vec["alpha"], trials = 100, cores = ncores, verbose = F)
+  
+  if(verbose) print(paste0("Starting paritions: ", Sys.time()))
+  n <- sum(vec[1:3])
+  g <- igraph::graph.empty(n = n, directed = F)
+  combn_mat <- utils::combn(n, 2)
+  g <- igraph::add_edges(g, edges = combn_mat[,obj$null_idx])
+  
+  # g_sub <- igraph::induced_subgraph(g, idx_base)
+  # core_set <- idx_base[covarianceSelection::clique_selection(g_sub, threshold = vec["gamma"])[[1]]]
+  # idx_our <- covarianceSelection::clique_selection(g, threshold = vec["gamma"], target_idx = core_set)
+  # idx_our <- idx_our[[1]]
+  idx_our <-  covarianceSelection::clique_selection(g, threshold = vec["gamma"])[[1]]
+  
+  if(verbose) print(paste0("Forming datasets: ", Sys.time()))
+  dat_our <- do.call(rbind, dat[idx_our])
+  dat_base <- do.call(rbind, dat[idx_base])
+  dat_oracle <- do.call(rbind, dat[c(1:vec["num_group1"])])
+  dat2_oracle <- do.call(rbind, dat2[c(1:vec["num_group1"])])
+  dat_all <- do.call(rbind, dat)
+  
+  if(verbose) print(paste0("Forming covariances: ", Sys.time()))
+  cov_our <- stats::cov(dat_our)
+  cov_base <- stats::cov(dat_base)
+  cov_oracle <- stats::cov(dat_oracle)
+  cov2_oracle <- stats::cov(dat2_oracle)
+  cov_all <- stats::cov(dat_all)
+  
+  if(verbose) print(paste0("Computing errors: ", Sys.time()))
+  error_our <- abs(mgcv::slanczos(cov_our - cov2_oracle, k = 1)$values[1])
+  error_base <- abs(mgcv::slanczos(cov_base - cov2_oracle, k = 1)$values[1])
+  error_oracle <- abs(mgcv::slanczos(cov_oracle - cov2_oracle, k = 1)$values[1])
+  error_all <- abs(mgcv::slanczos(cov_all - cov2_oracle, k = 1)$values[1])
+  
+  list(partition_idx = obj$null_idx, idx_our = idx_our, error_our = error_our,
+       error_base = error_base, error_oracle = error_oracle, error_all = error_all)
 }
 
 ###########################

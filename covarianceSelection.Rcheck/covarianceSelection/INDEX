@@ -1,0 +1,72 @@
+.add_to_queue           Add new elements to a queue
+.check_node_uniqeness   Checks if all nodes in a hash table are unique
+.check_nonunique        Check if an attempted set formed by two sets of
+                        indices has already been tried
+.check_pairs            Check pairs of children
+.check_superset         Check superset
+.compute_all_denom      Compute all of the denominators
+.compute_all_numerator_bootstrap
+                        Compute all the numerator bootstraps
+.compute_all_test_stat
+                        Compute the test statistic
+.compute_bootSigma      Compute the bootstrap empirical covariance
+                        (numerator)
+.compute_sigma          Compute the empirical covariance (numerator)
+.compute_variance       Compute the variance of the empirical
+                        covariance estimate
+.initialize_children    Initialize hash table of nodes
+.initialize_queue       Initialize queue
+.initialize_unique      Initialize hash table of indices
+.node                   Create a 'node' object
+.pass_threshold         Determine if an adjacency matrix passes a
+                        threshold
+.prune_clique           Prune the list of cliques
+.prune_nodes            Remove sparsely connected nodes
+.row_norm               Row normalization
+.spectral_cluster       Spectral clustering
+adj_to_graph            Convert adjancency matrix to graph
+anderson_2009           Quasiclique based on Anderson and Chellapilla
+                        (2009)
+binning                 Binning of subjects
+brain_expression        Genes expressed in brain
+brainspan_id            Brainspan ID information
+cai_test                Cai Test
+chen_2010               Quasiclique based on Chen and Saad (2010)
+clique_selection        Find largest soft clique in graph
+compute_scale_free      Compute the scale-free statistic
+count_neighbors         Count neighbors of a graph
+enrichment_test         Fisher test
+enumerate_edges         List the index-pairs of non-zeros in an
+                        adjacency matrix
+extractor               Split the dataset into smaller datasets
+goodness_of_fit         Goodness of fit diagnostic
+graphicalModel          Graphical model estimate
+graphicalModel_range    Graphical model estimate for a range of lambda
+                        values
+hmrf                    Hidden markov random field
+matching                Matching
+nonparanormal_transformation
+                        Nonparanormal transformation
+pairwise_test           Pairwise Test Function
+region_subregion        Partitioning of the regions in the brain
+regroup                 Regroup a list of matrices into another list of
+                        matrices
+report_results          Report results
+screen                  Screening data
+select_clique           Select clique based on intersection
+spectral_selection      Find largest clustering based on spectral
+                        clustering
+stepdown                Stepdown to test all pairs of datasets to see
+                        if they have equal covariance
+stepdown_choose         Stepdown choose
+stepdown_path           Stepdown path
+symbol_synonyms         Gene synonyms
+tada                    Partitioning of the regions in the brain
+tsourakakis_2013        Quasiclique based on Tsourakakis et al. (2013)
+tsourakakis_2014_approximate
+                        Triangle densest subgraph based on Tsourakakis
+                        (2014), approximate algorithm
+tsourakakis_2014_exact
+                        Triangle densest subgraph based on Tsourakakis
+                        (2014), exact algorithm
+validated_genes         Partitioning of the regions in the brain
