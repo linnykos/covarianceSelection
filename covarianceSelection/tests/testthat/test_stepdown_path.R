@@ -46,6 +46,38 @@ test_that("stepdown_path works with probability", {
   expect_true(all(dim_mat[2,] == 5*4/2))
 })
 
+test_that("stepdown_path works with squared = F", {
+  set.seed(10)
+  dat_list <- lapply(1:5, function(x){matrix(rnorm(100),10,10)})
+  res <- stepdown_path(dat_list, trials = 25, iterations = 20, prob = 0.5, squared = F)
+  
+  expect_true(class(res) == "stepdown")
+  expect_true(is.list(res))
+  expect_true(all(names(res) == c("t_vec", "boot")))
+  expect_true(length(res$t_vec) == 5*4/2)
+  expect_true(is.numeric(res$t_vec))
+  expect_true(!is.matrix(res$t_vec))
+  
+  expect_true(is.list(res$boot))
+  expect_true(all(sapply(res$boot, is.numeric)))
+  expect_true(all(sapply(res$boot, is.matrix)))
+  expect_true(length(res$boot) == 20)
+  
+  dim_mat <- sapply(res$boot, dim)
+  expect_true(all(dim_mat[1,] == 25))
+  expect_true(all(dim_mat[2,] == 5*4/2))
+})
+
+test_that("stepdown_path gives a different result when squared = T vs. squared = F", {
+  set.seed(10)
+  dat_list <- lapply(1:5, function(x){matrix(rnorm(100),10,10)})
+  res1 <- stepdown_path(dat_list, trials = 25, iterations = 20, prob = 0.5, squared = T)
+  res2 <- stepdown_path(dat_list, trials = 25, iterations = 20, prob = 0.5, squared = F)
+  
+  expect_true(sum(abs(res1$t_vec - res2$t_vec)) > 0 )
+})
+
+
 #######################
 
 ## stepdown_choose is correct
