@@ -14,15 +14,18 @@
 #' @return vector of p-values
 #' @export
 goodness_of_fit <- function(dat_list, permutations = 250, trials = 100, prob =  0.9999675, 
-                            verbose = F){
+                            cores = 1, verbose = F){
+  doMC::registerDoMC(cores = cores)
   n <- length(dat_list)
   
-  sapply(1:permutations, function(x){
-    if(verbose && permutations > 10 && x %% floor(permutations/10) == 0) cat('*')
+  func <- function(i){
+    if(verbose && permutations > 10 && i %% floor(permutations/10) == 0) cat('*')
     split1 <- sample(1:n, round(n/2))
     
     dat1 <- do.call(rbind, dat_list[split1])
     dat2 <- do.call(rbind, dat_list[-split1])
     cai_test(dat1, dat2, trials = trials, prob = prob)
-  })
+  }
+  
+  unlist(foreach::"%dopar%"(foreach::foreach(i = 1:permutations), func(i)))
 }

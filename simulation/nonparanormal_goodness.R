@@ -78,14 +78,14 @@ criterion <- function(dat, vec, y){
   g <- igraph::graph.empty(n = n, directed = F)
   combn_mat <- utils::combn(n, 2)
   g <- igraph::add_edges(g, edges = combn_mat[,obj$null_idx])
-  idx_our <-  covarianceSelection::clique_selection(g, threshold = vec["gamma"])[[1]]
+  idx_our <-  covarianceSelection::clique_selection(g, threshold = vec["gamma"], time_limit = 60)[[1]]
   
-  goodness_our <- covarianceSelection::goodness_of_fit(dat[idx_our], permutations = 250, trials = 100, 
-                                                       prob = 1, verbose = T)
+  goodness_our <- covarianceSelection::goodness_of_fit(dat[idx_our], permutations = 100, trials = 100, 
+                                                       prob = 1, cores = ncores, verbose = T)
   goodness_base <- covarianceSelection::goodness_of_fit(dat[c(1:3,16,21)], permutations = 250, trials = 100, 
-                                                       prob = 1, verbose = T)
+                                                       prob = 1, cores = ncores, verbose = T)
   goodness_all <- covarianceSelection::goodness_of_fit(dat, permutations = 250, trials = 100, 
-                                                        prob = 1, verbose = T)
+                                                        prob = 1, cores = ncores, verbose = T)
   
   if(vec["percentage"] == 0){
     goodness_oracle <- covarianceSelection::goodness_of_fit(dat[1:vec[1]], permutations = 250, trials = 100, 
