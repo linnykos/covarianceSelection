@@ -13,7 +13,8 @@
 #'
 #' @return vector of p-values
 #' @export
-goodness_of_fit <- function(dat_list, permutations = 250, trials = 100, prob = 1, verbose = F){
+goodness_of_fit <- function(dat_list, permutations = 250, trials = 100, prob =  0.9999675, 
+                            verbose = F){
   n <- length(dat_list)
   
   sapply(1:permutations, function(x){

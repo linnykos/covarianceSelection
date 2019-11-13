@@ -8,8 +8,8 @@ doMC::registerDoMC(cores = ncores)
 verbose <- F
 
 trials <- 25
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, 1000, seq(0, 1, length.out = 21), 0.1, 0.95))
-colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "n_pop", "d",
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, seq(0, 1, length.out = 21), 0.1, 0.95))
+colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha", "gamma")
 
 # collect all the marginal densities
