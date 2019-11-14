@@ -1,5 +1,5 @@
 rm(list = ls())
-load("../results/nonparanormal.RData")
+load("../results/gaussian.RData")
 
 # remove res that errored
 for(i in 1:length(res)){
@@ -39,12 +39,13 @@ partition_mat <- lapply(res, function(x){
   })
 })
 
-save.image("../results/nonparanormal_3.RData")
+save.image("../results/gaussian_2.RData")
 
-##################################
+####################
+
 
 rm(list=ls())
-load("../results/nonparanormal_3.RData")
+load("../results/gaussian_2.RData")
 
 idx <- c(1:paramMat[1,1])
 idx_all <- c(1:sum(paramMat[1,1:3]))
@@ -78,7 +79,7 @@ colfunc <- colorRampPalette(c(rgb(205,40,54, max = 255), rgb(149,219,144, max = 
 col_vec <- colfunc(4)
 lwd_vec <- c(5.5, 5, 4.5, 4)
 
-png("../figures/figure_8a.png", height = 1400, width = 1300, res = 300, units ="px")
+png("../figures/appendix_6a.png", height = 1400, width = 1300, res = 300, units ="px")
 par(mar = c(5,4,4,1))
 
 plot(NA, xlim = c(0,1), ylim = c(0,1), asp = T, xlab = "False positive rate", ylab = "True positive rate",

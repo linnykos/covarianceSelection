@@ -1,5 +1,5 @@
 rm(list = ls())
-load("../results/gaussian.RData")
+load("../results/nonparanormal_accelerated.RData")
 
 combn_null <- cbind(combn(paramMat[1,1],2),
                     (combn(paramMat[1,2],2)+paramMat[1,1]),
@@ -16,11 +16,11 @@ for(i in 1:length(res)){
   if(length(rm_idx) > 0) res[[i]] <- res[[i]][-rm_idx]
 }
 
-
 # assign colors
 colfunc <- colorRampPalette(c(rgb(205,40,54, max = 255), rgb(149,219,144, max = 255)))
 col_vec <- colfunc(4)
 lwd_vec <- c(5.5, 5, 4.5, 4)
+
 
 ###########
 
@@ -41,7 +41,6 @@ hyp_fpr_list <- lapply(res, function(x){
   })
 })
 
-##############
 
 # individual hypothesis
 hyp_tpr_list2 <- lapply(res, function(x){ #loop over simulation settings
@@ -60,7 +59,7 @@ hyp_fpr_list2 <- lapply(res, function(x){
   })
 })
 
-png("../figures/appendix_5.png", height = 1400, width = 2500, res = 300, units ="px")
+png("../figures/appendix_7.png", height = 1400, width = 2500, res = 300, units ="px")
 par(mfrow = c(1,2), mar = c(5,4,4,1))
 
 plot(NA, xlim = c(0,1), ylim = c(0,1), asp = T, xlab = "False positive rate", ylab = "True positive rate",
@@ -81,4 +80,3 @@ for(k in 1:4){
 legend("bottomright", rev(c("0% level", "30% level", "60% level", "100% level")),
        bty="n", fill=rev(col_vec))
 graphics.off()
-

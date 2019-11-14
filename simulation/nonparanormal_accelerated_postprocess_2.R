@@ -1,5 +1,5 @@
 rm(list = ls())
-load("../results/nonparanormal.RData")
+load("../results/nonparanormal_accelerated.RData")
 
 # remove res that errored
 for(i in 1:length(res)){
@@ -39,12 +39,13 @@ partition_mat <- lapply(res, function(x){
   })
 })
 
-save.image("../results/nonparanormal_3.RData")
+save.image("../results/nonparanormal_accelerated_2.RData")
 
-##################################
+#########################
+
 
 rm(list=ls())
-load("../results/nonparanormal_3.RData")
+load("../results/nonparanormal_accelerated_2.RData")
 
 idx <- c(1:paramMat[1,1])
 idx_all <- c(1:sum(paramMat[1,1:3]))
@@ -75,18 +76,19 @@ hyp_fpr_list <- lapply(partition_mat, function(x){
 
 # assign colors
 colfunc <- colorRampPalette(c(rgb(205,40,54, max = 255), rgb(149,219,144, max = 255)))
-col_vec <- colfunc(4)
+col_vec <- colfunc(4); col_vec2 <- colfunc(4)[c(1,3,2,4)]
 lwd_vec <- c(5.5, 5, 4.5, 4)
 
-png("../figures/figure_8a.png", height = 1400, width = 1300, res = 300, units ="px")
+png("../figures/appendix_8a.png", height = 1400, width = 1300, res = 300, units ="px")
 par(mar = c(5,4,4,1))
 
 plot(NA, xlim = c(0,1), ylim = c(0,1), asp = T, xlab = "False positive rate", ylab = "True positive rate",
      main = "Selected partitions via largest\nquasi-clique (RoC curve)")
 for(k in 1:4){
   roc_our <- roc_region(hyp_tpr_list[[k]], hyp_fpr_list[[k]])
-  lines(c(0, seq(0, 1, length.out = 21), 1), c(0, .monotone(roc_our$median_tpr), 1), col = col_vec[k], lwd = lwd_vec[k])
+  lines(c(0, seq(0, 1, length.out = 21), 1), c(0, .monotone(roc_our$median_tpr), 1), col = col_vec2[k], lwd = lwd_vec[k])
 }
 legend("bottomright", rev(c("0% level", "30% level", "60% level", "100% level")),
        bty="n", fill=rev(col_vec))
 graphics.off()
+

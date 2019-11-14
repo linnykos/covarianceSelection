@@ -22,6 +22,7 @@ set.seed(10)
 idx <- sample(1:ncol(genexp), paramMat[1,"d"])
 
 den_list <- lapply(idx, function(i){stats::density(genexp[,i])})
+rm(list = c("genexp"))
 
 #############
 

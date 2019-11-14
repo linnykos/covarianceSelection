@@ -106,7 +106,7 @@ criterion <- function(dat, vec, y){
        bh_indices_list = bh_indices_list)
 }
 
-# idx <- 1; y <- 1; set.seed(y); criterion(rule(paramMat[idx,]), paramMat[idx,], y)
+# idx <- 1; y <- 1; set.seed(y); zz <- criterion(rule(paramMat[idx,]), paramMat[idx,], y)
 # set.seed(2); criterion(rule(paramMat[10,]), paramMat[10,], 2)
 
 ###########################
