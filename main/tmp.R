@@ -25,8 +25,7 @@ for(i in 1:length(res_pfc35)){
   set.seed(10)
   hmrf_pfc35 <- covarianceSelection::hmrf(tada$pval.TADA, adj_pfc35, seedindex, pthres = pthres)
   report_pfc35 <- covarianceSelection::report_results(tada$Gene, 1-hmrf_pfc35$post, tada$pval.TADA, hmrf_pfc35$Iupdate)
-  # genes_pfc35 <- sort(as.character(report_pfc35$Gene[which(report_pfc35$FDR <= fdr_cutoff)]))
-  genes_pfc35 <- sort(as.character(report_pfc35$Gene[order(report_pfc35$FDR)[1:200]]))
+  genes_pfc35 <- sort(as.character(report_pfc35$Gene[which(report_pfc35$FDR <= fdr_cutoff)]))
   
   num_pfc35 <- length(intersect(genes_pfc35, validated_genes)) 
   num_edges <- sum(adj_pfc35)/2

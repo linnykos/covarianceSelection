@@ -90,10 +90,6 @@ criterion <- function(dat, vec, y){
   combn_mat <- utils::combn(n, 2)
   g <- igraph::add_edges(g, edges = combn_mat[,obj$null_idx])
   
-  # g_sub <- igraph::induced_subgraph(g, idx_base)
-  # core_set <- idx_base[covarianceSelection::clique_selection(g_sub, threshold = vec["gamma"])[[1]]]
-  # idx_our <- covarianceSelection::clique_selection(g, threshold = vec["gamma"], target_idx = core_set)
-  # idx_our <- idx_our[[1]]
   idx_our <-  covarianceSelection::clique_selection(g, threshold = vec["gamma"])[[1]]
   
   if(verbose) print(paste0("Forming datasets: ", Sys.time()))

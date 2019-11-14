@@ -1,10 +1,10 @@
 if(verbose) print(paste0(Sys.time(), "Start of step 7: Compiling the results"))
 validated_genes <- covarianceSelection::validated_genes$Gene
 
-num_pfc35 <- length(intersect(genes_pfc35, validated_genes))  # 28/177 genes?
-num_nodawn <- length(intersect(genes_nodawn, validated_genes)) # 11/13 genes?
-num_all <- length(intersect(genes_all, validated_genes)) # 28/177 genes?
-num_our <- length(intersect(genes_our, validated_genes)) # 30/183 genes?
+num_pfc35 <- length(intersect(genes_pfc35, validated_genes))  
+num_nodawn <- length(intersect(genes_nodawn, validated_genes)) 
+num_all <- length(intersect(genes_all, validated_genes)) 
+num_our <- length(intersect(genes_our, validated_genes)) 
 
 c(num_pfc35, num_nodawn, num_all, num_our)
 c(length(genes_pfc35), length(genes_nodawn), length(genes_all), length(genes_our))
@@ -24,13 +24,26 @@ length(intersect(genes_pfc35, genes_our))
 length(intersect(genes_pfc35, genes_nodawn))
 length(intersect(genes_our, genes_nodawn))
 
+idx_our <- which(tada$Gene %in% genes_our)
+z_our <- 1 - qnorm(tada$pval.TADA[idx_our])
+idx_pfc35 <- which(tada$Gene %in% genes_pfc35)
+z_pfc35 <- 1 - qnorm(tada$pval.TADA[idx_pfc35])
+vioplot(z_pfc35, z_our)
+############
+
 zz <- genes_our[which(!genes_our %in% genes_pfc35)]
 length(zz)
 length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]; zz[which(!zz %in% validated_genes)]
+idx_our <- which(tada$Gene %in% zz)
+z_our <- 1 - qnorm(tada$pval.TADA[idx_our])
 
 zz <- genes_pfc35[which(!genes_pfc35 %in% genes_our)]
 length(zz)
 length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]
+idx_pfc35 <- which(tada$Gene %in% zz)
+z_pfc35 <- 1 - qnorm(tada$pval.TADA[idx_pfc35])
+
+vioplot(z_pfc35, z_our)
 
 rm(list = c("validated_genes"))
 
