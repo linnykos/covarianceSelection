@@ -20,6 +20,18 @@ cbind(names(dat_list[idx_our]), sapply(dat_list[idx_our], nrow))
 
 covarianceSelection::binning(names(dat_list)[idx_our])
 
+length(intersect(genes_pfc35, genes_our))
+length(intersect(genes_pfc35, genes_nodawn))
+length(intersect(genes_our, genes_nodawn))
+
+zz <- genes_our[which(!genes_our %in% genes_pfc35)]
+length(zz)
+length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]; zz[which(!zz %in% validated_genes)]
+
+zz <- genes_pfc35[which(!genes_pfc35 %in% genes_our)]
+length(zz)
+length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]
+
 rm(list = c("validated_genes"))
 
 save.image(file = paste0(save_filepath, "/step7_results", filepath_suffix, ".RData"))

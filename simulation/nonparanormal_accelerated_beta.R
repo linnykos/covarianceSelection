@@ -1,16 +1,29 @@
+
 rm(list=ls())
 library(simulation)
 library(covarianceSelection)
 
 set.seed(10)
 ncores <- 20
-doMC::registerDoMC(cores = ncores)
+# doMC::registerDoMC(cores = ncores)
 verbose <- F
 
 trials <- 25
-paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, seq(0, 1, length.out = 21), 0.7, 0.95))
+paramMat <- as.matrix(expand.grid(15, 5, 5, 15, 1000, seq(0, 1, length.out = 21), 0.9, 0.95))
 colnames(paramMat) <- c("num_group1", "num_group2", "num_group3", "n", "d",
                         "percentage", "alpha", "gamma")
+
+# collect all the marginal densities
+load("../../raw_data/newGenexp.RData")
+rownames(genexp) <- genexp[,1]
+genexp <- genexp[,-1]
+genexp <- t(genexp)
+genexp <- as.data.frame(genexp)
+set.seed(10)
+idx <- sample(1:ncol(genexp), paramMat[1,"d"])
+
+den_list <- lapply(idx, function(i){stats::density(genexp[,i])})
+rm(list = c("genexp"))
 
 #############
 
@@ -28,13 +41,20 @@ generate_covariance <- function(d, percentage){
        covar_alt2 = covar_alt2)
 }
 
-generate_data <- function(covar_list, num_partition, n){
+generate_data <- function(covar_list, num_partition, n, den_list){
   k <- sum(num_partition)
   type_vec <- rep(1:3, times = num_partition)
   dat_list <- vector("list", k)
   d <- nrow(covar_list[[1]])
   
   dat_list <- lapply(1:k, function(i){ mvnfast::rmvn(n, rep(0, d), covar_list[[type_vec[i]]]) })
+  
+  # nonparanormal transform
+  dat_list <- lapply(1:length(dat_list), function(x){
+    covarianceSelection::nonparanormal_transformation(dat_list[[x]], den_list, 
+                                                      mean_vec = rep(0, d),
+                                                      sd_vec = sqrt(diag(covar_list[[type_vec[x]]])))
+  })
   
   dat_list
 }
@@ -46,7 +66,7 @@ rule <- function(vec){
   
   if(verbose) print(paste0("Finish generating covariances: ", Sys.time()))
   
-  dat <- generate_data(covar_list, num_partition = vec[1:3],  n = vec["n"])
+  dat <- generate_data(covar_list, num_partition = vec[1:3],  n = vec["n"], den_list)
   
   if(verbose) print(paste0("Finish generating data: ", Sys.time()))
   
@@ -61,7 +81,8 @@ criterion <- function(dat, vec, y){
   if(verbose) print(paste0("Running covariance tests: ", Sys.time()))
   
   set.seed(y)
-  obj <- covarianceSelection::stepdown(dat, alpha = vec["alpha"], trials = 100, cores = ncores, verbose = F)
+  obj <- covarianceSelection::stepdown(dat, alpha = vec["alpha"], trials = 100, cores = ncores, verbose = F,
+                                       squared = F)
   
   if(verbose) print(paste0("Starting paritions: ", Sys.time()))
   n <- sum(vec[1:3])
@@ -104,6 +125,7 @@ criterion <- function(dat, vec, y){
 res <- simulation::simulation_generator(rule = rule, criterion = criterion,
                                         paramMat = paramMat, trials = trials,
                                         cores = NA, as_list = T,
-                                        filepath = "../results/gaussian_beta_tmp.RData",
+                                        filepath = "../results/nonparanormal_accelerated_beta_tmp.RData",
                                         verbose = T)
-save.image("../results/gaussian_beta.RData")
+save.image("../results/nonparanormal_accelerated_beta.RData")
+
