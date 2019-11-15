@@ -73,40 +73,183 @@ lines(c(0,1),c(0,1), col = "red", lty = 2)
 points(sort(goodness_all), seq(0,1,length.out = length(goodness_all)), pch = 16)
 graphics.off()
 
-#################################
+#########################################
 
-zz <- genes_our[which(!genes_our %in% genes_pfc35)]
-length(zz)
-length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]; zz[which(!zz %in% validated_genes)]
-idx_our <- which(tada$Gene %in% zz)
-z_our <- 1 - qnorm(tada$pval.TADA[idx_our])
+color_palatte <- c(rgb(245, 234, 204, maxColorValue = 255), #yellow
+                   rgb(189, 57, 60, maxColorValue = 255), #red
+                   rgb(149,220,144, max = 255)) #green
+library(igraph)
 
-zz <- genes_pfc35[which(!genes_pfc35 %in% genes_our)]
-length(zz)
-length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]
-idx_pfc35 <- which(tada$Gene %in% zz)
-z_pfc35 <- 1 - qnorm(tada$pval.TADA[idx_pfc35])
+validated_genes <- covarianceSelection::validated_genes$Gene
+g_our <- igraph::graph_from_adjacency_matrix(adj_our)
 
-tmp <- data.frame(gene = c(z_pfc35, z_our), list = c(rep("Window 1B", length(z_pfc35)), rep("COBS", length(z_our))))
-tmp$list <- factor(tmp$list, levels = c("Window 1B", "COBS"))
-vioplot::vioplot(gene ~ list, data = tmp, ylab = "Z-score", xlab = "Gene list (only unique genes)",
-                 col = c(rgb(245, 234, 204, maxColorValue = 255), rgb(189, 57, 60, maxColorValue = 255)))
+tmp <- rep(1, igraph::vcount(g_our))
+tmp[which(colnames(dat_list[[1]]) %in% validated_genes)] <- 3
+tmp[which(colnames(dat_list[[1]]) %in% genes_nodawn)] <- 2
+igraph::V(g_our)$color <- color_palatte[tmp]
+igraph::V(g_our)$size <- c(1,5,5)[tmp]
+group_vec <- rep(NA, igraph::vcount(g_our))
+group_vec[which(colnames(dat_list[[1]]) %in% validated_genes)] <- 1
+group_vec[which(colnames(dat_list[[1]]) %in% genes_nodawn)] <- 2
+igraph::V(g_our)$group <- group_vec
+tmp <- igraph::components(g_our)
+g_our <- igraph::induced_subgraph(g_our, v = which(tmp$membership == 1))
+g_our <- igraph::as.undirected(g_our)
+g_our <- igraph::minimum.spanning.tree(g_our)
 
-load("../results/tmp.RData")
+png("../figures/tmp_1.png", height = 1500, width = 1500, units = "px", res = 300)
+par(mar = c(0,0,4,0))
+set.seed(10)
+igraph::plot.igraph(g_our, vertex.label = NA, main = "Our graph", edge.width = 0.5)
+graphics.off()
 
-zz <- gene_intersect[which(!gene_intersect %in% genes_pfc35)]
-length(zz)
-length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]; zz[which(!zz %in% validated_genes)]
-idx_our <- which(tada$Gene %in% zz)
-z_our <- 1 - qnorm(tada$pval.TADA[idx_our])
+idx1 <- which(igraph::V(g_our)$group == 1)
+idx2 <- which(igraph::V(g_our)$group == 2)
+dist_our <- igraph::distances(g_our, v = idx1, to = idx2)
+set.seed(10)
+tmp_graph <- igraph::erdos.renyi.game(igraph::vcount(g_our), igraph::ecount(g_our), type = "gnm")
+dist_tmp <- igraph::distances(tmp_graph, v = 1:length(idx1), to = (length(idx1)+1):(length(idx1)+length(idx2)))
+for(k in 1:10){
+   tmp1 <- apply(dist_our, 1, function(x){sort(x, decreasing = F)[k]})
+   #print(table(tmp1))
+   print(mean(tmp1))
+   #tmp2 <- mean(apply(dist_tmp, 1, function(x){sort(x, decreasing = F)[k]}))
+   #print(tmp1/tmp2)
+}
 
-zz <- genes_pfc35[which(!genes_pfc35 %in% gene_intersect)]
-length(zz)
-length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]
-idx_pfc35 <- which(tada$Gene %in% zz)
-z_pfc35 <- 1 - qnorm(tada$pval.TADA[idx_pfc35])
+ratio_vec_our <- sapply(idx1, function(x){
+   tmp <- as.numeric(igraph::neighborhood(g_our, order = 2, nodes = x)[[1]])
+   length(intersect(tmp, idx2))/length(tmp)
+})
+mean(ratio_vec_our)
 
-tmp <- data.frame(gene = c(z_pfc35, z_our), list = c(rep("Window 1B", length(z_pfc35)), rep("COBS", length(z_our))))
-tmp$list <- factor(tmp$list, levels = c("Window 1B", "COBS"))
-vioplot::vioplot(gene ~ list, data = tmp, ylab = "Z-score", xlab = "Gene list (only unique genes)",
-                 col = c(rgb(245, 234, 204, maxColorValue = 255), rgb(189, 57, 60, maxColorValue = 255)))
+## 
+
+g_pfc35 <- igraph::graph_from_adjacency_matrix(adj_pfc35)
+
+tmp <- rep(1, igraph::vcount(g_pfc35))
+tmp[which(colnames(dat_list[[1]]) %in% validated_genes)] <- 3
+tmp[which(colnames(dat_list[[1]]) %in% genes_nodawn)] <- 2
+igraph::V(g_pfc35)$color <- color_palatte[tmp]
+igraph::V(g_pfc35)$size <- c(1,5,5)[tmp]
+group_vec <- rep(NA, igraph::vcount(g_pfc35))
+group_vec[which(colnames(dat_list[[1]]) %in% validated_genes)] <- 1
+group_vec[which(colnames(dat_list[[1]]) %in% genes_nodawn)] <- 2
+igraph::V(g_pfc35)$group <- group_vec
+tmp <- igraph::components(g_pfc35)
+g_pfc35 <- igraph::induced_subgraph(g_pfc35, v = which(tmp$membership == 1))
+g_pfc35 <- igraph::as.undirected(g_pfc35)
+g_pfc35 <- igraph::minimum.spanning.tree(g_pfc35)
+
+png("../figures/tmp_2.png", height = 1500, width = 1500, units = "px", res = 300)
+par(mar = c(0,0,4,0))
+set.seed(10)
+igraph::plot.igraph(g_pfc35, vertex.label = NA, main = "PFC graph", edge.width = 0.5)
+graphics.off()
+
+idx1 <- which(igraph::V(g_pfc35)$group == 1)
+idx2 <- which(igraph::V(g_pfc35)$group == 2)
+dist_pfc35 <- igraph::distances(g_pfc35, v = idx1, to = idx2)
+set.seed(10)
+tmp_graph <- igraph::erdos.renyi.game(igraph::vcount(dist_pfc35), igraph::ecount(dist_pfc35), type = "gnm")
+dist_tmp <- igraph::distances(tmp_graph, v = 1:length(idx1), to = (length(idx1)+1):(length(idx1)+length(idx2)))
+for(k in 1:10){
+   tmp1 <- apply(dist_pfc35, 1, function(x){sort(x, decreasing = F)[k]})
+   print(mean(tmp1))
+   #tmp2 <- mean(apply(dist_tmp, 1, function(x){sort(x, decreasing = F)[k]}))
+   #print(tmp1/tmp2)
+}
+
+ratio_vec_pfc35 <- sapply(idx1, function(x){
+   tmp <- as.numeric(igraph::neighborhood(g_pfc35, order = 2, nodes = x)[[1]])
+   length(intersect(tmp, idx2))/length(tmp)
+})
+mean(ratio_vec_pfc35)
+
+######################################
+
+library(igraph)
+
+k_vec <- 1:10
+res_mat <- matrix(NA, ncol = 2, nrow = length(k_vec))
+validated_genes <- covarianceSelection::validated_genes$Gene
+
+g_our <- igraph::graph_from_adjacency_matrix(adj_our)
+tmp <- rep(1, igraph::vcount(g_our))
+group_vec <- rep(NA, igraph::vcount(g_our))
+group_vec[which(colnames(dat_list[[1]]) %in% validated_genes)] <- 1
+group_vec[which(colnames(dat_list[[1]]) %in% genes_nodawn)] <- 2
+igraph::V(g_our)$group <- group_vec
+tmp <- igraph::components(g_our)
+g_our <- igraph::induced_subgraph(g_our, v = which(tmp$membership == 1))
+g_our <- igraph::as.undirected(g_our)
+g_our <- igraph::minimum.spanning.tree(g_our)
+
+idx1 <- which(igraph::V(g_our)$group == 1)
+idx2 <- which(igraph::V(g_our)$group == 2)
+dist_tmp <- igraph::distances(tmp_graph, v = 1:length(idx1), to = (length(idx1)+1):(length(idx1)+length(idx2)))
+for(k in k_vec){
+   tmp1 <- apply(dist_our, 1, function(x){sort(x, decreasing = F)[k]})
+   res_mat[k,1] <- mean(tmp1)
+}
+
+g_pfc35 <- igraph::graph_from_adjacency_matrix(adj_pfc35)
+group_vec <- rep(NA, igraph::vcount(g_pfc35))
+group_vec[which(colnames(dat_list[[1]]) %in% validated_genes)] <- 1
+group_vec[which(colnames(dat_list[[1]]) %in% genes_nodawn)] <- 2
+igraph::V(g_pfc35)$group <- group_vec
+tmp <- igraph::components(g_pfc35)
+g_pfc35 <- igraph::induced_subgraph(g_pfc35, v = which(tmp$membership == 1))
+g_pfc35 <- igraph::as.undirected(g_pfc35)
+g_pfc35 <- igraph::minimum.spanning.tree(g_pfc35)
+
+idx1 <- which(igraph::V(g_pfc35)$group == 1)
+idx2 <- which(igraph::V(g_pfc35)$group == 2)
+dist_tmp <- igraph::distances(tmp_graph, v = 1:length(idx1), to = (length(idx1)+1):(length(idx1)+length(idx2)))
+for(k in k_vec){
+   tmp1 <- apply(dist_pfc35, 1, function(x){sort(x, decreasing = F)[k]})
+   res_mat[k,2] <- mean(tmp1)
+}
+
+
+plot(NA, xlim = range(k_vec), ylim = range(res_mat))
+points(res_mat[,1])
+points(res_mat[,2], col = "red")
+
+#########################
+res_mat <- matrix(NA, ncol = 2, nrow = 100)
+
+for(k in 1:100){
+   our_mat <- eigen_our$vectors[,c(1:k, (ncol(eigen_our$vectors)-k+1):ncol(eigen_our$vectors))]
+   idx1 <- which(colnames(dat_list[[1]]) %in% validated_genes)
+   idx2 <- which(colnames(dat_list[[1]]) %in% genes_nodawn)
+   idx1 <- setdiff(idx1, idx2)
+   
+   dist_mat <- sapply(idx1, function(x){
+      sapply(idx2, function(y){
+         .l2norm(our_mat[x,] - our_mat[y,])
+      })
+   })
+   val1 <- mean(apply(dist_mat, 1, min))
+   
+   ########
+   
+   pfc_mat <- eigen_pfc35$vectors[,c(1:k, (ncol(eigen_pfc35$vectors)-k+1):ncol(eigen_pfc35$vectors))]
+   idx1 <- which(colnames(dat_list[[1]]) %in% validated_genes)
+   idx2 <- which(colnames(dat_list[[1]]) %in% genes_nodawn)
+   idx1 <- setdiff(idx1, idx2)
+   
+   dist_mat <- sapply(idx1, function(x){
+      sapply(idx2, function(y){
+         .l2norm(pfc_mat[x,] - our_mat[y,])
+      })
+   })
+   val2 <- mean(apply(dist_mat, 1, min))
+   
+   res_mat[k,] <- c(val1, val2)
+}
+
+plot(NA, xlim = c(1,100), ylim = range(res_mat))
+points(res_mat[,1])
+points(res_mat[,2], col = "red")
+
