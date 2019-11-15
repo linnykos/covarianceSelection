@@ -13,14 +13,11 @@ verbose <- T
 save_filepath <- "/raid6/Kevin/covarianceSelection/results"
 filepath_suffix <- ""
 
-# source("../main/step0_loading.R")
-# source("../main/step1_screening.R")
-# source("../main/step2_nodawn_analysis.R")
-# source("../main/step3_pfc35_analysis.R")
-# source("../main/step4_alldata_analysis.R")
-# source("../main/step5_subjectselection.R")
-# source("../main/step6_our_analysis.R")
-# source("../main/step7_our_goodness.R")
-
-load("/raid6/Kevin/covarianceSelection/results/step8_other_goodness.RData")
-source("../main/step8_other_goodness.R")
+source("../main/step0_loading.R")
+source("../main/step1_screening.R")
+source("../main/step2_nodawn_analysis.R")
+source("../main/step3_pfc35_analysis.R")
+source("../main/step4_subjectselection.R")
+source("../main/step5_our_analysis.R")
+source("../main/step6_our_goodness.R")
+source("../main/step7_other_goodness.R")

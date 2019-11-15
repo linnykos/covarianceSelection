@@ -1,5 +1,6 @@
 rm(list=ls())
 load("../results/gaussian_beta.RData")
+load("../results/gaussian_beta_tmp.RData")
 
 median_mat <- matrix(NA, ncol = nrow(paramMat), nrow = 4)
 for(i in 1:length(res)){
@@ -10,7 +11,7 @@ for(i in 1:length(res)){
   all_vec <- sapply(tmp, function(x){x$error_all})
   oracle_vec <- sapply(tmp, function(x){x$error_oracle})
   
-  median_mat[,i] <- c(mean(our_vec), mean(base_vec), mean(all_vec), mean(oracle_vec))
+  median_mat[,i] <- c(median(our_vec), median(base_vec), median(all_vec), median(oracle_vec))
 }
 
 #png("../figures/.png", height = 1400, width = 1400, res = 300, units ="px")

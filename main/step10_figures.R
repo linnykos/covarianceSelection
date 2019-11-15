@@ -19,10 +19,7 @@ idx2 <- sort(idx_our)
 idx2 <- setdiff(idx2, idx1)
 tmp <-  igraph::components(g_selected)
 idx3 <- sort(setdiff(which(tmp$membership == 1), c(idx1,idx2)))
-# set.seed(10)
-# idx3 <- sample(idx3)
 adj_tmp <- as.matrix(igraph::as_adjacency_matrix(g_selected))
-# idx3 <- idx3[order(rowSums(adj_tmp[idx3,]), decreasing = T)]
 adj_tmp <- adj_tmp[c(idx1, idx2, idx3), c(idx1, idx2, idx3)]
 diag(adj_tmp) <- 1
 
@@ -75,3 +72,41 @@ plot(sort(goodness_all), seq(0,1,length.out = length(goodness_all)), asp = T, xl
 lines(c(0,1),c(0,1), col = "red", lty = 2)
 points(sort(goodness_all), seq(0,1,length.out = length(goodness_all)), pch = 16)
 graphics.off()
+
+#################################
+
+zz <- genes_our[which(!genes_our %in% genes_pfc35)]
+length(zz)
+length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]; zz[which(!zz %in% validated_genes)]
+idx_our <- which(tada$Gene %in% zz)
+z_our <- 1 - qnorm(tada$pval.TADA[idx_our])
+
+zz <- genes_pfc35[which(!genes_pfc35 %in% genes_our)]
+length(zz)
+length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]
+idx_pfc35 <- which(tada$Gene %in% zz)
+z_pfc35 <- 1 - qnorm(tada$pval.TADA[idx_pfc35])
+
+tmp <- data.frame(gene = c(z_pfc35, z_our), list = c(rep("Window 1B", length(z_pfc35)), rep("COBS", length(z_our))))
+tmp$list <- factor(tmp$list, levels = c("Window 1B", "COBS"))
+vioplot::vioplot(gene ~ list, data = tmp, ylab = "Z-score", xlab = "Gene list (only unique genes)",
+                 col = c(rgb(245, 234, 204, maxColorValue = 255), rgb(189, 57, 60, maxColorValue = 255)))
+
+load("../results/tmp.RData")
+
+zz <- gene_intersect[which(!gene_intersect %in% genes_pfc35)]
+length(zz)
+length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]; zz[which(!zz %in% validated_genes)]
+idx_our <- which(tada$Gene %in% zz)
+z_our <- 1 - qnorm(tada$pval.TADA[idx_our])
+
+zz <- genes_pfc35[which(!genes_pfc35 %in% gene_intersect)]
+length(zz)
+length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]
+idx_pfc35 <- which(tada$Gene %in% zz)
+z_pfc35 <- 1 - qnorm(tada$pval.TADA[idx_pfc35])
+
+tmp <- data.frame(gene = c(z_pfc35, z_our), list = c(rep("Window 1B", length(z_pfc35)), rep("COBS", length(z_our))))
+tmp$list <- factor(tmp$list, levels = c("Window 1B", "COBS"))
+vioplot::vioplot(gene ~ list, data = tmp, ylab = "Z-score", xlab = "Gene list (only unique genes)",
+                 col = c(rgb(245, 234, 204, maxColorValue = 255), rgb(189, 57, 60, maxColorValue = 255)))

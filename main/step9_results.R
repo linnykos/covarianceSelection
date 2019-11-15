@@ -36,12 +36,14 @@ length(zz)
 length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]; zz[which(!zz %in% validated_genes)]
 idx_our <- which(tada$Gene %in% zz)
 z_our <- 1 - qnorm(tada$pval.TADA[idx_our])
+quantile(z_our, probs = c(0.1,0.9))
 
 zz <- genes_pfc35[which(!genes_pfc35 %in% genes_our)]
 length(zz)
 length(intersect(zz, validated_genes)); zz[which(zz %in% validated_genes)]
 idx_pfc35 <- which(tada$Gene %in% zz)
 z_pfc35 <- 1 - qnorm(tada$pval.TADA[idx_pfc35])
+quantile(z_pfc35, probs = c(0.1,0.9))
 
 vioplot(z_pfc35, z_our)
 
