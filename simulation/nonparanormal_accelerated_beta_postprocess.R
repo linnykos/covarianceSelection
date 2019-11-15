@@ -13,7 +13,7 @@ for(i in 1:length(res)){
   median_mat[,i] <- c(mean(our_vec), mean(base_vec), mean(all_vec), mean(oracle_vec))
 }
 
-#png("../figures/.png", height = 1400, width = 1400, res = 300, units ="px")
+png("../figures/appendix_8b.png", height = 1400, width = 1400, res = 300, units ="px")
 par(mar = c(5,4,4,1))
 
 plot(NA, xlim = c(0,1), ylim = range(c(range(median_mat),85)), ylab = "Spectral error difference",
@@ -25,4 +25,4 @@ lines(seq(0,1,length.out = nrow(paramMat)), median_mat[3,], col = rgb(149,220,14
 
 legend("topleft", c("COBS", "Oracle", "Base", "All"),
        bty="n", fill= c("black", rgb(205,40,54, max = 255), rgb(106,164,248, max = 255), rgb(149,220,144, max = 255)))
-#graphics.off()
+graphics.off()
