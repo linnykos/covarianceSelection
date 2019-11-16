@@ -1,8 +1,5 @@
 rm(list=ls())
 load("../results/nonparanormal_goodness.RData")
-tmp <- res[[3]][[1]][[3]]
-res[[3]][[1]][[3]] <- res[[2]][[1]][[3]]
-res[[2]][[1]][[3]] <- tmp
 
 
 main_vec <- c("COBS", "Base", "All", "Oracle")

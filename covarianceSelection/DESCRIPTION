@@ -14,8 +14,6 @@ Imports:
     Matrix,
     foreach,
     doMC,
-    binaryLogic,
-    mgcv,
     org.Hs.eg.db,
     DBI,
     dequer,
