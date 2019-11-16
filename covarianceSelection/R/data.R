@@ -1,4 +1,4 @@
-#' Partitioning of the regions in the brain
+#' 102 detected risk genes based on Satterstrom 2019
 #'
 #' @name validated_genes
 #' @docType data
@@ -13,7 +13,9 @@
 #' @keywords data
 NULL
 
-#' Partitioning of the regions in the brain
+#' TADA data from De Rubeis 2014.
+#' 
+#' This includes 33 risk genes if you look for genes with a \code{qvalue} less than 0.1.
 #'
 #' @name tada
 #' @docType data
