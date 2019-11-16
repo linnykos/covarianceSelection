@@ -81,16 +81,16 @@ validated_idx <- setdiff(validated_idx, nodawn_idx)
 k_vec <- 1:10
 
 res_mat1 <- sapply(k_vec, function(k){
-   val1 <- compute_mst_distance(as.matrix(adj_our), validated_idx, nodawn_idx, k)
-   val2 <- compute_mst_distance(as.matrix(adj_pfc35), validated_idx, nodawn_idx, k)
+   val1 <- covarianceSelection::compute_mst_distance(as.matrix(adj_our), validated_idx, nodawn_idx, k)
+   val2 <- covarianceSelection::compute_mst_distance(as.matrix(adj_pfc35), validated_idx, nodawn_idx, k)
    
    c(val1, val2)
 })
 
 k_vec <- 1:10
 res_mat2 <- sapply(k_vec, function(k){
-   val1 <- compute_graph_root_distance(eigen_our$vectors, validated_idx, nodawn_idx, k)
-   val2 <- compute_graph_root_distance(eigen_pfc35$vectors, validated_idx, nodawn_idx, k)
+   val1 <- covarianceSelection::compute_graph_root_distance(eigen_our$vectors, validated_idx, nodawn_idx, k)
+   val2 <- covarianceSelection::compute_graph_root_distance(eigen_pfc35$vectors, validated_idx, nodawn_idx, k)
    
    c(val1, val2)
 })

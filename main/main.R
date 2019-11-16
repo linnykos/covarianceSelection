@@ -1,6 +1,6 @@
 rm(list=ls())
 
-ncores <- 20
+ncores <- 10
 set.seed(10)
 doMC::registerDoMC(cores = ncores)
 
@@ -19,5 +19,7 @@ source("../main/step2_nodawn_analysis.R")
 source("../main/step3_pfc35_analysis.R")
 source("../main/step4_subjectselection.R")
 source("../main/step5_our_analysis.R")
-source("../main/step6_our_goodness.R")
-source("../main/step7_other_goodness.R")
+source("../main/step5_our_analysis_robustness.R")
+source("../main/step7_goodness.R")
+source("../main/step8_results.R")
+source("../main/step9_figures.R")
