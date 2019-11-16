@@ -118,3 +118,6 @@ points(k_vec, res_mat2[1,], pch = 16, col = color_palatte[2])
 legend("topleft", c("Using Window 1B graph", "Using COBS graph"),
        bty="n", fill=color_palatte, cex = 0.75)
 graphics.off()
+
+median((res_mat1[2,] - res_mat1[1,])/res_mat1[2,])
+median((res_mat2[2,] - res_mat2[1,])/res_mat2[2,])
