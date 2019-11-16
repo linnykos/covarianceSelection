@@ -14,23 +14,11 @@ core_set <- selected_idx[covarianceSelection::clique_selection(g_sub, threshold 
 idx_our <- covarianceSelection::clique_selection(g_selected, threshold = gamma_threshold, target_idx = core_set)
 idx_our <- idx_our[[1]]
 
-## covarianceSelection::binning(names(dat_list)[idx_our]); covarianceSelection::binning(names(dat_list))
-## igraph::ecount(igraph::induced_subgraph(g_selected, idx_our))/(length(idx_our)*(length(idx_our)-1)/2)
 dat_our <- do.call(rbind, dat_list[idx_our])
 dat_our <- scale(dat_our, scale = F)
 
-# res <- covarianceSelection::graphicalModel_range(dat_our, 1:length(screening_res$primary), lambda_min = 0.01, lambda_max = 0.35,  
-#                                                  lambda_length = 30, verbose = T) 
-# save.image(file = paste0(save_filepath, "/step6_ourdata_analysis", filepath_suffix, ".RData"))
-# 
-# scale_vec_our <- sapply(res, function(x){covarianceSelection::compute_scale_free(as.matrix(x$adj_mat))})
-# edges_vec_our <- sapply(res, function(x){sum(as.matrix(x$adj_mat))/2})
-# # idx <- which.max(scale_vec_our)
-# idx <- 26
-# adj_our <- as.matrix(res[[idx]]$adj_mat)
-# stopifnot(all(dim(adj_our) == nrow(tada)))
-
-res <- covarianceSelection::graphicalModel(dat_our, primary_idx = 1:length(screening_res$primary), lambda = seq(0.05, 0.1, length.out = 15)[5])
+res <- covarianceSelection::graphicalModel(dat_our, primary_idx = 1:length(screening_res$primary), 
+                                           lambda = seq(0.05, 0.1, length.out = 15)[5])
 adj_our <- as.matrix(res$adj_mat)
 
 # run the HMRF
@@ -46,6 +34,9 @@ genes_our <- sort(as.character(report_our$Gene[which(report_our$FDR <= fdr_cutof
 
 adj_our <- Matrix::Matrix(adj_our, sparse = T)
 
-rm(list = c("dat_our", "seedindex", "res", "combn_mat", "n", "g_selected"))
+rm(list = c("dat_our", "seedindex", "res", "combn_mat", "n", "g_selected", "g_sub", "selected_idx", "core_set"))
 
-save.image(file = paste0(save_filepath, "/step6_ourdata_analysis", filepath_suffix, ".RData"))
+save.image(file = paste0(save_filepath, "/step5_ourdata_analysis", filepath_suffix, ".RData"))
+
+
+

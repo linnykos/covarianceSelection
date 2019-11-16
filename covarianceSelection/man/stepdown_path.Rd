@@ -5,7 +5,7 @@
 \title{Stepdown path}
 \usage{
 stepdown_path(dat_list, trials = 100, iterations = 15, cores = 1,
-  verbose = F, file = NA, prob = 1)
+  verbose = F, file = NA, prob = 1, squared = T)
 }
 \arguments{
 \item{dat_list}{list of data matrices with same number of columns}

@@ -17,60 +17,56 @@ compute_scale_free <- function(adj){
   stats::cor(log(x),log(y))^2
 }
 
-#' List the index-pairs of non-zeros in an adjacency matrix
-#'
-#' Only lists elements in the upper-triange, excluding diagonal
-#'
-#' @param adj matrix
-#' @param tol small number
-#'
-#' @return matrix with 2 columns
-#' @export
-enumerate_edges <- function(adj, tol = 1e-6){
-  stopifnot(sum(is.na(adj))==0, ncol(adj) == nrow(adj))
-  stopifnot(is.matrix(adj) | class(adj) == "dgCMatrix")
-
-  diag(adj) <- 0
-  adj[lower.tri(adj)] <- 0
-  which(abs(adj) > tol, arr.ind = TRUE)
-}
-
-#' Convert adjancency matrix to graph
+#' Compute the distance between two sets of vertices based on the MST
+#' 
+#' Specifically, focus on the largest connected component in the graph.
+#' Return the number of edges so each vertex in \code{idx1} reaches its
+#' closest \code{k} elements in \code{idx2}
 #'
 #' @param adj adjacency matrix
-#' @param tol tolerance
+#' @param idx1 vector containing indices between 1 and \code{nrow(adj)}
+#' @param idx2 vector containing indices between 1 and \code{nrow(adj)}
+#' @param k positive integer
 #'
-#' @return \code{igraph} object
+#' @return numeric
 #' @export
-adj_to_graph <- function(adj, tol = 1e-6){
-  n <- ncol(adj)
-  idx <- which(abs(adj) >= tol, arr.ind = T)
-  g <- igraph::graph.empty(n = n, directed = F)
-  igraph::add_edges(g, edges = t(idx))
+compute_mst_distance <- function(adj, idx1, idx2, k){
+  g <- igraph::graph_from_adjacency_matrix(adj)
+  tmp <- rep(1, igraph::vcount(g))
+  group_vec <- rep(NA, igraph::vcount(g))
+  group_vec[idx1] <- 1; group_vec[idx2] <- 2
+  igraph::V(g)$group <- group_vec
+  
+  # find largest connected component
+  tmp <- igraph::components(g)
+  g <- igraph::induced_subgraph(g, v = which(tmp$membership == 1))
+  g <- igraph::as.undirected(g)
+  g <- igraph::minimum.spanning.tree(g)
+  
+  source <- which(igraph::V(g)$group == 1)
+  sink <- which(igraph::V(g)$group == 2)
+  dist_mat <- igraph::distances(g, v = source, to = sink)
+  
+  mean(apply(dist_mat, 1, function(x){sort(x, decreasing = F)[k]}))
 }
 
-#' Count neighbors of a graph
-#' 
-#' Count how many neighbors each vertex in \code{idx} has.
+#' Compute the distance between two sets of vertices based on graph root embedding
 #'
-#' @param g igraph object
-#' @param idx vector of indicies
-#' @param order what degree neighbor
+#' @param eigenvectors eigenvectors of adjacency matrix
+#' @param idx1 vector containing indices between 1 and \code{nrow(adj)}
+#' @param idx2 vector containing indices between 1 and \code{nrow(adj)}
+#' @param k number of positive and negative dimensions
 #'
-#' @return a vector of numerics
+#' @return numeric
 #' @export
-count_neighbors <- function(g, idx, order = 1) {
-  stopifnot(class(g) == "igraph")
-  stopifnot(all(idx %% 1 == 0) & max(idx) <= igraph::vcount(g))
-
-  neigh <- igraph::ego(g, order = order)
-  neigh_vec <- numeric(igraph::vcount(g))
-
-  for(i in 1:length(neigh)) {
-    #make sure it doesn't count itself
-    neigh_vec[i] = length(which(idx %in% setdiff(neigh[[i]],i)))
-  }
-
-  neigh_vec
+compute_graph_root_distance <- function(eigenvectors, idx1, idx2, k){
+  embedding_mat <- eigenvectors[,c(1:k, (ncol(eigenvectors)-k+1):ncol(eigenvectors))]
+  
+  dist_mat <- sapply(idx1, function(x){
+    sapply(idx2, function(y){
+      .l2norm(embedding_mat[x,] - embedding_mat[y,])
+    })
+  })
+  
+  mean(apply(dist_mat, 1, min))
 }
-

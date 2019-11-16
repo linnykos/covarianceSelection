@@ -5,7 +5,8 @@
 \title{Stepdown to test all pairs of datasets to see if they have equal covariance}
 \usage{
 stepdown(dat_list, trials = 100, alpha = 0.05, return_pvalue = F,
-  cores = 1, prob = 1, verbose = F, only_test_stat = F)
+  cores = 1, prob = 1, verbose = F, only_test_stat = F,
+  squared = T)
 }
 \arguments{
 \item{dat_list}{list of data matrices with same number of columns}
