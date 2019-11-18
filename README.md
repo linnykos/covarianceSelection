@@ -46,12 +46,20 @@ All the code below were run on a server with 10 cores. If you do not have 10 cor
 
 All results produced are automatically placed in the `results/` folder as `.RData` files.
 
+The simulations rely on a custom-made simulation engine developed in https://github.com/linnylin92/simulation. 
+To download this (before running any simulation), use the code chunk below in R.
+
+```{r}
+library("devtools")
+devtools::install_github("linnylin92/simulation", subdir = "simulation")
+```
+
 ## Running the simulations
 
 To reproduce the simulations (Section 5 of our paper), navigate to the `simulation` folder. All
 simulations in this folder (documented below) take about 8 hours to finish.
 From this location, run the following line in the command window to reproduce the 
-results for Figure 6, 7, and 8A.
+results for Figures 6, 7, and 8A.
 
 ```
 R CMD BATCH nonparanormal.R # this runs the simulation
@@ -67,11 +75,41 @@ R CMD BATCH nonparanormal_beta.R # this runs the simulation
 R CMD BATCH nonparanormal_beta_postprocess.R # this generates Figure 8B
 ```
 
-Run the following line in the command window to reproduce the results for Figure S.2 and S.3.
+Run the following line in the command window to reproduce the results for Figures S.2 and S.3.
 
 ```
 R CMD BATCH nonparanormal_goodness.R # this runs the simulation
 R CMD BATCH nonparanormal_goodness_postprocess.R # this generates Figure 8B
+```
+
+Run the following line in the command window to reproduce the results for Figures S.4 and S.5A.
+
+```
+R CMD BATCH gaussian.R # this runs the simulation
+R CMD BATCH gaussian_postprocess.R # this generates Figure S.4
+R CMD BATCH gaussian_postprocess_2.R # this generates Figure S.5A
+```
+
+Run the following line in the command window to reproduce the results for Figure S.5B.
+
+```
+R CMD BATCH gaussian_beta.R # this runs the simulation
+R CMD BATCH gaussian_beta_postprocess.R # this generates Figure S.5B
+```
+
+Run the following line in the command window to reproduce the results for Figures S.6 and S.7A.
+
+```
+R CMD BATCH nonparanormal_accelerated.R # this runs the simulation
+R CMD BATCH nonparanormal_accelerated_postprocess.R # this generates Figure S.6
+R CMD BATCH nonparanormal_accelerated_postprocess_2.R # this generates Figure S.7A
+```
+
+Run the following line in the command window to reproduce the results for Figure S.7B.
+
+```
+R CMD BATCH nonparanormal_accelerated_beta.R # this runs the simulation
+R CMD BATCH nonparanormal_accelerated_beta_postprocess.R # this generates Figure S.7B
 ```
 
 
