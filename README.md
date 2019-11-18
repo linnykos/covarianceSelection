@@ -28,7 +28,7 @@ This dataset is a 105 MB `.RData` file, and is synced onto GitHub using the Git 
 install this system before proceeding.
 
 
-The second dataset is the p-value risk scores for the genes obtained applying
+The second dataset is the p-value risk scores (called TADA scores in the paper) for the genes obtained applying
  the TADA framework (He et al., 2013) to the data available in De Rubeis et al. (2014). The full citations are given in the paper.
  
 Supplementary datasets were also used to manage the data and assess the results. These are all documented appropriately under the file `covarianceSelection/R/data.R`.
@@ -118,26 +118,23 @@ R CMD BATCH nonparanormal_accelerated_beta_postprocess.R # this generates Figure
 To reproduce the analysis (Section 6 of our paper), navigate to the `main` folder. From this location, run the following lines in the command window.
 
 ```
-R CMD BATCH analysis_overalpha.R
-R CMD BATCH analysis_simultaenous.R
+R CMD BATCH main.R
 ```
 
-(These took 24 hours and 3.5 hours when we ran them respecitvely.) The first line of code runs a script to perform the analysis for varying values of `alpha`, for a total of 14 different analyses. 
-The second line of code runs 3 analyses: the analysis using our method at `alpha` equal to 0.1, the analysis that uses only the samples from Window 1B, and the analysis that
-uses all the samples in the BrainSpan dataset.
+These took 15 hours on our machine respecitvely. 
+This runs a sequence of steps in the analysis pipeline, which we briefly describe here.
+* `step0_loading.R` loads the BrainSpan dataset and TADA dataset (i.e., matching the genes in both
+datasets, resolving gene synonyms, removing genes not expressed in the brain).
+* `step1_screening.R` screens the genes according to Liu et al. (2015). This is reported in Section 6.1.
+* `step2_nodawn_analysis.R` detects the risk genes only based on the TADA dataset.
+* `step3_pfc35_analysis.R` implicates risk genes in the DAWN framework using the Window 1B partitions. This is reported in Section 6.4.
+* `step4_subjectselection.R` uses COBS and is the most computational-intensive part of our procedure. 
+This selects the 24 partitions in BrainSpan that we report in our paper. This is reported in Section 6.2.
+* `step5_our_analysis.R` implicates risk genes in the DAWN framework using our 24 partitions selected by COBS.
+This is reported in Section 6.4.
+* `step6_our_analysis_robustness.R` performs the robustness analysis. This is reported in Section 6.4.
+* `step7_goodness.R` performs the goodness of fit diagnostic. This is reported in Section 3.2 and 6.2.
+* `step8_results.R` collects all the key results from all the above sections. This is reported in Section 6.4.
+* `step9_figures.R` generates all the figures related to the analysis sections in our paper.
 
-## Summarizing the results. reproducing the figures
-
-These steps can only be done after you have run the simulation and analysis.
-To summarize the results, navigate to the `figures` folder. Run the following code in the R console.
-
-```{r}
-source("summary_statistics.R")
-```
-
-To generate all the figures, run the appropriate R code for each figure. The files in the `figures` folder are titled appropriate to their corresponding figure in the paper.
-For example, you can run the following line in the command window to reproduced Figure 2, which will be placed into the `figures` folder.
-
-```
-R CMD BATCH figure_2.R
-```
+All the resulting figures will be placed in the `figures` folder.
