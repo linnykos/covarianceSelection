@@ -11,16 +11,12 @@ This package can be installed through `devtools` in R.
 library("devtools")
 devtools::install_github("linnylin92/covarianceSelection", subdir = "covarianceSelection")
 ```
-The package itself depends on several packages. These include `igraph`, `glmnet`, `Matrix`, `MASS`, `huge`,  `plyr`, `foreach`, `doMC`, `hash`, `binaryLogic`, `dequer`, and `mgcv`.
+The package and downstream analysis and simulations depends on several packages, some of which originate
+from BioConductor. 
+These include `DBI`, `dequer`, `devtools`, `doMC`, `foreach`, `glmnet`, `hash`, `huge`, `igraph`, `MASS`, `Matrix`, and `org.Hs.eg.db`. 
 
-Warning: On Windows, to install the `doMC` package, use the following code in R.
-```{r}
-install.packages("doMC", repos="http://R-Forge.R-project.org")
-```
+Warning: The `doMC` package does not really work on Windows, as it does not seem to actually parallelize the code.
 See: http://stackoverflow.com/questions/16453625/package-domc-not-available-for-r-version-3-0-0-warning-in-install-packages
-
-The above installation is only for the R package. To reproduce the entire simulation and analysis, you will need to pull/fork this entire repository.
-You will need to install the Git Large File Storage system to do this (see below).
 
 # Data 
 
@@ -42,31 +38,42 @@ All data used in this entire project are either publicly available or processed 
 
 ## Note
 
-All the code below were run on a server with 10 cores. If you do not have 10 cores, be sure to change the value of `cores` appropriately in the following files:
-`main/step0_header.R`, `simulation/clique_simulation_RoC.R`, `simulation/clique_simulation_SnR.R`, and `simulation/clique_simulation_RoC_nodenom.R`.
+All the code below were run on a server with 10 cores. If you do not have 10 cores, be sure to change the value of `ncores` appropriately in the following files:
+`main/main.R` (for the data analysis) or `simulation/gaussian.R`, 
+`simulation/gaussian_beta.R`, `simulation/nonparanormal.R`, `simulation/nonparanormal_beta.R`, 
+`simulation/nonparanormal_goodness.R`, `simulation/nonparanormal_accelerated.R` and
+`simulation/nonparanormal_accelerated_beta.R` (for the simulations).
 
 All results produced are automatically placed in the `results/` folder as `.RData` files.
 
 ## Running the simulations
 
-To reproduce the simulations (Section 5 of our paper), navigate to the `simulation` folder. From this location, run the following line in the command window to reproduce the 
-results for Figure 6 and Figure 7. (This took 8.5 hours when we ran it.)
+To reproduce the simulations (Section 5 of our paper), navigate to the `simulation` folder. All
+simulations in this folder (documented below) take about 8 hours to finish.
+From this location, run the following line in the command window to reproduce the 
+results for Figure 6, 7, and 8A.
 
 ```
-R CMD BATCH clique_simulation_RoC.R
+R CMD BATCH nonparanormal.R # this runs the simulation
+R CMD BATCH nonparanormal_postprocess.R # this generates Figure 6
+R CMD BATCH nonparanormal_postprocess_2.R # this generates Figure 7
+R CMD BATCH nonparanormal_postprocess_3.R # this generates Figure 8A
 ```
 
-Run the following line in the command window to reproduce the results for Figure 8. (This took 3.5 hours when we ran it.)
+Run the following line in the command window to reproduce the results for Figure 8B. 
 
 ```
-R CMD BATCH clique_simulation_SnR.R
+R CMD BATCH nonparanormal_beta.R # this runs the simulation
+R CMD BATCH nonparanormal_beta_postprocess.R # this generates Figure 8B
 ```
 
-Run the following line in the command window to reproduce the results in the Appendix. (This took 2.5 hours when we ran it.)
+Run the following line in the command window to reproduce the results for Figure S.2 and S.3.
 
 ```
-R CMD BATCH clique_simulation_RoC_nodenom.R
+R CMD BATCH nonparanormal_goodness.R # this runs the simulation
+R CMD BATCH nonparanormal_goodness_postprocess.R # this generates Figure 8B
 ```
+
 
 ## Running the analysis
 
